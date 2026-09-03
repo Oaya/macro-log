@@ -1,0 +1,14 @@
+# Python
+backend/venv/
+**/__pycache__/
+*.pyc
+*.db
+
+# Node / React Native 
+mobile/node_modules/
+mobile/.expo/
+
+# Secrets & OS
+.env
+.env.*
+.DS_Store
