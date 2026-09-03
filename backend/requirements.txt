@@ -1,3 +1,6 @@
-fastapi[standard]
-strawberry-graphql[fastapi]
-uvicorn
+fastapi[standard]==0.141.1
+strawberry-graphql[fastapi]==0.327.2
+uvicorn==0.52.4
+sqlalchemy==2.0.52
+alembic==1.19.1
+psycopg2-binary==2.9.12
