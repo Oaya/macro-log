@@ -1,0 +1,30 @@
+services:
+  db:
+    container_name: macrolog_dev_db
+    image: postgres:16
+    environment:
+      POSTGRES_USER: macro
+      POSTGRES_PASSWORD: macro_pass
+      POSTGRES_DB: macrolog
+    ports:
+      - "5432:5432" # expose Postgres to your host (handy for a DB GUI)
+    volumes:
+      - pgdata:/var/lib/postgresql/data # named volume = data survives restarts
+
+  backend:
+    container_name: macrolog_dev_server
+    build: ./backend # build using backend/Dockerfile
+    ports:
+      - "8000:8000" # host:container — reach it at localhost:8000
+    environment:
+      # NOTE the host is 'db' — the SERVICE NAME, not localhost.
+      # Inside compose, containers reach each other by service name.
+      DATABASE_URL: postgresql://macro:macro_pass@db:5432/macrolog
+    depends_on:
+      - db # start db before backend
+    volumes:
+      - ./backend:/app # live-reload: your edits reflect in the container
+
+# Declares the named volume used above
+volumes:
+  pgdata:
