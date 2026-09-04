@@ -1,5 +1,6 @@
 import strawberry
 from sqlalchemy import select
+from strawberry.types import Info
 
 from database import SessionLocal
 from models import User as UserModel
@@ -37,10 +38,19 @@ class Query:
     def hello(self) -> str:
         return "world"
 
+    @strawberry.field
+    def me(self, info: Info) -> User:
+
+        current_user = info.context["current_user"]
+
+        if current_user is None:
+            raise Exception("Not authenticated")
+
+        # Convert the SQLalchemy user to the GraphQL user
+        return to_graphql_user(current_user)
+
 
 #  MUTATION
-
-
 @strawberry.type
 class Mutation:
     @strawberry.mutation
