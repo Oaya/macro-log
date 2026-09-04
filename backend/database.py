@@ -1,7 +1,7 @@
 import os
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 # Read the connection string from the environment.
 # Docker Compose injects DATABASE_URL (host "db", remember).
@@ -19,4 +19,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Base class your models will inherit from.
 # Alembic and SQLAlchemy use it to know what tables exist.
-Base = declarative_base()
+
+
+class Base(DeclarativeBase):
+    pass
