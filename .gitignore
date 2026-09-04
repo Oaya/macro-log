@@ -10,7 +10,7 @@ mobile/.expo/
 
 # Secrets & OS
 .env
-.env.*
+
 .DS_Store
 
 .vscode

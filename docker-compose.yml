@@ -16,10 +16,8 @@ services:
     build: ./backend # build using backend/Dockerfile
     ports:
       - "8000:8000" # host:container — reach it at localhost:8000
-    environment:
-      # NOTE the host is 'db' — the SERVICE NAME, not localhost.
-      # Inside compose, containers reach each other by service name.
-      DATABASE_URL: postgresql://macro:macro_pass@db:5432/macrolog
+    env_file:
+      - ./backend/.env
     depends_on:
       - db # start db before backend
     volumes:
