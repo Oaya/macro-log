@@ -41,3 +41,19 @@ def create_access_token(user_id: str) -> str:
     # Sign the payload with our secret. This makes it tamper-proof.
     token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
     return token
+
+
+def decode_access_token(token: str) -> str | None:
+    """Verify a JWT and return the user id inside it.
+    Returns None if the token is invalid, expired, or tampered with."""
+
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=JWT_ALGORITHM)
+        print(payload)
+
+        # "sub" is user_id exists.
+        user_id = payload.get("sub")
+        return user_id
+
+    except jwt.PyJWTError:
+        return None
