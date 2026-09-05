@@ -1,7 +1,7 @@
 import uuid
-from datetime import datetime
+from datetime import date, datetime
 
-from sqlalchemy import DateTime, Enum, Float, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Date, DateTime, Enum, Float, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
@@ -56,13 +56,17 @@ class Food(BaseMixin, Base):
     protein_g: Mapped[float] = mapped_column(Float, nullable=False)
     carbs_g: Mapped[float] = mapped_column(Float, nullable=False)
     fat_g: Mapped[float] = mapped_column(Float, nullable=False)
+    fiber_g: Mapped[float | None] = mapped_column(Float)
+    sodium_mg: Mapped[float | None] = mapped_column(Float)
+    created_by_user_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("users.id")
+    )
+    is_public: Mapped[bool] = mapped_column(Boolean, default=False)
 
     food_logs: Mapped[list["FoodLog"]] = relationship(back_populates="food")
 
 
 #  FoodLog: a logged meal (joins User and Food)
-
-
 class FoodLog(BaseMixin, Base):
     __tablename__ = "food_logs"
 
@@ -76,10 +80,9 @@ class FoodLog(BaseMixin, Base):
     meal_type: Mapped[str] = mapped_column(
         Enum("BREAKFAST", "LUNCH", "DINNER", "SNACK", name="meal_type"), nullable=False
     )
-    logged_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
+    log_date: Mapped[date] = mapped_column(
+        Date, nullable=False, server_default=func.current_date()
     )
-
     user: Mapped["User"] = relationship(back_populates="food_logs")
     food: Mapped["Food"] = relationship(back_populates="food_logs")
 
@@ -114,9 +117,8 @@ class WorkoutLog(BaseMixin, Base):
         Enum("KG", "LB", name="weight_type")
     )
     duration_min: Mapped[int | None] = mapped_column(Integer)
-    logged_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
+    log_date: Mapped[date] = mapped_column(
+        Date, nullable=False, server_default=func.current_date()
     )
-
     user: Mapped["User"] = relationship(back_populates="workout_logs")
     exercise: Mapped["Exercise"] = relationship(back_populates="workout_logs")
