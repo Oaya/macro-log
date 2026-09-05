@@ -24,11 +24,24 @@ class User(BaseMixin, Base):
 
     email: Mapped[str] = mapped_column(String, unique=True, nullable=False, index=True)
     password_hash: Mapped[str] = mapped_column(String, nullable=False)
+    height_cm: Mapped[float | None] = mapped_column(Float)
 
     # Relationships (a user has many of these)
     goal: Mapped["Goal | None"] = relationship(back_populates="user", uselist=False)
     food_logs: Mapped[list["FoodLog"]] = relationship(back_populates="user")
     workout_logs: Mapped[list["WorkoutLog"]] = relationship(back_populates="user")
+
+
+class BodyWeight(BaseMixin, Base):
+    __tablename__ = "body_weights"
+
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("users.id"), nullable=False
+    )
+    weight_kg: Mapped[float] = mapped_column(Float, nullable=False)
+    recorded_date: Mapped[date] = mapped_column(
+        Date, nullable=False, server_default=func.current_date()
+    )
 
 
 #  Goal: a user's daily calory/macro targets (one per user)
