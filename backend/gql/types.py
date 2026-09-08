@@ -11,10 +11,27 @@ class MealType(enum.Enum):
     SNACK = "SNACK"
 
 
+@strawberry.enum
+class Sex(enum.Enum):
+    MALE = "MALE"
+    FEMALE = "FEMALE"
+
+
+@strawberry.enum
+class UnitPreference(enum.Enum):
+    METRIC = "METRIC"
+    IMPERIAL = "IMPERIAL"
+
+
 @strawberry.type
 class User:
     id: strawberry.ID
     email: str
+    height_cm: float | None = None
+    date_of_birth: str | None = None
+    unit_preference: UnitPreference
+    sex: Sex | None = None
+    age: int | None = None
     created_at: str
 
 
@@ -22,6 +39,13 @@ class User:
 class AuthPayload:
     token: str
     user: User
+
+
+@strawberry.type
+class BodyWeightType:
+    id: strawberry.ID
+    weight_kg: float
+    recorded_date: str | None
 
 
 @strawberry.type

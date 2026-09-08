@@ -1,7 +1,17 @@
 import uuid
 from datetime import date, datetime
 
-from sqlalchemy import Boolean, Date, DateTime, Enum, Float, ForeignKey, Integer, String
+from sqlalchemy import (
+    Boolean,
+    Date,
+    DateTime,
+    Enum,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    UniqueConstraint,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
@@ -25,6 +35,14 @@ class User(BaseMixin, Base):
     email: Mapped[str] = mapped_column(String, unique=True, nullable=False, index=True)
     password_hash: Mapped[str] = mapped_column(String, nullable=False)
     height_cm: Mapped[float | None] = mapped_column(Float)
+    unit_preference: Mapped[str] = mapped_column(
+        Enum("METRIC", "IMPERIAL", name="unit_preference"),
+        nullable=False,
+        server_default="METRIC",
+    )
+
+    sex: Mapped[str | None] = mapped_column(Enum("MALE", "FEMALE", name="sex"))
+    date_of_birth: Mapped[date | None] = mapped_column(Date)
 
     # Relationships (a user has many of these)
     goal: Mapped["Goal | None"] = relationship(back_populates="user", uselist=False)
@@ -41,6 +59,10 @@ class BodyWeight(BaseMixin, Base):
     weight_kg: Mapped[float] = mapped_column(Float, nullable=False)
     recorded_date: Mapped[date] = mapped_column(
         Date, nullable=False, server_default=func.current_date()
+    )
+
+    __table_args__ = (
+        UniqueConstraint("user_id", "recorded_date", name="uq_user_date"),
     )
 
 
