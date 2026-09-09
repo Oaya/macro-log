@@ -27,7 +27,8 @@ def upgrade() -> None:
     sex_enum = sa.Enum("MALE", "FEMALE", name="sex")
     sex_enum.create(op.get_bind())
 
-    # 2. THEN add the columns (using create_type=False so it doesn't try to recreate the type)
+    # 2. THEN add the columns (using create_type=False so it doesn't try to
+    # recreate the type)
     op.add_column(
         "users",
         sa.Column(

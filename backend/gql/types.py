@@ -23,6 +23,25 @@ class UnitPreference(enum.Enum):
     IMPERIAL = "IMPERIAL"
 
 
+@strawberry.enum
+class ExerciseType(enum.Enum):
+    CARDIO = "CARDIO"
+    STRENGTH = "STRENGTH"
+    FLEXIBILITY = "FLEXIBILITY"
+
+
+@strawberry.enum
+class CaloriesEstimateStatus(enum.Enum):
+    # Calories burned were estimated successfully.
+    CALCULATED = "CALCULATED"
+    # No duration was provided, so there is nothing to estimate from.
+    NO_DURATION = "NO_DURATION"
+    # The exercise has no MET value on file.
+    NO_MET_VALUE = "NO_MET_VALUE"
+    # The user has never recorded a body weight.
+    NO_BODY_WEIGHT = "NO_BODY_WEIGHT"
+
+
 @strawberry.type
 class User:
     id: strawberry.ID
@@ -42,7 +61,7 @@ class AuthPayload:
 
 
 @strawberry.type
-class BodyWeightType:
+class BodyWeight:
     id: strawberry.ID
     weight_kg: float
     recorded_date: str | None
@@ -74,3 +93,24 @@ class FoodLog:
     fat_g: float
     fiber_g: float | None
     sodium_mg: float | None
+
+
+@strawberry.type
+class Exercise:
+    id: strawberry.ID
+    name: str
+    type: ExerciseType
+    met_value: float | None
+
+
+@strawberry.type
+class WorkoutLog:
+    id: strawberry.ID
+    exercise_name: str
+    sets: int | None
+    reps: int | None
+    weight: float | None
+    duration_min: int | None
+    calories_burned: float | None
+    calories_estimate_status: CaloriesEstimateStatus
+    log_date: str

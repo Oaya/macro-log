@@ -5,8 +5,9 @@ from sqlalchemy import select
 from strawberry.types import Info
 
 from database import SessionLocal
+from gql.context import require_user
 from gql.converters import to_graphql_user
-from gql.types import BodyWeightType, Sex, UnitPreference, User
+from gql.types import BodyWeight, Sex, UnitPreference, User
 from models import BodyWeight as BodyWeightModel
 from models import User as UserModel
 
@@ -16,11 +17,8 @@ class UserQuery:
     @strawberry.field
     def body_weights(
         self, info: Info, recorded_date: date | None = None
-    ) -> list[BodyWeightType]:
-        current_user = info.context["current_user"]
-
-        if current_user is None:
-            raise Exception("Not authenticated")
+    ) -> list[BodyWeight]:
+        current_user = require_user(info)
 
         db = SessionLocal()
 
@@ -34,7 +32,7 @@ class UserQuery:
 
             db_weights = db.execute(query).scalars().all()
             return [
-                BodyWeightType(
+                BodyWeight(
                     id=strawberry.ID(str(w.id)),
                     weight_kg=w.weight_kg,
                     recorded_date=str(w.recorded_date),
@@ -53,11 +51,8 @@ class UserMutation:
         info: Info,
         weight_kg: float,
         recorded_date: date | None = None,
-    ) -> BodyWeightType:
-        current_user = info.context["current_user"]
-
-        if current_user is None:
-            raise Exception("Not authenticated")
+    ) -> BodyWeight:
+        current_user = require_user(info)
 
         target_date = recorded_date or date.today()
 
@@ -87,7 +82,7 @@ class UserMutation:
             db.commit()
             db.refresh(db_weight)
 
-            return BodyWeightType(
+            return BodyWeight(
                 id=strawberry.ID(str(db_weight.id)),
                 weight_kg=db_weight.weight_kg,
                 recorded_date=str(db_weight.recorded_date),
@@ -104,9 +99,7 @@ class UserMutation:
         date_of_birth: date | None = None,
         unit_preference: UnitPreference | None = None,
     ) -> User:
-        current_user = info.context["current_user"]
-        if current_user is None:
-            raise Exception("Not authenticated")
+        current_user = require_user(info)
 
         db = SessionLocal()
         try:

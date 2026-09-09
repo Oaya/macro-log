@@ -130,7 +130,7 @@ class Exercise(BaseMixin, Base):
         Enum("CARDIO", "STRENGTH", "FLEXIBILITY", name="exercise_type"),
         nullable=False,
     )
-    calories_per_minute: Mapped[float | None] = mapped_column(Float)
+    met_value: Mapped[float | None] = mapped_column(Float)
 
     workout_logs: Mapped[list["WorkoutLog"]] = relationship(back_populates="exercise")
 
@@ -152,6 +152,7 @@ class WorkoutLog(BaseMixin, Base):
         Enum("KG", "LB", name="weight_type")
     )
     duration_min: Mapped[int | None] = mapped_column(Integer)
+    calories_burned: Mapped[float | None] = mapped_column(Float)
     log_date: Mapped[date] = mapped_column(
         Date, nullable=False, server_default=func.current_date()
     )
