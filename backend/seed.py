@@ -13,6 +13,10 @@ EXERCISES = [
     ("Push-up", "STRENGTH", 8.0),
     ("Bicep Curl", "STRENGTH", 3.5),
     ("Lunge", "STRENGTH", 4.0),
+    ("Plank", "STRENGTH", 3.0),
+    ("Leg Press", "STRENGTH", 5.0),
+    ("Shoulder Press", "STRENGTH", 5.0),
+    ("Tricep Dip", "STRENGTH", 5.0),
     # Cardio
     ("Running", "CARDIO", 10.0),
     ("Cycling", "CARDIO", 8.0),
@@ -20,6 +24,10 @@ EXERCISES = [
     ("Walking", "CARDIO", 3.5),
     ("Rowing", "CARDIO", 7.0),
     ("Jump Rope", "CARDIO", 12.0),
+    ("Elliptical", "CARDIO", 5.0),
+    ("Hiking", "CARDIO", 6.0),
+    ("Dancing", "CARDIO", 5.0),
+    ("HIIT", "CARDIO", 8.0),
     # Flexibility
     ("Yoga", "FLEXIBILITY", 2.5),
     ("Stretching", "FLEXIBILITY", 2.5),

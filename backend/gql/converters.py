@@ -17,6 +17,7 @@ def to_graphql_user(db_user: UserModel) -> User:
         date_of_birth=str(db_user.date_of_birth) if db_user.date_of_birth else None,
         sex=Sex(db_user.sex) if db_user.sex else None,
         unit_preference=UnitPreference(db_user.unit_preference),
+        age=calculate_age(db_user.date_of_birth) if db_user.date_of_birth else None,
     )
 
 

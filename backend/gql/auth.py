@@ -3,6 +3,7 @@ from sqlalchemy import select
 from strawberry.types import Info
 
 from database import SessionLocal
+from gql.context import require_user
 from gql.converters import to_graphql_user
 from gql.types import AuthPayload, User
 from models import User as UserModel
@@ -13,10 +14,7 @@ from security import create_access_token, hash_password, verify_password
 class AuthQuery:
     @strawberry.field
     def me(self, info: Info) -> User:
-        current_user = info.context["current_user"]
-        if current_user is None:
-            raise Exception("Not authenticated")
-        return to_graphql_user(current_user)
+        return to_graphql_user(require_user(info))
 
 
 @strawberry.type
