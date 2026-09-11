@@ -134,3 +134,21 @@ class Goal:
     target_weight_kg: float | None
     target_date: str | None
     activity_level: ActivityLevel
+
+
+@strawberry.type
+class DailySummary:
+    date: str
+    calories_consumed: float
+    calories_burned: float
+    net_calories: float
+    protein_g: float
+    carbs_g: float
+    fat_g: float
+
+    # Goal comparison (null if no goal set)
+    goal_calories: int | None
+    calories_remaining: float | None
+    goal_protein_g: int | None
+    goal_carbs_g: int | None
+    goal_fat_g: int | None
