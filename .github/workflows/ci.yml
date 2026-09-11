@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: macro
+          POSTGRES_PASSWORD: macro_pass
+          POSTGRES_DB: macrolog_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        working-directory: backend
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run migrations
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql://macro:macro_pass@localhost:5432/macrolog_test
+        run: alembic upgrade head
+      - name: Run tests
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql://macro:macro_pass@localhost:5432/macrolog_test
+          JWT_SECRET: test-secret-for-ci-only
+        run: pytest tests/ -v

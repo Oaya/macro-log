@@ -1,3 +1,11 @@
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+filterwarnings = [
+    "ignore::starlette.exceptions.StarletteDeprecationWarning",
+    "ignore::DeprecationWarning:starlette.testclient",
+]
+
 [tool.ruff]
 line-length = 88
 target-version = "py314"
