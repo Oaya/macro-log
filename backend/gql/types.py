@@ -18,6 +18,14 @@ class Sex(enum.Enum):
 
 
 @strawberry.enum
+class ActivityLevel(enum.Enum):
+    SEDENTARY = "SEDENTARY"
+    LIGHT = "LIGHT"
+    MODERATE = "MODERATE"
+    ACTIVE = "ACTIVE"
+
+
+@strawberry.enum
 class UnitPreference(enum.Enum):
     METRIC = "METRIC"
     IMPERIAL = "IMPERIAL"
@@ -114,3 +122,15 @@ class WorkoutLog:
     calories_burned: float | None
     calories_estimate_status: CaloriesEstimateStatus
     log_date: str
+
+
+@strawberry.type
+class Goal:
+    id: strawberry.ID
+    daily_calories: float
+    protein_g: float
+    fat_g: float
+    carbs_g: float
+    target_weight_kg: float | None
+    target_date: str | None
+    activity_level: ActivityLevel
