@@ -78,6 +78,12 @@ class Goal(BaseMixin, Base):
     carbs_g: Mapped[int] = mapped_column(Integer, nullable=False)
     fat_g: Mapped[int] = mapped_column(Integer, nullable=False)
 
+    target_weight_kg: Mapped[float | None] = mapped_column(Float)
+    target_date: Mapped[date | None] = mapped_column(Date)
+    activity_level: Mapped[str | None] = mapped_column(
+        Enum("SEDENTARY", "LIGHT", "MODERATE", "ACTIVE", name="activity_level")
+    )
+
     user: Mapped["User"] = relationship(back_populates="goal")
 
 

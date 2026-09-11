@@ -14,6 +14,7 @@ services:
   backend:
     container_name: macrolog_dev_server
     build: ./backend # build using backend/Dockerfile
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     ports:
       - "8000:8000" # host:container — reach it at localhost:8000
     env_file:
