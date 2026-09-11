@@ -14,7 +14,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Now copy the rest of the app code
 COPY . .
 
-# Run the server. --host 0.0.0.0 is REQUIRED inside a container:
-# 'localhost' inside the container isn't reachable from your machine;
-# 0.0.0.0 binds all interfaces so the port mapping works.
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Make the start script executable
+RUN chmod +x start.sh
+
+# Run the start script: migrations + seed + server (binds to $PORT on Render)
+CMD ["bash", "start.sh"]

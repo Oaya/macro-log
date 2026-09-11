@@ -11,6 +11,10 @@ DATABASE_URL = os.getenv(
     "postgresql://macro:macro_pass@localhost:5432/macrolog",
 )
 
+# Render provides postgres://, but SQLAlchemy/psycopg2 needs postgresql://
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
 # The engine is the core connection pool to the database.
 engine = create_engine(DATABASE_URL)
 
