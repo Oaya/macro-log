@@ -1,6 +1,6 @@
-# MacroLog - Fitness & Nutrition Tracker
+# MacroLog Backend - Fitness & Nutrition Tracker API
 
-A GraphQL API for tracking food, workouts, body metrics, and personalized nutrition goals. Monorepo: `backend/` (API, complete) and `mobile/` (React Native, planned).
+A GraphQL API for tracking food, workouts, body metrics, and personalized nutrition goals. Part of a monorepo alongside `mobile/` (React Native, planned).
 
 ## Tech Stack
 
@@ -15,19 +15,21 @@ A GraphQL API for tracking food, workouts, body metrics, and personalized nutrit
 
 ## Project Structure
 
-- `backend/main.py` - FastAPI app + GraphQL context (auth) wiring
-- `backend/database.py` - engine, SessionLocal, Base
-- `backend/models.py` - SQLAlchemy models
-- `backend/security.py` - hash/verify passwords, create/decode JWT
-- `backend/calculations.py` - pure nutrition math (BMR, TDEE, macros, age) - NO db/GraphQL
-- `backend/openfoodfacts.py` - external food-search API (Search-a-licious)
-- `backend/seed.py` - seeds exercises (idempotent)
-- `backend/gql/` - GraphQL layer; partial Query/Mutation classes merged in `schema.py`
+- `main.py` - FastAPI app + GraphQL context (auth) wiring
+- `database.py` - engine, SessionLocal, Base
+- `models.py` - SQLAlchemy models
+- `security.py` - hash/verify passwords, create/decode JWT
+- `calculations.py` - pure nutrition math (BMR, TDEE, macros, age) - NO db/GraphQL
+- `openfoodfacts.py` - external food-search API (Search-a-licious)
+- `seed.py` - seeds exercises (idempotent)
+- `gql/` - GraphQL layer; partial Query/Mutation classes merged in `schema.py`
   - `types.py`, `inputs.py`, `converters.py`
   - `auth.py`, `food.py`, `user.py`, `workout.py`, `goal.py`, `summary.py`
-- `backend/alembic/versions/` - migrations
+- `alembic/versions/` - migrations
 
 ## Running Locally
+
+Run from the repo root (`docker-compose.yml` lives there, not in `backend/`):
 
 ```bash
 docker compose up --build -d       # start backend + db
@@ -109,6 +111,6 @@ For each query/mutation, test at minimum:
 
 ## Deployment (Render)
 
-- Web service builds from `backend/Dockerfile`, runs `start.sh` (migrations + seed + uvicorn on `$PORT`).
+- Web service builds from `Dockerfile`, runs `start.sh` (migrations + seed + uvicorn on `$PORT`).
 - `database.py` rewrites Render's `postgres://` URL to `postgresql://`.
 - Free Postgres expires 30 days after creation; recreate + redeploy restores schema/seed automatically (user data is lost).

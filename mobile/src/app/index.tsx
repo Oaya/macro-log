@@ -1,28 +1,30 @@
+import { useAuth } from "@/lib/auth-context";
 import { gql, TypedDocumentNode } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
-import { View, Text, FlatList, ActivityIndicator } from "react-native";
+import { useRouter } from "expo-router";
+import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
-// Describe the shape of an exercise
-type Exercise = {
-	id: string;
-	name: string;
+type MeData = {
+	me: { email: string };
 };
 
-type ExercisesData = {
-	exercises: Exercise[];
-};
-
-const GET_EXERCISES: TypedDocumentNode<ExercisesData> = gql`
+const ME: TypedDocumentNode<MeData> = gql`
 	query {
-		exercises {
-			id
-			name
+		me {
+			email
 		}
 	}
 `;
 
 export default function Index() {
-	const { loading, error, data } = useQuery(GET_EXERCISES);
+	const { data: meData, loading, error } = useQuery(ME);
+	const router = useRouter();
+	const { logout } = useAuth();
+
+	const handleLogout = async () => {
+		await logout();
+		router.replace("/login");
+	};
 
 	if (loading) {
 		return (
@@ -43,16 +45,11 @@ export default function Index() {
 
 	return (
 		<View style={{ flex: 1, padding: 20, paddingTop: 60 }}>
-			<Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 20 }}>
-				MacroLog — Exercises
-			</Text>
-			<FlatList
-				data={data?.exercises}
-				keyExtractor={(item) => item.id}
-				renderItem={({ item }) => (
-					<Text style={{ fontSize: 18, paddingVertical: 8 }}>{item.name}</Text>
-				)}
-			/>
+			{meData?.me && <Text> Logged in as : {meData.me.email}</Text>}
+
+			<Pressable onPress={handleLogout}>
+				<Text>Log out</Text>
+			</Pressable>
 		</View>
 	);
 }
