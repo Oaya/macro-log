@@ -34,6 +34,9 @@ class User(BaseMixin, Base):
 
     email: Mapped[str] = mapped_column(String, unique=True, nullable=False, index=True)
     password_hash: Mapped[str] = mapped_column(String, nullable=False)
+    username: Mapped[str] = mapped_column(
+        String, unique=True, nullable=False, index=True
+    )
     height_cm: Mapped[float | None] = mapped_column(Float)
     unit_preference: Mapped[str] = mapped_column(
         Enum("METRIC", "IMPERIAL", name="unit_preference"),

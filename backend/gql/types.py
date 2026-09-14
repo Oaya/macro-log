@@ -54,6 +54,7 @@ class CaloriesEstimateStatus(enum.Enum):
 class User:
     id: strawberry.ID
     email: str
+    username: str
     height_cm: float | None = None
     date_of_birth: str | None = None
     unit_preference: UnitPreference

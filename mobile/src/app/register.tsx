@@ -10,6 +10,7 @@ type RegisterData = {
 };
 
 type RegisterVariables = {
+	username: string;
 	email: string;
 	password: string;
 };
@@ -28,13 +29,16 @@ const REGISTER: TypedDocumentNode<RegisterData, RegisterVariables> = gql`
 export default function Register() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [username, setUsername] = useState("");
 	const [register, { loading }] = useMutation(REGISTER);
 	const router = useRouter();
 	const { login: setLoggedIn } = useAuth();
 
 	const handleRegister = async () => {
 		try {
-			const result = await register({ variables: { email, password } });
+			const result = await register({
+				variables: { email, password, username },
+			});
 			const token = result.data?.register.token;
 
 			if (token) {
@@ -66,6 +70,20 @@ export default function Register() {
 				onChangeText={setEmail}
 				autoCapitalize="none"
 				keyboardType="email-address"
+				style={{
+					borderWidth: 1,
+					borderColor: "#ccc",
+					padding: 12,
+					borderRadius: 8,
+					color: "#000",
+				}}
+			/>
+			<TextInput
+				placeholder="Username"
+				placeholderTextColor="#888"
+				value={username}
+				onChangeText={setUsername}
+				autoCapitalize="none"
 				style={{
 					borderWidth: 1,
 					borderColor: "#ccc",
