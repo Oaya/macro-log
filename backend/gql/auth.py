@@ -20,7 +20,7 @@ class AuthQuery:
 @strawberry.type
 class AuthMutation:
     @strawberry.mutation
-    def register(self, email: str, password: str) -> AuthPayload:
+    def register(self, email: str, password: str, username: str) -> AuthPayload:
         # Open DB for session
         db = SessionLocal()
 
@@ -36,7 +36,7 @@ class AuthMutation:
             hashed = hash_password(password)
 
             # Create and save the new user
-            db_user = UserModel(email=email, password_hash=hashed)
+            db_user = UserModel(email=email, password_hash=hashed, username=username)
             db.add(db_user)
             db.commit()
             db.refresh(db_user)

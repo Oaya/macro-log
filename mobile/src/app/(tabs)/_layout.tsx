@@ -1,24 +1,31 @@
-import { Tabs } from "expo-router";
+import { NativeTabs } from "expo-router/unstable-native-tabs";
 
 export default function TabsLayout() {
 	return (
-		<Tabs screenOptions={{ headerShown: true }}>
-			<Tabs.Screen
-				name="index"
-				options={{ title: "Home" }}
-			/>
-			<Tabs.Screen
-				name="summary"
-				options={{ title: "Summary" }}
-			/>
-			<Tabs.Screen
-				name="log"
-				options={{ title: "Log" }}
-			/>
-			<Tabs.Screen
-				name="profile"
-				options={{ title: "Profile" }}
-			/>
-		</Tabs>
+		<NativeTabs>
+			<NativeTabs.Trigger name="index">
+				<NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+				<NativeTabs.Trigger.Icon sf={"house"}></NativeTabs.Trigger.Icon>
+			</NativeTabs.Trigger>
+
+			<NativeTabs.Trigger name="summary">
+				<NativeTabs.Trigger.Label>Summary</NativeTabs.Trigger.Label>
+				<NativeTabs.Trigger.Icon sf={"chart.bar"}></NativeTabs.Trigger.Icon>
+			</NativeTabs.Trigger>
+
+			<NativeTabs.Trigger name="log">
+				<NativeTabs.Trigger.Label>Log</NativeTabs.Trigger.Label>
+				<NativeTabs.Trigger.Icon
+					sf={"list.bullet.rectangle"}
+				></NativeTabs.Trigger.Icon>
+			</NativeTabs.Trigger>
+
+			<NativeTabs.Trigger name="more">
+				<NativeTabs.Trigger.Label>More</NativeTabs.Trigger.Label>
+				<NativeTabs.Trigger.Icon
+					sf={"person.crop.circle"}
+				></NativeTabs.Trigger.Icon>
+			</NativeTabs.Trigger>
+		</NativeTabs>
 	);
 }

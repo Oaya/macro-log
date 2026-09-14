@@ -12,6 +12,7 @@ def to_graphql_user(db_user: UserModel) -> User:
     return User(
         id=strawberry.ID(str(db_user.id)),
         email=db_user.email,
+        username=db_user.username,
         created_at=str(db_user.created_at),
         height_cm=db_user.height_cm,
         date_of_birth=str(db_user.date_of_birth) if db_user.date_of_birth else None,

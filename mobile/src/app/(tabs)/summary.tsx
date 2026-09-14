@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { gql, TypedDocumentNode } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import { ActivityIndicator, ScrollView, Text, View } from "react-native";
 
@@ -19,7 +19,11 @@ type SummaryData = {
 	};
 };
 
-const DAILY_SUMMARY = gql`
+type SummaryVariables = {
+	date: string;
+};
+
+const DAILY_SUMMARY: TypedDocumentNode<SummaryData, SummaryVariables> = gql`
 	query DailySummary($date: Date!) {
 		dailySummary(summaryDate: $date) {
 			caloriesConsumed
@@ -39,7 +43,7 @@ const DAILY_SUMMARY = gql`
 
 export default function summary() {
 	const today = new Date().toISOString().split("T")[0];
-	const { data, loading, error } = useQuery<SummaryData>(DAILY_SUMMARY, {
+	const { data, loading, error } = useQuery(DAILY_SUMMARY, {
 		variables: { date: today },
 	});
 
@@ -67,7 +71,7 @@ export default function summary() {
 				Today's Summary
 			</Text>
 
-			<View style={{ gap: 12 }}>
+			<View style={{ gap: 8 }}>
 				<Row
 					label="Calories eaten"
 					value={`${s?.caloriesConsumed ?? 0} cal`}
