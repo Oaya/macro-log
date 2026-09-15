@@ -5,7 +5,7 @@ def test_set_weight_goal_incomplete_profile_fails(client, auth_headers):
         json={
             "query": """
             mutation {
-              setWeightGoal(targetWeightKg: 70, targetDate: "2026-12-01", activityLevel: "MODERATE") {
+              setWeightGoal( startWeightKg: 80, targetWeightKg: 70, targetDate: "2026-12-01", activityLevel: "MODERATE") {
                 dailyCalories
               }
             }
