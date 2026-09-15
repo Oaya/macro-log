@@ -1,6 +1,6 @@
 import { DatePickerModal } from "@/components/date-picker-modal";
 import { formatDateToISO, parseISODate } from "@/lib/date";
-import { displayWeightToKg } from "@/lib/units";
+import { displayWeightToKg, kgToDisplayWeight } from "@/lib/units";
 import { gql, TypedDocumentNode } from "@apollo/client";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { Ionicons } from "@expo/vector-icons";
@@ -51,18 +51,33 @@ const RECORD_WEIGHT = gql`
 
 export default function Weight() {
 	const [recordWeight, { loading: creating }] = useMutation(RECORD_WEIGHT);
-	const { data: meData, loading, error } = useQuery(ME);
-
-	console.log(meData);
+	const { data: meData, loading, error, refetch } = useQuery(ME);
 
 	const [datePickerVisible, setDatePickerVisible] = useState(false);
 
 	const [weight, setWeight] = useState("");
 	const [date, setDate] = useState(formatDateToISO(new Date()));
-
+	const [initializedWeightKey, setInitializedWeightKey] = useState<
+		string | null
+	>(null);
 	const unit = meData?.me.unitPreference;
 
 	const isImperial = unit?.toUpperCase() === "IMPERIAL";
+
+	// Initialize local state from backend data.
+	const weightKey = meData
+		? `${meData.latestBodyWeight?.recordedDate ?? "none"}:${meData.latestBodyWeight?.weightKg ?? "none"}:${unit}`
+		: null;
+
+	if (weightKey && weightKey !== initializedWeightKey) {
+		setInitializedWeightKey(weightKey);
+		if (meData?.latestBodyWeight) {
+			setWeight(
+				kgToDisplayWeight(meData.latestBodyWeight.weightKg, isImperial),
+			);
+			setDate(meData.latestBodyWeight.recordedDate);
+		}
+	}
 
 	if (error) {
 		return (
@@ -95,8 +110,8 @@ export default function Weight() {
 			await recordWeight({
 				variables: { weightKg: weightKg, recordedDate: date },
 			});
+			await refetch();
 			Alert.alert("Saved", "Weight recorded for today");
-			setWeight("");
 		} catch (e: any) {
 			Alert.alert("Error", e.message);
 		}
@@ -146,7 +161,6 @@ export default function Weight() {
 								]}
 								value={weight}
 								keyboardType="decimal-pad"
-								placeholder={isImperial ? "130.0" : "60.0"}
 								placeholderTextColor="#C7C7CC"
 								onChangeText={setWeight}
 							/>

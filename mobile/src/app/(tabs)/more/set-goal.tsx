@@ -1,6 +1,6 @@
 import { DatePickerModal } from "@/components/date-picker-modal";
 import { formatDateToISO, parseISODate } from "@/lib/date";
-import { displayWeightToKg } from "@/lib/units";
+import { displayWeightToKg, kgToDisplayWeight } from "@/lib/units";
 import { TypedDocumentNode, gql } from "@apollo/client";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { Ionicons } from "@expo/vector-icons";
@@ -124,20 +124,6 @@ export default function SetGoal() {
 
 	const isImperial = unit?.toUpperCase() === "IMPERIAL";
 
-	//Backend always stores kg. Convert backend kg into whatever unit the user should see.
-	const kgToDisplayWeight = (kg: number | null) => {
-		if (kg == null) {
-			return "";
-		}
-
-		if (isImperial) {
-			const pounds = kg * 2.20462;
-			return pounds.toFixed(1);
-		}
-
-		return kg.toString();
-	};
-
 	///Initialize local state from backend data.
 	//The backend gives us kg, but our input fields should/show lb when the user's preference is imperial.
 	const goalKey = goalData ? `${goalData.goal?.id ?? "none"}:${unit}` : null;
@@ -145,8 +131,12 @@ export default function SetGoal() {
 	if (goalKey && goalKey !== initializedGoalKey) {
 		setInitializedGoalKey(goalKey);
 		if (goalData?.goal) {
-			setStartWeight(kgToDisplayWeight(goalData.goal.startWeightKg));
-			setTargetWeight(kgToDisplayWeight(goalData.goal.targetWeightKg));
+			setStartWeight(
+				kgToDisplayWeight(goalData.goal.startWeightKg, isImperial),
+			);
+			setTargetWeight(
+				kgToDisplayWeight(goalData.goal.targetWeightKg, isImperial),
+			);
 			setTargetDate(goalData.goal.targetDate ?? "");
 			setActivity(goalData.goal.activityLevel);
 		}
@@ -228,9 +218,13 @@ export default function SetGoal() {
 
 	const handleCancel = () => {
 		if (goalData?.goal) {
-			setStartWeight(kgToDisplayWeight(goalData.goal.startWeightKg));
+			setStartWeight(
+				kgToDisplayWeight(goalData.goal.startWeightKg, isImperial),
+			);
 
-			setTargetWeight(kgToDisplayWeight(goalData.goal.targetWeightKg));
+			setTargetWeight(
+				kgToDisplayWeight(goalData.goal.targetWeightKg, isImperial),
+			);
 
 			setTargetDate(goalData.goal.targetDate ?? "");
 			setActivity(goalData.goal.activityLevel);

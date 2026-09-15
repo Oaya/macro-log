@@ -12,3 +12,17 @@ export function displayWeightToKg(value: string, isImperial: boolean) {
 
 	return Number(weight.toFixed(2));
 }
+
+//Backend always stores kg. Convert backend kg into whatever unit the user should see.
+export function kgToDisplayWeight(kg: number | null, isImperial: boolean) {
+	if (kg == null) {
+		return "";
+	}
+
+	if (isImperial) {
+		const pounds = kg * 2.20462;
+		return pounds.toFixed(1);
+	}
+
+	return kg.toString();
+}
