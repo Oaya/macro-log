@@ -5,7 +5,6 @@ import {
 	ActivityIndicator,
 	Alert,
 	FlatList,
-	Image,
 	KeyboardAvoidingView,
 	Modal,
 	Platform,
@@ -18,45 +17,50 @@ import {
 	View,
 } from "react-native";
 
-// Height is always stored/sent as centimeters; only the dropdown's display differs by unit.
-const CM_MIN = 100;
-const CM_MAX = 250;
-const DEFAULT_CM = 170;
+const ACTIVITY_LEVEL = ["SEDENTARY", "LIGHT", "MODERATE", "ACTIVE"];
 
-const parseHeightCm = (value: string | null) => {
+type WeightOption = { label: string; kg: number };
+
+// Height is always stored/sent as centimeters; only the dropdown's display differs by unit.
+const KG_MIN = 20;
+const KG_MAX = 250;
+const DEFAULT_KG = 70;
+
+const parseWeightKg = (value: string | null) => {
 	const parsed = value ? parseFloat(value) : NaN;
-	if (isNaN(parsed)) return DEFAULT_CM;
-	return Math.min(Math.max(Math.round(parsed), CM_MIN), CM_MAX);
+	if (isNaN(parsed)) return DEFAULT_KG;
+	return Math.min(Math.max(Math.round(parsed), KG_MIN), KG_MAX);
 };
 
-type HeightOption = { label: string; cm: number };
-
-const METRIC_HEIGHT_OPTIONS: HeightOption[] = Array.from(
-	{ length: CM_MAX - CM_MIN + 1 },
+const METRIC_WEIGHT_OPTIONS: WeightOption[] = Array.from(
+	{ length: KG_MAX - KG_MIN + 1 },
 	(_, i) => {
-		const cm = CM_MIN + i;
-		return { label: `${cm} cm`, cm };
+		const kg = KG_MIN + i;
+		return { label: `${kg} kg`, kg };
 	},
 );
 
-const IMPERIAL_HEIGHT_OPTIONS: HeightOption[] = Array.from(
-	{ length: (8 - 3 + 1) * 12 },
+const LB_MIN = Math.round(KG_MIN * 2.20462); // ~44 lb
+const LB_MAX = Math.round(KG_MAX * 2.20462); // ~551 lb
+
+const IMPERIAL_WEIGHT_OPTIONS: WeightOption[] = Array.from(
+	{ length: (LB_MAX - LB_MIN + 1) * 16 },
 	(_, i) => {
-		const totalInches = i + 3 * 12;
-		const feet = Math.floor(totalInches / 12);
-		const inches = totalInches % 12;
+		const totalOunces = i + LB_MIN * 16;
+		const lb = Math.floor(totalOunces / 16);
+		const oz = totalOunces % 16;
 		return {
-			label: `${feet}'${inches}"`,
-			cm: Math.round(totalInches * 2.54),
+			label: `${lb} lb ${oz} oz`,
+			kg: Math.round((totalOunces / 16 / 2.20462) * 10) / 10,
 		};
 	},
 );
 
-const findNearestOptionIndex = (options: HeightOption[], cm: number) => {
+const findNearestOptionIndex = (options: WeightOption[], kg: number) => {
 	let nearestIndex = 0;
 	let smallestDiff = Infinity;
 	options.forEach((option, index) => {
-		const diff = Math.abs(option.cm - cm);
+		const diff = Math.abs(option.kg - kg);
 		if (diff < smallestDiff) {
 			smallestDiff = diff;
 			nearestIndex = index;
@@ -65,76 +69,85 @@ const findNearestOptionIndex = (options: HeightOption[], cm: number) => {
 	return nearestIndex;
 };
 
-type MeData = {
+type GoalData = {
+	goal: {
+		id: string;
+		dailyCalories: number;
+		proteinG: number;
+		fatG: number;
+		carbsG: number;
+		startWeightKg: number | null;
+		targetWeightKg: number | null;
+		targetDate: string | null;
+		activityLevel: string;
+	} | null;
 	me: {
-		email: string;
-		username: string;
-		createdAt: string;
-		heightCm: number | null;
-		dateOfBirth: string | null;
-		sex: string | null;
 		unitPreference: string;
 	};
 };
 
-const ME: TypedDocumentNode<MeData> = gql`
-	query GetMe {
+const GOAL: TypedDocumentNode<GoalData> = gql`
+	query GetGoal {
+		goal {
+			dailyCalories
+			proteinG
+			fatG
+			carbsG
+			startWeightKg
+			targetWeightKg
+			targetDate
+			activityLevel
+		}
 		me {
-			email
-			username
-			createdAt
-			heightCm
-			dateOfBirth
-			sex
 			unitPreference
 		}
 	}
 `;
 
-const UPDATE_PROFILE = gql`
-	mutation UpdateProfile(
-		$heightCm: Float
-		$sex: Sex
-		$dateOfBirth: Date
-		$unitPreference: UnitPreference
+const SET_WEIGHT_GOAL = gql`
+	mutation SetWeightGoal(
+		$startWeightKg: Float!
+		$targetWeightKg: Float!
+		$targetDate: Date!
+		$activityLevel: String!
 	) {
-		updateProfile(
-			heightCm: $heightCm
-			sex: $sex
-			dateOfBirth: $dateOfBirth
-			unitPreference: $unitPreference
+		setWeightGoal(
+			startWeightKg: $startWeightKg
+			targetWeightKg: $targetWeightKg
+			targetDate: $targetDate
+			activityLevel: $activityLevel
 		) {
-			heightCm
-			dateOfBirth
-			sex
-			unitPreference
+			startWeightKg
+			targetWeightKg
+			targetDate
+			activityLevel
 		}
 	}
 `;
 
-export default function Profile() {
-	const { data: meData, loading, error } = useQuery(ME);
-	const [updateProfile, { loading: updating }] = useMutation(UPDATE_PROFILE, {
-		refetchQueries: [{ query: ME }],
-	});
+export default function SetGoal() {
+	const { data: goalData, loading, error } = useQuery(GOAL);
+	const [setGoal, { loading: updating, data }] =
+		useMutation<GoalData>(SET_WEIGHT_GOAL);
 
 	// Local State Management for Editing
 	const [isEditing, setIsEditing] = useState(false);
-	const [sex, setSex] = useState<string | null>(null);
-	const [dob, setDob] = useState<string | null>(null);
-	const [height, setHeight] = useState<string | null>("");
-	const [unit, setUnit] = useState<string>("METRIC");
-	const [heightPickerVisible, setHeightPickerVisible] = useState(false);
+	const [startWeight, setStartWeight] = useState<string | null>("");
+	const [targetWeight, setTargetWeight] = useState<string | null>("");
+	const [targetDate, setTargetDate] = useState<string | null>(""); // "YYYY-MM-DD"
+	const [activity, setActivity] = useState<string>("MODERATE");
+	const [weightPickerVisible, setWeightPickerVisible] = useState(false);
+	const unit = goalData?.me.unitPreference;
 
 	// Initialize local state when Apollo data loads
 	useEffect(() => {
-		if (meData?.me) {
-			setSex(meData?.me.sex);
-			setDob(meData.me.dateOfBirth);
-			setHeight(String(meData.me.heightCm));
-			setUnit(meData.me.unitPreference);
+		if (goalData?.goal) {
+			setStartWeight(goalData.goal.startWeightKg?.toString() ?? "");
+			setTargetWeight(goalData.goal.targetWeightKg?.toString() ?? "");
+			setTargetDate(goalData.goal.targetDate);
+			setActivity(goalData.goal.activityLevel);
 		}
-	}, [meData]);
+	}, [goalData]);
 
 	if (loading) {
 		return (
@@ -165,53 +178,51 @@ export default function Profile() {
 	//  Save and Cancel Handlers
 	const handleSave = async () => {
 		try {
-			await updateProfile({
+			await setGoal({
 				variables: {
-					dateOfBirth: dob,
-					heightCm: parseHeightCm(height),
-					sex: sex,
-					unitPreference: unit,
+					targetDate: targetDate,
+					startWeightKg: parseFloat(startWeight ?? ""),
+					targetWeightKg: parseFloat(targetWeight ?? ""),
+					activityLevel: activity,
 				},
 			});
 			setIsEditing(false);
-			Alert.alert("Success", "Profile updated successfully!");
+			Alert.alert("Success", "Goal updated successfully!");
 		} catch (err: any) {
-			Alert.alert("Error", err.message || "Failed to update profile.");
+			Alert.alert("Error", err.message || "Failed to update goal.");
 		}
 	};
 
 	const handleCancel = () => {
-		if (meData?.me) {
-			setDob(meData.me.dateOfBirth);
-			setSex(meData?.me.sex);
-			setDob(meData.me.dateOfBirth);
-			setHeight(String(meData.me.heightCm));
-			setUnit(meData.me.unitPreference);
+		if (goalData?.goal) {
+			setStartWeight(goalData.goal.startWeightKg?.toString() ?? "");
+			setTargetWeight(goalData.goal.targetWeightKg?.toString() ?? "");
+			setTargetDate(goalData.goal.targetDate);
+			setActivity(goalData.goal.activityLevel);
 		}
 		setIsEditing(false);
 	};
 
-	// Helper to format dynamic height labels
-	const formatHeightDisplay = (heightVal: string) => {
-		const cm = parseFloat(heightVal);
-		if (isNaN(cm) || cm <= 0) return "--";
+	const formatWeightDisplay = (weightVal: string) => {
+		const kg = parseFloat(weightVal);
+		if (isNaN(kg) || kg <= 0) return "--";
 
 		if (unit?.toLowerCase() === "imperial") {
-			const totalInches = cm / 2.54;
-			const feet = Math.floor(totalInches / 12);
-			const inches = Math.round(totalInches % 12);
-			return `${feet}'${inches}"`;
+			const totalOunces = Math.round(kg * 2.20462 * 16);
+			const lb = Math.floor(totalOunces / 16);
+			const oz = totalOunces % 16;
+			return `${lb} lb ${oz} oz`;
 		}
-		return `${cm} cm`;
+		return `${kg} kg`;
 	};
 
-	const heightOptions =
+	const weightOptions =
 		unit?.toUpperCase() === "IMPERIAL"
-			? IMPERIAL_HEIGHT_OPTIONS
-			: METRIC_HEIGHT_OPTIONS;
+			? IMPERIAL_WEIGHT_OPTIONS
+			: METRIC_WEIGHT_OPTIONS;
 	const selectedHeightIndex = findNearestOptionIndex(
-		heightOptions,
-		parseHeightCm(height),
+		weightOptions,
+		parseWeightKg(targetWeight),
 	);
 
 	return (
@@ -224,74 +235,19 @@ export default function Profile() {
 				bounces={false}
 				showsVerticalScrollIndicator={false}
 			>
-				<View style={styles.avatarBlock}>
-					<Image
-						source={{
-							uri: "https://plus.unsplash.com/premium_photo-1739786996040-32bde1db0610?w=500&auto=format&fit=crop&q=60",
-						}}
-						style={styles.avatar}
-					/>
-					<Text style={styles.name}>{meData?.me.username}</Text>
-					<Text style={styles.joined}>
-						Member since{" "}
-						{meData?.me.createdAt
-							? new Date(meData.me.createdAt).toISOString().split("T")[0]
-							: "--"}
-					</Text>
-				</View>
-
 				<View style={styles.detailsCard}>
-					{/* Email Row */}
+					{/* Target Weight Row */}
 					<View style={styles.row}>
 						<View style={styles.leftContainer}>
-							<Text style={styles.label}>Email</Text>
-						</View>
-
-						<Text
-							style={styles.value}
-							numberOfLines={1}
-							ellipsizeMode="tail"
-						>
-							{meData?.me.email}
-						</Text>
-					</View>
-
-					{/* Date of Birth Row */}
-					<View style={styles.row}>
-						<View style={styles.leftContainer}>
-							<Text style={styles.label}>Date of Birth</Text>
-						</View>
-						{isEditing ? (
-							<TextInput
-								style={styles.input}
-								value={dob ?? ""}
-								placeholder="YYYY-MM-DD"
-								placeholderTextColor="#C7C7CC"
-								onChangeText={(text) => setDob(text)}
-							/>
-						) : (
-							<Text
-								style={styles.value}
-								numberOfLines={1}
-								ellipsizeMode="tail"
-							>
-								{meData?.me.dateOfBirth || "--"}
-							</Text>
-						)}
-					</View>
-
-					{/* Height Row */}
-					<View style={styles.row}>
-						<View style={styles.leftContainer}>
-							<Text style={styles.label}>Height</Text>
+							<Text style={styles.label}>Current Weight</Text>
 						</View>
 						{isEditing ? (
 							<Pressable
 								style={styles.dropdownTrigger}
-								onPress={() => setHeightPickerVisible(true)}
+								onPress={() => setWeightPickerVisible(true)}
 							>
 								<Text style={styles.dropdownTriggerText}>
-									{heightOptions[selectedHeightIndex]?.label ?? "--"}
+									{weightOptions[selectedHeightIndex]?.label ?? "--"}
 								</Text>
 								<Text style={styles.dropdownChevron}>⌄</Text>
 							</Pressable>
@@ -301,33 +257,84 @@ export default function Profile() {
 								numberOfLines={1}
 								ellipsizeMode="tail"
 							>
-								{formatHeightDisplay(height ?? "")}
+								{formatWeightDisplay(startWeight ?? "")}
 							</Text>
 						)}
 					</View>
 
-					{/* Sex Row */}
+					{/* Target Weight Row */}
 					<View style={styles.row}>
 						<View style={styles.leftContainer}>
-							<Text style={styles.label}>Sex</Text>
+							<Text style={styles.label}>Target Weight</Text>
+						</View>
+						{isEditing ? (
+							<Pressable
+								style={styles.dropdownTrigger}
+								onPress={() => setWeightPickerVisible(true)}
+							>
+								<Text style={styles.dropdownTriggerText}>
+									{weightOptions[selectedHeightIndex]?.label ?? "--"}
+								</Text>
+								<Text style={styles.dropdownChevron}>⌄</Text>
+							</Pressable>
+						) : (
+							<Text
+								style={styles.value}
+								numberOfLines={1}
+								ellipsizeMode="tail"
+							>
+								{formatWeightDisplay(targetWeight ?? "")}
+							</Text>
+						)}
+					</View>
+
+					{/* Target date Row */}
+					<View style={styles.row}>
+						<View style={styles.leftContainer}>
+							<Text style={styles.label}>Target Date</Text>
+						</View>
+						{isEditing ? (
+							<TextInput
+								style={styles.input}
+								value={targetDate ?? ""}
+								placeholder="YYYY-MM-DD"
+								placeholderTextColor="#C7C7CC"
+								onChangeText={(text) => setTargetDate(text)}
+							/>
+						) : (
+							<Text
+								style={styles.value}
+								numberOfLines={1}
+								ellipsizeMode="tail"
+							>
+								{goalData?.goal?.targetDate || "--"}
+							</Text>
+						)}
+					</View>
+
+					{/* Activity Level Row */}
+					<View style={styles.row}>
+						<View style={styles.leftContainer}>
+							<Text style={styles.label}>Activity Level</Text>
 						</View>
 						{isEditing ? (
 							<View style={styles.optionGroup}>
-								{(["MALE", "FEMALE"] as const).map((option) => (
+								{ACTIVITY_LEVEL.map((option) => (
 									<Pressable
 										key={option}
-										onPress={() => setSex(option)}
+										onPress={() => setActivity(option)}
 										style={[
 											styles.optionPill,
 											{
-												borderColor: sex === option ? "#4bb7e1" : "#ccc",
-												backgroundColor: sex === option ? "#4bb7e1" : "#fff",
+												borderColor: activity === option ? "#4bb7e1" : "#ccc",
+												backgroundColor:
+													activity === option ? "#4bb7e1" : "#fff",
 											},
 										]}
 									>
 										<Text
 											style={{
-												color: sex === option ? "#fff" : "#000",
+												color: activity === option ? "#fff" : "#000",
 											}}
 										>
 											{option}
@@ -341,47 +348,7 @@ export default function Profile() {
 								numberOfLines={1}
 								ellipsizeMode="tail"
 							>
-								{meData?.me.sex || "--"}
-							</Text>
-						)}
-					</View>
-
-					{/* Unit Preference Row */}
-					<View style={styles.row}>
-						<View style={styles.leftContainer}>
-							<Text style={styles.label}>Unit Preference</Text>
-						</View>
-						{isEditing ? (
-							<View style={styles.optionGroup}>
-								{(["METRIC", "IMPERIAL"] as const).map((option) => (
-									<Pressable
-										key={option}
-										onPress={() => setUnit(option)}
-										style={[
-											styles.optionPill,
-											{
-												borderColor: unit === option ? "#4bb7e1" : "#ccc",
-												backgroundColor: unit === option ? "#4bb7e1" : "#fff",
-											},
-										]}
-									>
-										<Text
-											style={{
-												color: unit === option ? "#fff" : "#000",
-											}}
-										>
-											{option}
-										</Text>
-									</Pressable>
-								))}
-							</View>
-						) : (
-							<Text
-								style={styles.value}
-								numberOfLines={1}
-								ellipsizeMode="tail"
-							>
-								{meData?.me.unitPreference}
+								{goalData?.goal?.activityLevel || "--"}
 							</Text>
 						)}
 					</View>
@@ -416,20 +383,20 @@ export default function Profile() {
 						style={styles.editButton}
 						onPress={() => setIsEditing(true)}
 					>
-						<Text style={styles.editButtonText}>Edit Profile</Text>
+						<Text style={styles.editButtonText}>Edit Goal</Text>
 					</TouchableOpacity>
 				)}
 			</ScrollView>
 
 			<Modal
-				visible={heightPickerVisible}
+				visible={weightPickerVisible}
 				transparent
 				animationType="slide"
-				onRequestClose={() => setHeightPickerVisible(false)}
+				onRequestClose={() => setWeightPickerVisible(false)}
 			>
 				<Pressable
 					style={styles.modalBackdrop}
-					onPress={() => setHeightPickerVisible(false)}
+					onPress={() => setWeightPickerVisible(false)}
 				>
 					<Pressable
 						style={styles.modalSheet}
@@ -437,12 +404,12 @@ export default function Profile() {
 					>
 						<View style={styles.modalHeader}>
 							<Text style={styles.modalTitle}>Select Height</Text>
-							<TouchableOpacity onPress={() => setHeightPickerVisible(false)}>
+							<TouchableOpacity onPress={() => setWeightPickerVisible(false)}>
 								<Text style={styles.modalDoneText}>Done</Text>
 							</TouchableOpacity>
 						</View>
 						<FlatList
-							data={heightOptions}
+							data={weightOptions}
 							keyExtractor={(item) => item.label}
 							initialScrollIndex={selectedHeightIndex}
 							getItemLayout={(_, index) => ({
@@ -454,8 +421,8 @@ export default function Profile() {
 								<TouchableOpacity
 									style={styles.modalOptionRow}
 									onPress={() => {
-										setHeight(String(item.cm));
-										setHeightPickerVisible(false);
+										setTargetWeight(String(item.kg));
+										setWeightPickerVisible(false);
 									}}
 								>
 									<Text

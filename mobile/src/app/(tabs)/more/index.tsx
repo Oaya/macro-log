@@ -58,7 +58,7 @@ export default function More() {
 			style={styles.container}
 			showsVerticalScrollIndicator={false}
 		>
-			{/* 1. Profile Row */}
+			{/*  Profile Row */}
 			<TouchableOpacity
 				style={styles.profileCard}
 				onPress={() => router.push("/(tabs)/more/profile")}
@@ -81,11 +81,14 @@ export default function More() {
 				/>
 			</TouchableOpacity>
 
-			{/* 2. Menu Options List */}
+			{/*  Menu Options List */}
 			<View style={styles.menuContainer}>
 				<Text style={styles.sectionHeading}>Nutrition & Goals</Text>
 
-				<TouchableOpacity style={styles.menuItem}>
+				<TouchableOpacity
+					style={styles.menuItem}
+					onPress={() => router.push("/(tabs)/more/set-goal")}
+				>
 					<View style={[styles.iconBg, { backgroundColor: "#E3F2FD" }]}>
 						<Ionicons
 							name="nutrition"
@@ -101,7 +104,7 @@ export default function More() {
 					/>
 				</TouchableOpacity>
 
-				<TouchableOpacity style={styles.menuItem}>
+				{/* <TouchableOpacity style={styles.menuItem}>
 					<View style={[styles.iconBg, { backgroundColor: "#E8F5E9" }]}>
 						<Ionicons
 							name="trophy"
@@ -115,7 +118,7 @@ export default function More() {
 						color="#C7C7CC"
 						size={18}
 					/>
-				</TouchableOpacity>
+				</TouchableOpacity> */}
 
 				{/* Logout */}
 				<TouchableOpacity
