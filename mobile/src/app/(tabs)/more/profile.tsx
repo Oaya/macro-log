@@ -68,6 +68,7 @@ const findNearestOptionIndex = (options: HeightOption[], cm: number) => {
 type MeData = {
 	me: {
 		email: string;
+		username: string;
 		createdAt: string;
 		heightCm: number | null;
 		dateOfBirth: string | null;
@@ -80,6 +81,7 @@ const ME: TypedDocumentNode<MeData> = gql`
 	query GetMe {
 		me {
 			email
+			username
 			createdAt
 			heightCm
 			dateOfBirth
@@ -166,7 +168,7 @@ export default function Profile() {
 			await updateProfile({
 				variables: {
 					dateOfBirth: dob,
-					heightCm: height ? parseFloat(height) : 0,
+					heightCm: parseHeightCm(height),
 					sex: sex,
 					unitPreference: unit,
 				},
@@ -234,7 +236,7 @@ export default function Profile() {
 						}}
 						style={styles.avatar}
 					/>
-					<Text style={styles.name}>Alex Rivers</Text>
+					<Text style={styles.name}>{meData?.me.username}</Text>
 					<Text style={styles.joined}>
 						Member since{" "}
 						{meData?.me.createdAt
@@ -315,27 +317,29 @@ export default function Profile() {
 							<Text style={styles.label}>Sex</Text>
 						</View>
 						{isEditing ? (
-							(["MALE", "FEMALE"] as const).map((option) => (
-								<Pressable
-									key={option}
-									onPress={() => setSex(option)}
-									style={{
-										padding: 6,
-										borderRadius: 8,
-										borderWidth: 1,
-										borderColor: sex === option ? "#4bb7e1" : "#ccc",
-										backgroundColor: sex === option ? "#4bb7e1" : "#fff",
-									}}
-								>
-									<Text
-										style={{
-											color: sex === option ? "#fff" : "#000",
-										}}
+							<View style={styles.optionGroup}>
+								{(["MALE", "FEMALE"] as const).map((option) => (
+									<Pressable
+										key={option}
+										onPress={() => setSex(option)}
+										style={[
+											styles.optionPill,
+											{
+												borderColor: sex === option ? "#4bb7e1" : "#ccc",
+												backgroundColor: sex === option ? "#4bb7e1" : "#fff",
+											},
+										]}
 									>
-										{option}
-									</Text>
-								</Pressable>
-							))
+										<Text
+											style={{
+												color: sex === option ? "#fff" : "#000",
+											}}
+										>
+											{option}
+										</Text>
+									</Pressable>
+								))}
+							</View>
 						) : (
 							<Text
 								style={styles.value}
@@ -353,27 +357,29 @@ export default function Profile() {
 							<Text style={styles.label}>Unit Preference</Text>
 						</View>
 						{isEditing ? (
-							(["METRIC", "IMPERIAL"] as const).map((option) => (
-								<Pressable
-									key={option}
-									onPress={() => setUnit(option)}
-									style={{
-										padding: 6,
-										borderRadius: 8,
-										borderWidth: 1,
-										borderColor: unit === option ? "#4bb7e1" : "#ccc",
-										backgroundColor: unit === option ? "#4bb7e1" : "#fff",
-									}}
-								>
-									<Text
-										style={{
-											color: unit === option ? "#fff" : "#000",
-										}}
+							<View style={styles.optionGroup}>
+								{(["METRIC", "IMPERIAL"] as const).map((option) => (
+									<Pressable
+										key={option}
+										onPress={() => setUnit(option)}
+										style={[
+											styles.optionPill,
+											{
+												borderColor: unit === option ? "#4bb7e1" : "#ccc",
+												backgroundColor: unit === option ? "#4bb7e1" : "#fff",
+											},
+										]}
 									>
-										{option}
-									</Text>
-								</Pressable>
-							))
+										<Text
+											style={{
+												color: unit === option ? "#fff" : "#000",
+											}}
+										>
+											{option}
+										</Text>
+									</Pressable>
+								))}
+							</View>
 						) : (
 							<Text
 								style={styles.value}
@@ -430,7 +436,10 @@ export default function Profile() {
 					style={styles.modalBackdrop}
 					onPress={() => setHeightPickerVisible(false)}
 				>
-					<Pressable style={styles.modalSheet} onPress={() => {}}>
+					<Pressable
+						style={styles.modalSheet}
+						onPress={() => {}}
+					>
 						<View style={styles.modalHeader}>
 							<Text style={styles.modalTitle}>Select Height</Text>
 							<TouchableOpacity onPress={() => setHeightPickerVisible(false)}>
@@ -473,6 +482,17 @@ export default function Profile() {
 	);
 }
 
+const rowLayout = {
+	flexDirection: "row" as const,
+	alignItems: "center" as const,
+	justifyContent: "space-between" as const,
+	paddingVertical: 14,
+	borderBottomWidth: 1,
+	borderBottomColor: "#F2F2F7",
+};
+
+const boldText16 = { fontSize: 16, fontWeight: "600" as const };
+
 const styles = StyleSheet.create({
 	container: { flex: 1, backgroundColor: "#F4F6F9", padding: 20 },
 	avatarBlock: { alignItems: "center", marginTop: 20, marginBottom: 24 },
@@ -486,13 +506,8 @@ const styles = StyleSheet.create({
 		marginBottom: 24,
 	},
 	row: {
-		flexDirection: "row",
-		alignItems: "center",
-		justifyContent: "space-between",
+		...rowLayout,
 		gap: 16,
-		paddingVertical: 14,
-		borderBottomWidth: 1,
-		borderBottomColor: "#F2F2F7",
 		minHeight: 56,
 	},
 	dropdownTrigger: {
@@ -512,6 +527,15 @@ const styles = StyleSheet.create({
 	leftContainer: {
 		flexDirection: "row",
 		alignItems: "center",
+	},
+	optionGroup: {
+		flexDirection: "row",
+		gap: 4,
+	},
+	optionPill: {
+		padding: 6,
+		borderRadius: 8,
+		borderWidth: 1,
 	},
 	label: {
 		fontSize: 15,
@@ -548,14 +572,14 @@ const styles = StyleSheet.create({
 	},
 
 	editButton: {
-		backgroundColor: "#007AFF",
+		backgroundColor: "#4bb7e1",
 		height: 48,
 		borderRadius: 10,
 		justifyContent: "center",
 		alignItems: "center",
 		marginBottom: 40,
 	},
-	editButtonText: { color: "#FFF", fontSize: 16, fontWeight: "600" },
+	editButtonText: { ...boldText16, color: "#FFF" },
 	editActionsContainer: {
 		flexDirection: "row",
 		justifyContent: "space-between",
@@ -570,9 +594,9 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	cancelButton: { backgroundColor: "#E5E5EA" },
-	cancelButtonText: { color: "#48484A", fontSize: 16, fontWeight: "600" },
-	saveButton: { backgroundColor: "#34C759" },
-	saveButtonText: { color: "#FFF", fontSize: 16, fontWeight: "600" },
+	cancelButtonText: { ...boldText16, color: "#48484A" },
+	saveButton: { backgroundColor: "#8bf3a5" },
+	saveButtonText: { ...boldText16, color: "#FFF" },
 
 	modalBackdrop: {
 		flex: 1,
@@ -587,24 +611,11 @@ const styles = StyleSheet.create({
 		paddingBottom: Platform.OS === "ios" ? 24 : 12,
 	},
 	modalHeader: {
-		flexDirection: "row",
-		justifyContent: "space-between",
-		alignItems: "center",
+		...rowLayout,
 		paddingHorizontal: 20,
-		paddingVertical: 14,
-		borderBottomWidth: 1,
-		borderBottomColor: "#F2F2F7",
 	},
-	modalTitle: {
-		fontSize: 16,
-		fontWeight: "600",
-		color: "#1A1A1A",
-	},
-	modalDoneText: {
-		fontSize: 16,
-		fontWeight: "600",
-		color: "#007AFF",
-	},
+	modalTitle: { ...boldText16, color: "#1A1A1A" },
+	modalDoneText: { ...boldText16, color: "#4bb7e1" },
 	modalOptionRow: {
 		height: 44,
 		justifyContent: "center",
@@ -615,7 +626,7 @@ const styles = StyleSheet.create({
 		color: "#1A1A1A",
 	},
 	modalOptionTextSelected: {
-		color: "#007AFF",
+		color: "#4bb7e1",
 		fontWeight: "600",
 	},
 });
