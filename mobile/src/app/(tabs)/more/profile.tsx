@@ -3,6 +3,7 @@ import { useMutation, useQuery } from "@apollo/client/react";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { DatePickerModal } from "@/components/date-picker-modal";
+import { formatDateToISO, parseISODate } from "@/lib/date";
 import {
 	ActivityIndicator,
 	Alert,
@@ -209,23 +210,6 @@ export default function Profile() {
 			return `${feet}'${inches}"`;
 		}
 		return `${cm} cm`;
-	};
-
-	// Parse/format as local calendar dates (not UTC) so the picker's day
-	// doesn't shift when the local timezone is ahead of or behind UTC.
-	const parseDob = (value: string | null): Date => {
-		const [year, month, day] = (value ?? "").split("-").map(Number);
-		if (!year || !month || !day) {
-			return new Date();
-		}
-		return new Date(year, month - 1, day);
-	};
-
-	const formatDateToISO = (date: Date) => {
-		const year = date.getFullYear();
-		const month = String(date.getMonth() + 1).padStart(2, "0");
-		const day = String(date.getDate()).padStart(2, "0");
-		return `${year}-${month}-${day}`;
 	};
 
 	const heightOptions =
@@ -510,7 +494,7 @@ export default function Profile() {
 			<DatePickerModal
 				visible={dobPickerVisible}
 				title="Select Date of Birth"
-				value={parseDob(dob)}
+				value={parseISODate(dob)}
 				maximumDate={new Date()}
 				onChange={(date) => setDob(formatDateToISO(date))}
 				onClose={() => setDobPickerVisible(false)}

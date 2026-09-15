@@ -107,7 +107,7 @@ export default function Login() {
 				href="/register"
 				style={{ marginTop: 16, textAlign: "center", color: "blue" }}
 			>
-				Don't have an account? Sign up
+				Don&apos;t have an account? Sign up
 			</Link>
 		</View>
 	);

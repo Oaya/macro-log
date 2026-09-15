@@ -14,13 +14,14 @@ def client():
 @pytest.fixture
 def auth_headers(client):
     """Register a new user and return auth headers with their token."""
-    email = f"test_{uuid.uuid4().hex[:8]}@example.com"
+    unique = uuid.uuid4().hex[:8]
+    email = f"test_{unique}@example.com"
     response = client.post(
         "/graphql",
         json={
             "query": f'''
             mutation {{
-              register(email: "{email}", password: "password123") {{
+              register(email: "{email}", password: "password123", username: "test_{unique}") {{
                 token
               }}
             }}
