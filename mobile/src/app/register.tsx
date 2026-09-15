@@ -10,14 +10,14 @@ type RegisterData = {
 };
 
 type RegisterVariables = {
-	username: string;
 	email: string;
+	username: string;
 	password: string;
 };
 
 const REGISTER: TypedDocumentNode<RegisterData, RegisterVariables> = gql`
-	mutation Register($email: String!, $password: String!) {
-		register(email: $email, password: $password) {
+	mutation Register($email: String!, $username: String!, $password: String!) {
+		register(email: $email, username: $username, password: $password) {
 			token
 			user {
 				email

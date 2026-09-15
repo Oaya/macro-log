@@ -1,14 +1,17 @@
 import uuid
 
 
-def register_user(client, email=None, password="password123"):
+def register_user(client, email=None, username=None, password="password123"):
     email = email or f"test_{uuid.uuid4().hex[:8]}@example.com"
+    username = username or f"user_{uuid.uuid4().hex[:8]}"
     response = client.post(
         "/graphql",
         json={
             "query": f'''
             mutation {{
-              register(email: "{email}", password: "{password}") {{
+              register(
+                email: "{email}", username: "{username}", password: "{password}"
+              ) {{
                 token
                 user {{ id email }}
               }}
