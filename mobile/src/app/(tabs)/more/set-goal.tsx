@@ -1,6 +1,8 @@
 import { DatePickerModal } from "@/components/date-picker-modal";
 import { formatDateToISO, parseISODate } from "@/lib/date";
 import { displayWeightToKg, kgToDisplayWeight } from "@/lib/units";
+import { colors } from "@/styles/colors";
+import { commonStyles } from "@/styles/common";
 import { TypedDocumentNode, gql } from "@apollo/client";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { Ionicons } from "@expo/vector-icons";
@@ -169,7 +171,7 @@ export default function SetGoal() {
 			>
 				<Text
 					style={{
-						color: "#FF3B30",
+						color: colors.danger,
 						textAlign: "center",
 					}}
 				>
@@ -250,23 +252,23 @@ export default function SetGoal() {
 			style={{ flex: 1 }}
 		>
 			<ScrollView
-				style={styles.container}
+				style={commonStyles.container}
 				bounces={false}
 				showsVerticalScrollIndicator={false}
 			>
 				<View style={styles.detailsCard}>
-					<Text style={styles.sectionHeading}>Goal</Text>
+					<Text style={commonStyles.sectionHeading}>Goal</Text>
 					{/* Current Weight */}
-					<View style={styles.row}>
-						<View style={styles.leftContainer}>
-							<Text style={styles.label}>Current Weight</Text>
+					<View style={commonStyles.row}>
+						<View style={commonStyles.leftContainer}>
+							<Text style={commonStyles.label}>Current Weight</Text>
 						</View>
 
 						{isEditing ? (
-							<View style={styles.inputInlineWrapper}>
+							<View style={commonStyles.inputInlineWrapper}>
 								<TextInput
 									style={[
-										styles.input,
+										commonStyles.input,
 										{
 											flex: 0,
 											width: 90,
@@ -279,28 +281,28 @@ export default function SetGoal() {
 									onChangeText={setStartWeight}
 								/>
 
-								<Text style={styles.inputSuffix}>
+								<Text style={commonStyles.inputSuffix}>
 									{isImperial ? "lb" : "kg"}
 								</Text>
 							</View>
 						) : (
-							<Text style={styles.value}>
+							<Text style={commonStyles.value}>
 								{formatWeightDisplay(startWeight)}
 							</Text>
 						)}
 					</View>
 
 					{/* Target Weight */}
-					<View style={styles.row}>
-						<View style={styles.leftContainer}>
-							<Text style={styles.label}>Target Weight</Text>
+					<View style={commonStyles.row}>
+						<View style={commonStyles.leftContainer}>
+							<Text style={commonStyles.label}>Target Weight</Text>
 						</View>
 
 						{isEditing ? (
-							<View style={styles.inputInlineWrapper}>
+							<View style={commonStyles.inputInlineWrapper}>
 								<TextInput
 									style={[
-										styles.input,
+										commonStyles.input,
 										{
 											flex: 0,
 											width: 90,
@@ -313,29 +315,29 @@ export default function SetGoal() {
 									onChangeText={setTargetWeight}
 								/>
 
-								<Text style={styles.inputSuffix}>
+								<Text style={commonStyles.inputSuffix}>
 									{isImperial ? "lb" : "kg"}
 								</Text>
 							</View>
 						) : (
-							<Text style={styles.value}>
+							<Text style={commonStyles.value}>
 								{formatWeightDisplay(targetWeight)}
 							</Text>
 						)}
 					</View>
 
 					{/* Target Date */}
-					<View style={styles.row}>
-						<View style={styles.leftContainer}>
-							<Text style={styles.label}>Target Date</Text>
+					<View style={commonStyles.row}>
+						<View style={commonStyles.leftContainer}>
+							<Text style={commonStyles.label}>Target Date</Text>
 						</View>
 
 						{isEditing ? (
 							<Pressable
-								style={styles.dropdownTrigger}
+								style={commonStyles.dropdownTrigger}
 								onPress={() => setTargetDatePickerVisible(true)}
 							>
-								<Text style={styles.dropdownTriggerText}>
+								<Text style={commonStyles.dropdownTriggerText}>
 									{targetDate || "--"}
 								</Text>
 								<Ionicons
@@ -346,7 +348,7 @@ export default function SetGoal() {
 							</Pressable>
 						) : (
 							<Text
-								style={styles.value}
+								style={commonStyles.value}
 								numberOfLines={1}
 								ellipsizeMode="tail"
 							>
@@ -356,17 +358,17 @@ export default function SetGoal() {
 					</View>
 
 					{/* Activity Level */}
-					<View style={styles.row}>
-						<View style={styles.leftContainer}>
-							<Text style={styles.label}>Activity Level</Text>
+					<View style={commonStyles.row}>
+						<View style={commonStyles.leftContainer}>
+							<Text style={commonStyles.label}>Activity Level</Text>
 						</View>
 
 						{isEditing ? (
 							<Pressable
-								style={styles.dropdownTrigger}
+								style={commonStyles.dropdownTrigger}
 								onPress={() => setActivityPickerVisible(true)}
 							>
-								<Text style={styles.dropdownTriggerText}>
+								<Text style={commonStyles.dropdownTriggerText}>
 									{activity || "--"}
 								</Text>
 								<Ionicons
@@ -377,7 +379,7 @@ export default function SetGoal() {
 							</Pressable>
 						) : (
 							<Text
-								style={styles.value}
+								style={commonStyles.value}
 								numberOfLines={1}
 								ellipsizeMode="tail"
 							>
@@ -390,43 +392,43 @@ export default function SetGoal() {
 				{/* Daily Target */}
 				{goalData?.goal && (
 					<View style={styles.detailsCard}>
-						<Text style={styles.sectionHeading}>Daily Goal</Text>
-						<View style={styles.row}>
-							<Text style={styles.label}>Daily Calories</Text>
-							<Text style={styles.value}>
+						<Text style={commonStyles.sectionHeading}>Daily Goal</Text>
+						<View style={commonStyles.row}>
+							<Text style={commonStyles.label}>Daily Calories</Text>
+							<Text style={commonStyles.value}>
 								{goalData.goal.dailyCalories} cal
 							</Text>
 						</View>
 
-						<View style={styles.row}>
-							<Text style={styles.label}>Carbs</Text>
-							<Text style={styles.value}>{goalData.goal.carbsG} g</Text>
+						<View style={commonStyles.row}>
+							<Text style={commonStyles.label}>Carbs</Text>
+							<Text style={commonStyles.value}>{goalData.goal.carbsG} g</Text>
 						</View>
 
-						<View style={styles.row}>
-							<Text style={styles.label}>Protein</Text>
-							<Text style={styles.value}>{goalData.goal.proteinG} g</Text>
+						<View style={commonStyles.row}>
+							<Text style={commonStyles.label}>Protein</Text>
+							<Text style={commonStyles.value}>{goalData.goal.proteinG} g</Text>
 						</View>
 
-						<View style={styles.row}>
-							<Text style={styles.label}>Fat</Text>
-							<Text style={styles.value}>{goalData.goal.fatG} g</Text>
+						<View style={commonStyles.row}>
+							<Text style={commonStyles.label}>Fat</Text>
+							<Text style={commonStyles.value}>{goalData.goal.fatG} g</Text>
 						</View>
 					</View>
 				)}
 
 				{/* Actions */}
 				{isEditing ? (
-					<View style={styles.editActionsContainer}>
+					<View style={commonStyles.editActionsContainer}>
 						<TouchableOpacity
-							style={[styles.actionButton, styles.cancelButton]}
+							style={[commonStyles.actionButton, commonStyles.cancelButton]}
 							onPress={handleCancel}
 						>
-							<Text style={styles.cancelButtonText}>Cancel</Text>
+							<Text style={commonStyles.cancelButtonText}>Cancel</Text>
 						</TouchableOpacity>
 
 						<TouchableOpacity
-							style={[styles.actionButton, styles.saveButton]}
+							style={[commonStyles.actionButton, commonStyles.saveButton]}
 							onPress={handleSave}
 							disabled={updating}
 						>
@@ -436,16 +438,16 @@ export default function SetGoal() {
 									size="small"
 								/>
 							) : (
-								<Text style={styles.saveButtonText}>Save</Text>
+								<Text style={commonStyles.saveButtonText}>Save</Text>
 							)}
 						</TouchableOpacity>
 					</View>
 				) : (
 					<TouchableOpacity
-						style={styles.editButton}
+						style={commonStyles.editButton}
 						onPress={() => setIsEditing(true)}
 					>
-						<Text style={styles.editButtonText}>Edit Goal</Text>
+						<Text style={commonStyles.editButtonText}>Edit Goal</Text>
 					</TouchableOpacity>
 				)}
 			</ScrollView>
@@ -457,17 +459,17 @@ export default function SetGoal() {
 				onRequestClose={() => setActivityPickerVisible(false)}
 			>
 				<Pressable
-					style={styles.modalBackdrop}
+					style={commonStyles.modalBackdrop}
 					onPress={() => setActivityPickerVisible(false)}
 				>
 					<Pressable
-						style={styles.modalSheet}
+						style={commonStyles.modalSheet}
 						onPress={() => {}}
 					>
-						<View style={styles.modalHeader}>
-							<Text style={styles.modalTitle}>Select Activity Level</Text>
+						<View style={commonStyles.modalHeader}>
+							<Text style={commonStyles.modalTitle}>Select Activity Level</Text>
 							<TouchableOpacity onPress={() => setActivityPickerVisible(false)}>
-								<Text style={styles.modalDoneText}>Done</Text>
+								<Text style={commonStyles.modalDoneText}>Done</Text>
 							</TouchableOpacity>
 						</View>
 						<FlatList
@@ -481,7 +483,7 @@ export default function SetGoal() {
 							})}
 							renderItem={({ item, index }) => (
 								<TouchableOpacity
-									style={styles.modalOptionRow}
+									style={commonStyles.modalOptionRow}
 									onPress={() => {
 										setActivity(item);
 										setActivityPickerVisible(false);
@@ -489,9 +491,9 @@ export default function SetGoal() {
 								>
 									<Text
 										style={[
-											styles.modalOptionText,
+											commonStyles.modalOptionText,
 											index === selectedActivityIndex &&
-												styles.modalOptionTextSelected,
+												commonStyles.modalOptionTextSelected,
 										]}
 									>
 										{item}
@@ -514,204 +516,6 @@ export default function SetGoal() {
 	);
 }
 
-const rowLayout = {
-	flexDirection: "row" as const,
-	alignItems: "center" as const,
-	justifyContent: "space-between" as const,
-	paddingVertical: 14,
-	borderBottomWidth: 1,
-	borderBottomColor: "#F2F2F7",
-};
-
-const boldText16 = {
-	fontSize: 16,
-	fontWeight: "600" as const,
-};
-
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: "#F4F6F9",
-		padding: 20,
-	},
-
-	detailsCard: {
-		backgroundColor: "#FFF",
-		borderRadius: 12,
-		paddingHorizontal: 16,
-		marginBottom: 24,
-	},
-
-	sectionHeading: {
-		fontSize: 12,
-		fontWeight: "700",
-		color: "#8E8E93",
-		textTransform: "uppercase",
-
-		marginTop: 14,
-		marginBottom: 6,
-	},
-
-	row: {
-		...rowLayout,
-		gap: 16,
-		minHeight: 56,
-	},
-
-	leftContainer: {
-		flexDirection: "row",
-		alignItems: "center",
-	},
-
-	optionGroup: {
-		flexDirection: "row",
-		gap: 4,
-	},
-
-	optionPill: {
-		padding: 6,
-		borderRadius: 8,
-		borderWidth: 1,
-	},
-
-	dropdownTrigger: {
-		flexDirection: "row",
-		alignItems: "center",
-		gap: 6,
-	},
-
-	dropdownTriggerText: {
-		fontSize: 15,
-		color: "#1A1A1A",
-	},
-
-	label: {
-		fontSize: 15,
-		color: "#1A1A1A",
-		fontWeight: "500",
-	},
-
-	value: {
-		fontSize: 15,
-		color: "#8E8E93",
-		flexShrink: 1,
-		textAlign: "right",
-	},
-
-	input: {
-		fontSize: 15,
-		color: "#1A1A1A",
-		backgroundColor: "#F4F6F9",
-		borderRadius: 6,
-		paddingHorizontal: 10,
-		paddingVertical: 6,
-		textAlign: "right",
-		flex: 1,
-		maxWidth: "65%",
-	},
-
-	inputInlineWrapper: {
-		flexDirection: "row",
-		alignItems: "center",
-		justifyContent: "flex-end",
-		flex: 1,
-	},
-
-	inputSuffix: {
-		marginLeft: 6,
-		fontSize: 14,
-		color: "#8E8E93",
-	},
-
-	editButton: {
-		backgroundColor: "#4bb7e1",
-		height: 48,
-		borderRadius: 10,
-		justifyContent: "center",
-		alignItems: "center",
-		marginBottom: 40,
-	},
-
-	editButtonText: {
-		...boldText16,
-		color: "#FFF",
-	},
-
-	editActionsContainer: {
-		flexDirection: "row",
-		justifyContent: "space-between",
-		marginBottom: 40,
-		gap: 12,
-	},
-
-	actionButton: {
-		flex: 1,
-		height: 48,
-		borderRadius: 10,
-		justifyContent: "center",
-		alignItems: "center",
-	},
-
-	cancelButton: {
-		backgroundColor: "#E5E5EA",
-	},
-
-	cancelButtonText: {
-		...boldText16,
-		color: "#48484A",
-	},
-
-	saveButton: {
-		backgroundColor: "#8bf3a5",
-	},
-
-	saveButtonText: {
-		...boldText16,
-		color: "#FFF",
-	},
-
-	modalBackdrop: {
-		flex: 1,
-		backgroundColor: "rgba(0,0,0,0.4)",
-		justifyContent: "flex-end",
-	},
-
-	modalSheet: {
-		backgroundColor: "#FFF",
-		borderTopLeftRadius: 16,
-		borderTopRightRadius: 16,
-		maxHeight: "60%",
-		paddingBottom: Platform.OS === "ios" ? 24 : 12,
-	},
-
-	modalHeader: {
-		...rowLayout,
-		paddingHorizontal: 20,
-	},
-
-	modalTitle: {
-		...boldText16,
-		color: "#1A1A1A",
-	},
-
-	modalDoneText: {
-		...boldText16,
-		color: "#4bb7e1",
-	},
-
-	modalOptionRow: {
-		height: 44,
-		justifyContent: "center",
-		paddingHorizontal: 20,
-	},
-
-	modalOptionText: {
-		fontSize: 16,
-		color: "#1A1A1A",
-	},
-
-	modalOptionTextSelected: {
-		color: "#4bb7e1",
-		fontWeight: "600",
-	},
+	detailsCard: { ...commonStyles.card, marginBottom: 24 },
 });

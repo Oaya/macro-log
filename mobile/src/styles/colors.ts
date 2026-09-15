@@ -1,0 +1,14 @@
+export const colors = {
+	background: "#F4F6F9",
+	card: "#FFF",
+	textPrimary: "#1A1A1A",
+	textSecondary: "#8E8E93",
+	placeholder: "#C7C7CC",
+	border: "#F2F2F7",
+	primary: "#4bb7e1",
+	success: "#8bf3a5",
+	cancel: "#E5E5EA",
+	cancelText: "#48484A",
+	danger: "#FF3B30",
+	backdrop: "rgba(0,0,0,0.4)",
+};

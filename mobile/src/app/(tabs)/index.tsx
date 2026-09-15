@@ -12,7 +12,7 @@ export default function Index() {
 	};
 
 	return (
-		<View style={{ flex: 1, padding: 20, paddingTop: 60 }}>
+		<View style={{ flex: 1, backgroundColor: "#F4F6F9", padding: 20, paddingTop: 60 }}>
 			<Pressable onPress={handleLogout}>
 				<Text>Log out</Text>
 			</Pressable>

@@ -11,6 +11,11 @@ export default function LogLayout() {
 				name="weight"
 				options={{ title: "Log Weight" }}
 			/>
+
+			<Stack.Screen
+				name="workout"
+				options={{ title: "Log Workout" }}
+			/>
 		</Stack>
 	);
 }
