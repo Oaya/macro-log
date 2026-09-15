@@ -132,6 +132,7 @@ class Goal:
     protein_g: float
     fat_g: float
     carbs_g: float
+    start_weight_kg: float | None
     target_weight_kg: float | None
     target_date: str | None
     activity_level: ActivityLevel

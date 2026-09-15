@@ -11,6 +11,10 @@ export default function MoreLayout() {
 				name="profile"
 				options={{ title: "My Profile" }}
 			/>
+			<Stack.Screen
+				name="set-goal"
+				options={{ title: "Set Goal" }}
+			/>
 		</Stack>
 	);
 }

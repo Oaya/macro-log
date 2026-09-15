@@ -33,9 +33,9 @@ ACTIVITY_FACTORS = {
 
 
 def calculate_goal(
-    weight_kg, height_cm, age, sex, activity_level, current_weight, target_weight, days
+    height_cm, age, sex, activity_level, current_weight, target_weight, days
 ):
-    bmr = calculate_bmr(weight_kg, height_cm, age, sex)
+    bmr = calculate_bmr(current_weight, height_cm, age, sex)
     tdee = bmr * ACTIVITY_FACTORS[activity_level]
 
     total_deficit = (current_weight - target_weight) * CALORIES_PER_KG

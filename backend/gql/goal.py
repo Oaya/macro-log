@@ -17,7 +17,7 @@ from models import User as UserModel
 @strawberry.type
 class GoalQuery:
     @strawberry.field
-    def goal(self, info: Info) -> Goal:
+    def goal(self, info: Info) -> Goal | None:
 
         current_user = require_user(info)
 
@@ -29,7 +29,7 @@ class GoalQuery:
             ).scalar_one_or_none()
 
             if goal is None:
-                raise Exception("Goal not found")
+                return None
 
             return Goal(
                 id=strawberry.ID(str(goal.id)),
@@ -37,6 +37,7 @@ class GoalQuery:
                 protein_g=goal.protein_g,
                 fat_g=goal.fat_g,
                 carbs_g=goal.carbs_g,
+                start_weight_kg=goal.start_weight_kg,
                 target_date=str(goal.target_date),
                 target_weight_kg=goal.target_weight_kg,
                 activity_level=ActivityLevel(goal.activity_level),
@@ -54,6 +55,7 @@ class GoalMutation:
         target_weight_kg: float,
         target_date: date,
         activity_level: str,
+        start_weight_kg: float,
     ) -> Goal:
 
         current_user = require_user(info)
@@ -67,24 +69,19 @@ class GoalMutation:
             if db_user is None:
                 raise Exception("User not found")
 
-            latest_weight = (
-                db.execute(
-                    select(BodyWeightModel)
-                    .where(BodyWeightModel.user_id == current_user.id)
-                    .order_by(BodyWeightModel.recorded_date.desc())
-                )
-                .scalars()
-                .first()
-            )
+            # latest_weight = (
+            #     db.execute(
+            #         select(BodyWeightModel)
+            #         .where(BodyWeightModel.user_id == current_user.id)
+            #         .order_by(BodyWeightModel.recorded_date.desc())
+            #     )
+            #     .scalars()
+            #     .first()
+            # )
 
-            if not (
-                db_user.height_cm
-                and db_user.date_of_birth
-                and db_user.sex
-                and latest_weight
-            ):
+            if not (db_user.height_cm and db_user.date_of_birth and db_user.sex):
                 raise Exception(
-                    "Please complete your profile (height, date of birth, sex, and record a weight) first"
+                    "Please complete your profile (height, date of birth, sex) first"
                 )
 
             age = calculate_age(db_user.date_of_birth)
@@ -94,12 +91,11 @@ class GoalMutation:
                 raise Exception("Target date must be in the future")
 
             result = calculate_goal(
-                weight_kg=latest_weight.weight_kg,
                 height_cm=db_user.height_cm,
                 age=age,
                 sex=db_user.sex,
                 activity_level=activity_level,
-                current_weight=latest_weight.weight_kg,
+                current_weight=start_weight_kg,
                 target_weight=target_weight_kg,
                 days=days,
             )
@@ -112,12 +108,14 @@ class GoalMutation:
                 goal.protein_g = result["protein_g"]
                 goal.carbs_g = result["carbs_g"]
                 goal.fat_g = result["fat_g"]
+                goal.start_weight_kg = start_weight_kg
                 goal.target_weight_kg = target_weight_kg
                 goal.target_date = target_date
                 goal.activity_level = activity_level
             else:
                 goal = GoalModel(
                     user_id=current_user.id,
+                    start_weight_kg=start_weight_kg,
                     target_weight_kg=target_weight_kg,
                     target_date=target_date,
                     activity_level=activity_level,
@@ -127,12 +125,21 @@ class GoalMutation:
             db.commit()
             db.refresh(goal)
 
+            db.add(
+                BodyWeightModel(
+                    user_id=current_user.id,
+                    weight_kg=start_weight_kg,
+                    recorded_date=date.today(),
+                )
+            )
+
             return Goal(
                 id=strawberry.ID(str(goal.id)),
                 daily_calories=goal.daily_calories,
                 protein_g=goal.protein_g,
                 carbs_g=goal.carbs_g,
                 fat_g=goal.fat_g,
+                start_weight_kg=goal.start_weight_kg,
                 target_date=str(goal.target_date),
                 target_weight_kg=goal.target_weight_kg,
                 activity_level=ActivityLevel(goal.activity_level),
