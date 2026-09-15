@@ -27,7 +27,7 @@ function AuthGate({ children }: { children: ReactNode }) {
 		} else if (loggedIn && inAuthScreen) {
 			router.replace("/");
 		}
-	}, [checking, loggedIn, inAuthScreen]);
+	}, [checking, loggedIn, inAuthScreen, router]);
 
 	if (checking) {
 		return <LoadingScreen />;

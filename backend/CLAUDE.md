@@ -71,7 +71,7 @@ docker compose run --rm backend python seed.py   # idempotent, safe to re-run
 ## Auth
 
 - **Public** (no token): `register`, `login`, `searchFoods`, `exercises`
-- **Protected** (require token): `me`, `logFood`, `foodLogs`, `updateProfile`, `recordWeight`, `bodyWeights`, `logWorkout`, `workoutLogs`, `setWeightGoal`, `goal`, `dailySummary`
+- **Protected** (require token): `me`, `logFood`, `foodLogs`, `updateProfile`, `recordWeight`, `bodyWeights`, `latestBodyWeight`, `logWorkout`, `workoutLogs`, `setWeightGoal`, `goal`, `dailySummary`
 - Protected resolvers get the user via `info.context["current_user"]` and raise `"Not authenticated"` if it's `None`.
 - Clients send `Authorization: Bearer <token>`.
 

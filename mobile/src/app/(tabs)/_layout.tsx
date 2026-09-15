@@ -8,16 +8,16 @@ export default function TabsLayout() {
 				<NativeTabs.Trigger.Icon sf={"house"}></NativeTabs.Trigger.Icon>
 			</NativeTabs.Trigger>
 
-			<NativeTabs.Trigger name="summary">
-				<NativeTabs.Trigger.Label>Summary</NativeTabs.Trigger.Label>
-				<NativeTabs.Trigger.Icon sf={"chart.bar"}></NativeTabs.Trigger.Icon>
-			</NativeTabs.Trigger>
-
 			<NativeTabs.Trigger name="log">
 				<NativeTabs.Trigger.Label>Log</NativeTabs.Trigger.Label>
 				<NativeTabs.Trigger.Icon
 					sf={"list.bullet.rectangle"}
 				></NativeTabs.Trigger.Icon>
+			</NativeTabs.Trigger>
+
+			<NativeTabs.Trigger name="progress">
+				<NativeTabs.Trigger.Label>Progress</NativeTabs.Trigger.Label>
+				<NativeTabs.Trigger.Icon sf={"chart.bar"}></NativeTabs.Trigger.Icon>
 			</NativeTabs.Trigger>
 
 			<NativeTabs.Trigger name="more">

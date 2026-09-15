@@ -1,8 +1,10 @@
+import { DatePickerModal } from "@/components/date-picker-modal";
+import { formatDateToISO, parseISODate } from "@/lib/date";
+import { displayWeightToKg } from "@/lib/units";
 import { TypedDocumentNode, gql } from "@apollo/client";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { DatePickerModal } from "@/components/date-picker-modal";
 import {
 	ActivityIndicator,
 	Alert,
@@ -105,8 +107,7 @@ export default function SetGoal() {
 
 	const [isEditing, setIsEditing] = useState(false);
 	const [activityPickerVisible, setActivityPickerVisible] = useState(false);
-	const [targetDatePickerVisible, setTargetDatePickerVisible] =
-		useState(false);
+	const [targetDatePickerVisible, setTargetDatePickerVisible] = useState(false);
 
 	// These values are stored in the user's DISPLAY unit.
 	// Imperial user -> pounds
@@ -115,9 +116,9 @@ export default function SetGoal() {
 	const [targetWeight, setTargetWeight] = useState("");
 	const [targetDate, setTargetDate] = useState("");
 	const [activity, setActivity] = useState("MODERATE");
-	const [initializedGoalKey, setInitializedGoalKey] = useState<
-		string | null
-	>(null);
+	const [initializedGoalKey, setInitializedGoalKey] = useState<string | null>(
+		null,
+	);
 
 	const unit = goalData?.me.unitPreference;
 
@@ -135,21 +136,6 @@ export default function SetGoal() {
 		}
 
 		return kg.toString();
-	};
-
-	// Convert what the user typed back into kg before sending it to the backend.
-	const displayWeightToKg = (value: string) => {
-		const weight = parseFloat(value);
-
-		if (isNaN(weight) || weight <= 0) {
-			return null;
-		}
-
-		if (isImperial) {
-			return Number((weight / 2.20462).toFixed(2));
-		}
-
-		return Number(weight.toFixed(2));
 	};
 
 	///Initialize local state from backend data.
@@ -204,8 +190,8 @@ export default function SetGoal() {
 	}
 
 	const handleSave = async () => {
-		const startWeightKg = displayWeightToKg(startWeight);
-		const targetWeightKg = displayWeightToKg(targetWeight);
+		const startWeightKg = displayWeightToKg(startWeight, isImperial);
+		const targetWeightKg = displayWeightToKg(targetWeight, isImperial);
 
 		if (startWeightKg === null) {
 			Alert.alert("Invalid Weight", "Please enter a valid current weight.");
@@ -262,23 +248,6 @@ export default function SetGoal() {
 		return isImperial ? `${weight} lb` : `${weight} kg`;
 	};
 
-	// Parse/format as local calendar dates (not UTC) so the picker's day
-	// doesn't shift when the local timezone is ahead of or behind UTC.
-	const parseTargetDate = (value: string): Date => {
-		const [year, month, day] = value.split("-").map(Number);
-		if (!year || !month || !day) {
-			return new Date();
-		}
-		return new Date(year, month - 1, day);
-	};
-
-	const formatDateToISO = (date: Date) => {
-		const year = date.getFullYear();
-		const month = String(date.getMonth() + 1).padStart(2, "0");
-		const day = String(date.getDate()).padStart(2, "0");
-		return `${year}-${month}-${day}`;
-	};
-
 	const selectedActivityIndex = ACTIVITY_LEVEL.indexOf(activity);
 
 	return (
@@ -292,6 +261,7 @@ export default function SetGoal() {
 				showsVerticalScrollIndicator={false}
 			>
 				<View style={styles.detailsCard}>
+					<Text style={styles.sectionHeading}>Goal</Text>
 					{/* Current Weight */}
 					<View style={styles.row}>
 						<View style={styles.leftContainer}>
@@ -423,6 +393,34 @@ export default function SetGoal() {
 					</View>
 				</View>
 
+				{/* Daily Target */}
+				{goalData?.goal && (
+					<View style={styles.detailsCard}>
+						<Text style={styles.sectionHeading}>Daily Goal</Text>
+						<View style={styles.row}>
+							<Text style={styles.label}>Daily Calories</Text>
+							<Text style={styles.value}>
+								{goalData.goal.dailyCalories} cal
+							</Text>
+						</View>
+
+						<View style={styles.row}>
+							<Text style={styles.label}>Carbs</Text>
+							<Text style={styles.value}>{goalData.goal.carbsG} g</Text>
+						</View>
+
+						<View style={styles.row}>
+							<Text style={styles.label}>Protein</Text>
+							<Text style={styles.value}>{goalData.goal.proteinG} g</Text>
+						</View>
+
+						<View style={styles.row}>
+							<Text style={styles.label}>Fat</Text>
+							<Text style={styles.value}>{goalData.goal.fatG} g</Text>
+						</View>
+					</View>
+				)}
+
 				{/* Actions */}
 				{isEditing ? (
 					<View style={styles.editActionsContainer}>
@@ -514,7 +512,7 @@ export default function SetGoal() {
 			<DatePickerModal
 				visible={targetDatePickerVisible}
 				title="Select Target Date"
-				value={parseTargetDate(targetDate)}
+				value={parseISODate(targetDate)}
 				onChange={(date) => setTargetDate(formatDateToISO(date))}
 				onClose={() => setTargetDatePickerVisible(false)}
 			/>
@@ -550,6 +548,16 @@ const styles = StyleSheet.create({
 		marginBottom: 24,
 	},
 
+	sectionHeading: {
+		fontSize: 12,
+		fontWeight: "700",
+		color: "#8E8E93",
+		textTransform: "uppercase",
+
+		marginTop: 14,
+		marginBottom: 6,
+	},
+
 	row: {
 		...rowLayout,
 		gap: 16,
@@ -582,7 +590,6 @@ const styles = StyleSheet.create({
 		fontSize: 15,
 		color: "#1A1A1A",
 	},
-
 
 	label: {
 		fontSize: 15,

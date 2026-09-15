@@ -13,7 +13,6 @@ export default function Index() {
 
 	return (
 		<View style={{ flex: 1, padding: 20, paddingTop: 60 }}>
-			<Text style={{ fontSize: 24 }}>Home</Text>
 			<Pressable onPress={handleLogout}>
 				<Text>Log out</Text>
 			</Pressable>

@@ -8,7 +8,8 @@
     "scheme": "macro-log",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "bundleIdentifier": "com.ayaaa-1130.macro-log"
     },
     "android": {
       "adaptiveIcon": {
