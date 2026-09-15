@@ -1,8 +1,8 @@
+import { DatePickerModal } from "@/components/date-picker-modal";
 import { TypedDocumentNode, gql } from "@apollo/client";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { DatePickerModal } from "@/components/date-picker-modal";
 import {
 	ActivityIndicator,
 	Alert,
@@ -105,8 +105,7 @@ export default function SetGoal() {
 
 	const [isEditing, setIsEditing] = useState(false);
 	const [activityPickerVisible, setActivityPickerVisible] = useState(false);
-	const [targetDatePickerVisible, setTargetDatePickerVisible] =
-		useState(false);
+	const [targetDatePickerVisible, setTargetDatePickerVisible] = useState(false);
 
 	// These values are stored in the user's DISPLAY unit.
 	// Imperial user -> pounds
@@ -115,9 +114,9 @@ export default function SetGoal() {
 	const [targetWeight, setTargetWeight] = useState("");
 	const [targetDate, setTargetDate] = useState("");
 	const [activity, setActivity] = useState("MODERATE");
-	const [initializedGoalKey, setInitializedGoalKey] = useState<
-		string | null
-	>(null);
+	const [initializedGoalKey, setInitializedGoalKey] = useState<string | null>(
+		null,
+	);
 
 	const unit = goalData?.me.unitPreference;
 
@@ -292,6 +291,7 @@ export default function SetGoal() {
 				showsVerticalScrollIndicator={false}
 			>
 				<View style={styles.detailsCard}>
+					<Text style={styles.sectionHeading}>Goal</Text>
 					{/* Current Weight */}
 					<View style={styles.row}>
 						<View style={styles.leftContainer}>
@@ -423,6 +423,34 @@ export default function SetGoal() {
 					</View>
 				</View>
 
+				{/* Daily Target */}
+				{goalData?.goal && (
+					<View style={styles.detailsCard}>
+						<Text style={styles.sectionHeading}>Daily Goal</Text>
+						<View style={styles.row}>
+							<Text style={styles.label}>Daily Calories</Text>
+							<Text style={styles.value}>
+								{goalData.goal.dailyCalories} cal
+							</Text>
+						</View>
+
+						<View style={styles.row}>
+							<Text style={styles.label}>Carbs</Text>
+							<Text style={styles.value}>{goalData.goal.carbsG} g</Text>
+						</View>
+
+						<View style={styles.row}>
+							<Text style={styles.label}>Protein</Text>
+							<Text style={styles.value}>{goalData.goal.proteinG} g</Text>
+						</View>
+
+						<View style={styles.row}>
+							<Text style={styles.label}>Fat</Text>
+							<Text style={styles.value}>{goalData.goal.fatG} g</Text>
+						</View>
+					</View>
+				)}
+
 				{/* Actions */}
 				{isEditing ? (
 					<View style={styles.editActionsContainer}>
@@ -550,6 +578,16 @@ const styles = StyleSheet.create({
 		marginBottom: 24,
 	},
 
+	sectionHeading: {
+		fontSize: 12,
+		fontWeight: "700",
+		color: "#8E8E93",
+		textTransform: "uppercase",
+
+		marginTop: 14,
+		marginBottom: 6,
+	},
+
 	row: {
 		...rowLayout,
 		gap: 16,
@@ -582,7 +620,6 @@ const styles = StyleSheet.create({
 		fontSize: 15,
 		color: "#1A1A1A",
 	},
-
 
 	label: {
 		fontSize: 15,

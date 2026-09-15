@@ -96,15 +96,15 @@ export default function summary() {
 						/>
 						<Row
 							label="Goal Protein"
-							value={`${s.goalProteinG} cal`}
+							value={`${s.goalProteinG} g`}
 						/>
 						<Row
 							label="Goal Carbs"
-							value={`${s.goalCarbsG} cal`}
+							value={`${s.goalCarbsG} g`}
 						/>
 						<Row
 							label="Goal Fat"
-							value={`${s.goalFatG} cal`}
+							value={`${s.goalFatG} g`}
 						/>
 					</>
 				)}
