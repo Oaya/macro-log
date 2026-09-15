@@ -1,6 +1,8 @@
 import { TypedDocumentNode, gql } from "@apollo/client";
 import { useMutation, useQuery } from "@apollo/client/react";
-import { useEffect, useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import { useState } from "react";
+import { DatePickerModal } from "@/components/date-picker-modal";
 import {
 	ActivityIndicator,
 	Alert,
@@ -13,7 +15,6 @@ import {
 	ScrollView,
 	StyleSheet,
 	Text,
-	TextInput,
 	TouchableOpacity,
 	View,
 } from "react-native";
@@ -67,6 +68,7 @@ const findNearestOptionIndex = (options: HeightOption[], cm: number) => {
 
 type MeData = {
 	me: {
+		id: string;
 		email: string;
 		username: string;
 		createdAt: string;
@@ -80,6 +82,7 @@ type MeData = {
 const ME: TypedDocumentNode<MeData> = gql`
 	query GetMe {
 		me {
+			id
 			email
 			username
 			createdAt
@@ -125,16 +128,19 @@ export default function Profile() {
 	const [height, setHeight] = useState<string | null>("");
 	const [unit, setUnit] = useState<string>("METRIC");
 	const [heightPickerVisible, setHeightPickerVisible] = useState(false);
+	const [dobPickerVisible, setDobPickerVisible] = useState(false);
+	const [initializedMe, setInitializedMe] = useState<MeData["me"] | null>(
+		null,
+	);
 
 	// Initialize local state when Apollo data loads
-	useEffect(() => {
-		if (meData?.me) {
-			setSex(meData?.me.sex);
-			setDob(meData.me.dateOfBirth);
-			setHeight(String(meData.me.heightCm));
-			setUnit(meData.me.unitPreference);
-		}
-	}, [meData]);
+	if (meData?.me && meData.me !== initializedMe) {
+		setInitializedMe(meData.me);
+		setSex(meData.me.sex);
+		setDob(meData.me.dateOfBirth);
+		setHeight(String(meData.me.heightCm));
+		setUnit(meData.me.unitPreference);
+	}
 
 	if (loading) {
 		return (
@@ -205,6 +211,23 @@ export default function Profile() {
 		return `${cm} cm`;
 	};
 
+	// Parse/format as local calendar dates (not UTC) so the picker's day
+	// doesn't shift when the local timezone is ahead of or behind UTC.
+	const parseDob = (value: string | null): Date => {
+		const [year, month, day] = (value ?? "").split("-").map(Number);
+		if (!year || !month || !day) {
+			return new Date();
+		}
+		return new Date(year, month - 1, day);
+	};
+
+	const formatDateToISO = (date: Date) => {
+		const year = date.getFullYear();
+		const month = String(date.getMonth() + 1).padStart(2, "0");
+		const day = String(date.getDate()).padStart(2, "0");
+		return `${year}-${month}-${day}`;
+	};
+
 	const heightOptions =
 		unit?.toUpperCase() === "IMPERIAL"
 			? IMPERIAL_HEIGHT_OPTIONS
@@ -262,13 +285,19 @@ export default function Profile() {
 							<Text style={styles.label}>Date of Birth</Text>
 						</View>
 						{isEditing ? (
-							<TextInput
-								style={styles.input}
-								value={dob ?? ""}
-								placeholder="YYYY-MM-DD"
-								placeholderTextColor="#C7C7CC"
-								onChangeText={(text) => setDob(text)}
-							/>
+							<Pressable
+								style={styles.dropdownTrigger}
+								onPress={() => setDobPickerVisible(true)}
+							>
+								<Text style={styles.dropdownTriggerText}>
+									{dob || "--"}
+								</Text>
+								<Ionicons
+									name="chevron-down"
+									size={14}
+									color="#8E8E93"
+								/>
+							</Pressable>
 						) : (
 							<Text
 								style={styles.value}
@@ -293,7 +322,11 @@ export default function Profile() {
 								<Text style={styles.dropdownTriggerText}>
 									{heightOptions[selectedHeightIndex]?.label ?? "--"}
 								</Text>
-								<Text style={styles.dropdownChevron}>⌄</Text>
+								<Ionicons
+									name="chevron-down"
+									size={14}
+									color="#8E8E93"
+								/>
 							</Pressable>
 						) : (
 							<Text
@@ -473,6 +506,15 @@ export default function Profile() {
 					</Pressable>
 				</Pressable>
 			</Modal>
+
+			<DatePickerModal
+				visible={dobPickerVisible}
+				title="Select Date of Birth"
+				value={parseDob(dob)}
+				maximumDate={new Date()}
+				onChange={(date) => setDob(formatDateToISO(date))}
+				onClose={() => setDobPickerVisible(false)}
+			/>
 		</KeyboardAvoidingView>
 	);
 }
@@ -513,10 +555,6 @@ const styles = StyleSheet.create({
 	dropdownTriggerText: {
 		fontSize: 15,
 		color: "#1A1A1A",
-	},
-	dropdownChevron: {
-		fontSize: 15,
-		color: "#8E8E93",
 	},
 
 	leftContainer: {

@@ -14,12 +14,13 @@ import {
 } from "react-native";
 
 type MeData = {
-	me: { email: string; username: string };
+	me: { id: string; email: string; username: string };
 };
 
 const ME: TypedDocumentNode<MeData> = gql`
 	query {
 		me {
+			id
 			email
 			username
 		}
