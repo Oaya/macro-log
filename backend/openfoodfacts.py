@@ -50,11 +50,12 @@ def search_foods(query: str, limit: int = 30) -> list[dict]:
         sodium_mg = sodium_g * 1000 if sodium_g is not None else None
 
         brands_raw = product.get("brands")
-        brands = (
-            [b.strip() for b in brands_raw.split(",") if b.strip()]
-            if brands_raw
-            else None
-        )
+        if isinstance(brands_raw, list):
+            brands = [b.strip() for b in brands_raw if b.strip()] or None
+        elif isinstance(brands_raw, str):
+            brands = [b.strip() for b in brands_raw.split(",") if b.strip()] or None
+        else:
+            brands = None
 
         results.append(
             {
