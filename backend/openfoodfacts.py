@@ -37,6 +37,8 @@ def search_foods(query: str, limit: int = 30) -> list[dict]:
     results = []
     # Search-a-licious returns results under "hits".
     for product in data.get("hits", []):
+        print("product", product)
+
         name = (product.get("product_name") or "").strip()
         nutriments = product.get("nutriments", {})
         calories = nutriments.get("energy-kcal_100g")
