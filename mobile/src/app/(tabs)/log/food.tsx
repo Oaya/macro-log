@@ -20,7 +20,7 @@ import {
 
 type FoodResult = {
 	name: string;
-	brand: string[] | null;
+	brands: string[] | null;
 	barcode: string | null;
 	servingSize: string | null;
 	quantity: string | null;
@@ -56,7 +56,7 @@ const SEARCH_FOODS: TypedDocumentNode<SearchData> = gql`
 	query SearchFoods($query: String!) {
 		searchFoods(query: $query, limit: 30) {
 			name
-			brand
+			brands
 			barcode
 			servingSize
 			quantity
@@ -100,7 +100,7 @@ function defaultMealType(): (typeof MEAL_TYPES)[number] {
 }
 
 export default function LogFood() {
-	const [runSearch, { data, loading }] = useLazyQuery<SearchData>(SEARCH_FOODS);
+	const [runSearch, { data, loading }] = useLazyQuery(SEARCH_FOODS);
 	const [logFood, { loading: saving }] = useMutation(LOG_FOOD);
 
 	const [search, setSearch] = useState("");
@@ -118,6 +118,8 @@ export default function LogFood() {
 			runSearch({ variables: { query: text } });
 		}
 	};
+
+	console.log("data", data);
 
 	const qty = parseFloat(quantity) || 0;
 
