@@ -1,9 +1,12 @@
+import { DatePickerModal } from "@/components/date-picker-modal";
+import { formatDateToISO, parseISODate } from "@/lib/date";
+import { colors } from "@/styles/colors";
+import { commonStyles } from "@/styles/common";
+import { profileStyles } from "@/styles/profile";
 import { TypedDocumentNode, gql } from "@apollo/client";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { DatePickerModal } from "@/components/date-picker-modal";
-import { formatDateToISO, parseISODate } from "@/lib/date";
 import {
 	ActivityIndicator,
 	Alert,
@@ -14,7 +17,6 @@ import {
 	Platform,
 	Pressable,
 	ScrollView,
-	StyleSheet,
 	Text,
 	TouchableOpacity,
 	View,
@@ -130,9 +132,7 @@ export default function Profile() {
 	const [unit, setUnit] = useState<string>("METRIC");
 	const [heightPickerVisible, setHeightPickerVisible] = useState(false);
 	const [dobPickerVisible, setDobPickerVisible] = useState(false);
-	const [initializedMe, setInitializedMe] = useState<MeData["me"] | null>(
-		null,
-	);
+	const [initializedMe, setInitializedMe] = useState<MeData["me"] | null>(null);
 
 	// Initialize local state when Apollo data loads
 	if (meData?.me && meData.me !== initializedMe) {
@@ -162,7 +162,7 @@ export default function Profile() {
 					padding: 20,
 				}}
 			>
-				<Text style={{ color: "#FF3B30", textAlign: "center" }}>
+				<Text style={{ color: colors.danger, textAlign: "center" }}>
 					Error: {error.message}
 				</Text>
 			</View>
@@ -227,19 +227,19 @@ export default function Profile() {
 			style={{ flex: 1 }}
 		>
 			<ScrollView
-				style={styles.container}
+				style={commonStyles.container}
 				bounces={false}
 				showsVerticalScrollIndicator={false}
 			>
-				<View style={styles.avatarBlock}>
+				<View style={profileStyles.avatarBlock}>
 					<Image
 						source={{
 							uri: "https://plus.unsplash.com/premium_photo-1739786996040-32bde1db0610?w=500&auto=format&fit=crop&q=60",
 						}}
-						style={styles.avatar}
+						style={profileStyles.avatar}
 					/>
-					<Text style={styles.name}>{meData?.me.username}</Text>
-					<Text style={styles.joined}>
+					<Text style={profileStyles.name}>{meData?.me.username}</Text>
+					<Text style={profileStyles.joined}>
 						Member since{" "}
 						{meData?.me.createdAt
 							? new Date(meData.me.createdAt).toISOString().split("T")[0]
@@ -247,15 +247,15 @@ export default function Profile() {
 					</Text>
 				</View>
 
-				<View style={styles.detailsCard}>
+				<View style={profileStyles.detailsCard}>
 					{/* Email Row */}
-					<View style={styles.row}>
-						<View style={styles.leftContainer}>
-							<Text style={styles.label}>Email</Text>
+					<View style={commonStyles.row}>
+						<View style={commonStyles.leftContainer}>
+							<Text style={commonStyles.label}>Email</Text>
 						</View>
 
 						<Text
-							style={styles.value}
+							style={commonStyles.value}
 							numberOfLines={1}
 							ellipsizeMode="tail"
 						>
@@ -264,27 +264,27 @@ export default function Profile() {
 					</View>
 
 					{/* Date of Birth Row */}
-					<View style={styles.row}>
-						<View style={styles.leftContainer}>
-							<Text style={styles.label}>Date of Birth</Text>
+					<View style={commonStyles.row}>
+						<View style={commonStyles.leftContainer}>
+							<Text style={commonStyles.label}>Date of Birth</Text>
 						</View>
 						{isEditing ? (
 							<Pressable
-								style={styles.dropdownTrigger}
+								style={commonStyles.dropdownTrigger}
 								onPress={() => setDobPickerVisible(true)}
 							>
-								<Text style={styles.dropdownTriggerText}>
+								<Text style={commonStyles.dropdownTriggerText}>
 									{dob || "--"}
 								</Text>
 								<Ionicons
 									name="chevron-down"
 									size={14}
-									color="#8E8E93"
+									color={colors.textSecondary}
 								/>
 							</Pressable>
 						) : (
 							<Text
-								style={styles.value}
+								style={commonStyles.value}
 								numberOfLines={1}
 								ellipsizeMode="tail"
 							>
@@ -294,27 +294,27 @@ export default function Profile() {
 					</View>
 
 					{/* Height Row */}
-					<View style={styles.row}>
-						<View style={styles.leftContainer}>
-							<Text style={styles.label}>Height</Text>
+					<View style={commonStyles.row}>
+						<View style={commonStyles.leftContainer}>
+							<Text style={commonStyles.label}>Height</Text>
 						</View>
 						{isEditing ? (
 							<Pressable
-								style={styles.dropdownTrigger}
+								style={commonStyles.dropdownTrigger}
 								onPress={() => setHeightPickerVisible(true)}
 							>
-								<Text style={styles.dropdownTriggerText}>
+								<Text style={commonStyles.dropdownTriggerText}>
 									{heightOptions[selectedHeightIndex]?.label ?? "--"}
 								</Text>
 								<Ionicons
 									name="chevron-down"
 									size={14}
-									color="#8E8E93"
+									color={colors.textSecondary}
 								/>
 							</Pressable>
 						) : (
 							<Text
-								style={styles.value}
+								style={commonStyles.value}
 								numberOfLines={1}
 								ellipsizeMode="tail"
 							>
@@ -324,28 +324,29 @@ export default function Profile() {
 					</View>
 
 					{/* Sex Row */}
-					<View style={styles.row}>
-						<View style={styles.leftContainer}>
-							<Text style={styles.label}>Sex</Text>
+					<View style={commonStyles.row}>
+						<View style={commonStyles.leftContainer}>
+							<Text style={commonStyles.label}>Sex</Text>
 						</View>
 						{isEditing ? (
-							<View style={styles.optionGroup}>
+							<View style={profileStyles.optionGroup}>
 								{(["MALE", "FEMALE"] as const).map((option) => (
 									<Pressable
 										key={option}
 										onPress={() => setSex(option)}
 										style={[
-											styles.optionPill,
-											{
-												borderColor: sex === option ? "#4bb7e1" : "#ccc",
-												backgroundColor: sex === option ? "#4bb7e1" : "#fff",
-											},
+											commonStyles.optionPill,
+											sex === option
+												? profileStyles.pillSelected
+												: profileStyles.pillUnselected,
 										]}
 									>
 										<Text
-											style={{
-												color: sex === option ? "#fff" : "#000",
-											}}
+											style={
+												sex === option
+													? profileStyles.pillTextSelected
+													: profileStyles.pillTextUnselected
+											}
 										>
 											{option}
 										</Text>
@@ -354,7 +355,7 @@ export default function Profile() {
 							</View>
 						) : (
 							<Text
-								style={styles.value}
+								style={commonStyles.value}
 								numberOfLines={1}
 								ellipsizeMode="tail"
 							>
@@ -364,28 +365,29 @@ export default function Profile() {
 					</View>
 
 					{/* Unit Preference Row */}
-					<View style={styles.row}>
-						<View style={styles.leftContainer}>
-							<Text style={styles.label}>Unit Preference</Text>
+					<View style={commonStyles.row}>
+						<View style={commonStyles.leftContainer}>
+							<Text style={commonStyles.label}>Unit Preference</Text>
 						</View>
 						{isEditing ? (
-							<View style={styles.optionGroup}>
+							<View style={profileStyles.optionGroup}>
 								{(["METRIC", "IMPERIAL"] as const).map((option) => (
 									<Pressable
 										key={option}
 										onPress={() => setUnit(option)}
 										style={[
-											styles.optionPill,
-											{
-												borderColor: unit === option ? "#4bb7e1" : "#ccc",
-												backgroundColor: unit === option ? "#4bb7e1" : "#fff",
-											},
+											commonStyles.optionPill,
+											unit === option
+												? profileStyles.pillSelected
+												: profileStyles.pillUnselected,
 										]}
 									>
 										<Text
-											style={{
-												color: unit === option ? "#fff" : "#000",
-											}}
+											style={
+												unit === option
+													? profileStyles.pillTextSelected
+													: profileStyles.pillTextUnselected
+											}
 										>
 											{option}
 										</Text>
@@ -394,7 +396,7 @@ export default function Profile() {
 							</View>
 						) : (
 							<Text
-								style={styles.value}
+								style={commonStyles.value}
 								numberOfLines={1}
 								ellipsizeMode="tail"
 							>
@@ -406,15 +408,15 @@ export default function Profile() {
 
 				{/*  Dynamic Footer Action Layout */}
 				{isEditing ? (
-					<View style={styles.editActionsContainer}>
+					<View style={commonStyles.submitActionsContainer}>
 						<TouchableOpacity
-							style={[styles.actionButton, styles.cancelButton]}
+							style={[commonStyles.actionButton, commonStyles.cancelButton]}
 							onPress={handleCancel}
 						>
-							<Text style={styles.cancelButtonText}>Cancel</Text>
+							<Text style={commonStyles.cancelButtonText}>Cancel</Text>
 						</TouchableOpacity>
 						<TouchableOpacity
-							style={[styles.actionButton, styles.saveButton]}
+							style={[commonStyles.actionButton, commonStyles.saveButton]}
 							onPress={handleSave}
 							disabled={updating}
 						>
@@ -424,16 +426,16 @@ export default function Profile() {
 									size="small"
 								/>
 							) : (
-								<Text style={styles.saveButtonText}>Save</Text>
+								<Text style={commonStyles.saveButtonText}>Save</Text>
 							)}
 						</TouchableOpacity>
 					</View>
 				) : (
 					<TouchableOpacity
-						style={styles.editButton}
+						style={commonStyles.submitButton}
 						onPress={() => setIsEditing(true)}
 					>
-						<Text style={styles.editButtonText}>Edit Profile</Text>
+						<Text style={commonStyles.submitButtonText}>Edit Profile</Text>
 					</TouchableOpacity>
 				)}
 			</ScrollView>
@@ -445,17 +447,17 @@ export default function Profile() {
 				onRequestClose={() => setHeightPickerVisible(false)}
 			>
 				<Pressable
-					style={styles.modalBackdrop}
+					style={commonStyles.modalBackdrop}
 					onPress={() => setHeightPickerVisible(false)}
 				>
 					<Pressable
-						style={styles.modalSheet}
+						style={commonStyles.modalSheet}
 						onPress={() => {}}
 					>
-						<View style={styles.modalHeader}>
-							<Text style={styles.modalTitle}>Select Height</Text>
+						<View style={commonStyles.modalHeader}>
+							<Text style={commonStyles.modalTitle}>Select Height</Text>
 							<TouchableOpacity onPress={() => setHeightPickerVisible(false)}>
-								<Text style={styles.modalDoneText}>Done</Text>
+								<Text style={commonStyles.modalDoneText}>Done</Text>
 							</TouchableOpacity>
 						</View>
 						<FlatList
@@ -469,7 +471,7 @@ export default function Profile() {
 							})}
 							renderItem={({ item, index }) => (
 								<TouchableOpacity
-									style={styles.modalOptionRow}
+									style={commonStyles.modalOptionRow}
 									onPress={() => {
 										setHeight(String(item.cm));
 										setHeightPickerVisible(false);
@@ -477,9 +479,9 @@ export default function Profile() {
 								>
 									<Text
 										style={[
-											styles.modalOptionText,
+											commonStyles.modalOptionText,
 											index === selectedHeightIndex &&
-												styles.modalOptionTextSelected,
+												commonStyles.modalOptionTextSelected,
 										]}
 									>
 										{item.label}
@@ -502,148 +504,3 @@ export default function Profile() {
 		</KeyboardAvoidingView>
 	);
 }
-
-const rowLayout = {
-	flexDirection: "row" as const,
-	alignItems: "center" as const,
-	justifyContent: "space-between" as const,
-	paddingVertical: 14,
-	borderBottomWidth: 1,
-	borderBottomColor: "#F2F2F7",
-};
-
-const boldText16 = { fontSize: 16, fontWeight: "600" as const };
-
-const styles = StyleSheet.create({
-	container: { flex: 1, backgroundColor: "#F4F6F9", padding: 20 },
-	avatarBlock: { alignItems: "center", marginTop: 20, marginBottom: 24 },
-	avatar: { width: 100, height: 100, borderRadius: 50, marginBottom: 12 },
-	name: { fontSize: 22, fontWeight: "700", color: "#1A1A1A" },
-	joined: { fontSize: 13, color: "#8E8E93", marginTop: 4 },
-	detailsCard: {
-		backgroundColor: "#FFF",
-		borderRadius: 12,
-		paddingHorizontal: 16,
-		marginBottom: 24,
-	},
-	row: {
-		...rowLayout,
-		gap: 16,
-		minHeight: 56,
-	},
-	dropdownTrigger: {
-		flexDirection: "row",
-		alignItems: "center",
-		gap: 6,
-	},
-	dropdownTriggerText: {
-		fontSize: 15,
-		color: "#1A1A1A",
-	},
-
-	leftContainer: {
-		flexDirection: "row",
-		alignItems: "center",
-	},
-	optionGroup: {
-		flexDirection: "row",
-		gap: 4,
-	},
-	optionPill: {
-		padding: 6,
-		borderRadius: 8,
-		borderWidth: 1,
-	},
-	label: {
-		fontSize: 15,
-		color: "#1A1A1A",
-		fontWeight: "500",
-	},
-	value: {
-		fontSize: 15,
-		color: "#8E8E93",
-		flexShrink: 1,
-		textAlign: "right",
-	},
-	input: {
-		fontSize: 15,
-		color: "#1A1A1A",
-		backgroundColor: "#F4F6F9",
-		borderRadius: 6,
-		paddingHorizontal: 10,
-		paddingVertical: 6,
-		textAlign: "right",
-		flex: 1,
-		maxWidth: "65%",
-	},
-	inputInlineWrapper: {
-		flexDirection: "row",
-		alignItems: "center",
-		justifyContent: "flex-end",
-		flex: 1,
-	},
-	inputSuffix: {
-		marginLeft: 6,
-		fontSize: 14,
-		color: "#8E8E93",
-	},
-
-	editButton: {
-		backgroundColor: "#4bb7e1",
-		height: 48,
-		borderRadius: 10,
-		justifyContent: "center",
-		alignItems: "center",
-		marginBottom: 40,
-	},
-	editButtonText: { ...boldText16, color: "#FFF" },
-	editActionsContainer: {
-		flexDirection: "row",
-		justifyContent: "space-between",
-		marginBottom: 40,
-		gap: 12,
-	},
-	actionButton: {
-		flex: 1,
-		height: 48,
-		borderRadius: 10,
-		justifyContent: "center",
-		alignItems: "center",
-	},
-	cancelButton: { backgroundColor: "#E5E5EA" },
-	cancelButtonText: { ...boldText16, color: "#48484A" },
-	saveButton: { backgroundColor: "#8bf3a5" },
-	saveButtonText: { ...boldText16, color: "#FFF" },
-
-	modalBackdrop: {
-		flex: 1,
-		backgroundColor: "rgba(0,0,0,0.4)",
-		justifyContent: "flex-end",
-	},
-	modalSheet: {
-		backgroundColor: "#FFF",
-		borderTopLeftRadius: 16,
-		borderTopRightRadius: 16,
-		maxHeight: "60%",
-		paddingBottom: Platform.OS === "ios" ? 24 : 12,
-	},
-	modalHeader: {
-		...rowLayout,
-		paddingHorizontal: 20,
-	},
-	modalTitle: { ...boldText16, color: "#1A1A1A" },
-	modalDoneText: { ...boldText16, color: "#4bb7e1" },
-	modalOptionRow: {
-		height: 44,
-		justifyContent: "center",
-		paddingHorizontal: 20,
-	},
-	modalOptionText: {
-		fontSize: 16,
-		color: "#1A1A1A",
-	},
-	modalOptionTextSelected: {
-		color: "#4bb7e1",
-		fontWeight: "600",
-	},
-});

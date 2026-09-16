@@ -16,7 +16,14 @@ def search_foods(query: str, limit: int = 30) -> list[dict]:
         "q": query,
         "page_size": limit,
         # Only fetch the fields we need (faster, smaller response).
-        "fields": ["product_name", "code", "serving_size", "nutriments"],
+        "fields": [
+            "product_name",
+            "code",
+            "serving_size",
+            "nutriments",
+            "brands",
+            "quantity",
+        ],
     }
 
     try:
@@ -45,8 +52,10 @@ def search_foods(query: str, limit: int = 30) -> list[dict]:
         results.append(
             {
                 "name": name,
+                "brand": product.get("brands"),
                 "barcode": product.get("code"),
                 "serving_size": product.get("serving_size"),
+                "quantity": product.get("quantity"),
                 "calories": calories,
                 "protein_g": nutriments.get("proteins_100g", 0.0),
                 "carbs_g": nutriments.get("carbohydrates_100g", 0.0),

@@ -1,4 +1,6 @@
 import { useAuth } from "@/lib/auth-context";
+import { colors } from "@/styles/colors";
+import { commonStyles } from "@/styles/common";
 import { gql, TypedDocumentNode } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import { Ionicons } from "@expo/vector-icons";
@@ -77,7 +79,7 @@ export default function More() {
 				</View>
 				<Ionicons
 					name="chevron-forward"
-					color="#C7C7CC"
+					color={colors.placeholder}
 					size={20}
 				/>
 			</TouchableOpacity>
@@ -100,7 +102,7 @@ export default function More() {
 					<Text style={styles.menuText}>Calorie & Goals</Text>
 					<Ionicons
 						name="chevron-forward"
-						color="#C7C7CC"
+						color={colors.placeholder}
 						size={18}
 					/>
 				</TouchableOpacity>
@@ -116,7 +118,7 @@ export default function More() {
 					<Text style={styles.menuText}>Weight Goals</Text>
 					<Ionicons
 						name="chevron-forward"
-						color="#C7C7CC"
+						color={colors.placeholder}
 						size={18}
 					/>
 				</TouchableOpacity> */}
@@ -129,12 +131,15 @@ export default function More() {
 					<View style={[styles.iconBg, { backgroundColor: "#FFEBEE" }]}>
 						<Ionicons
 							name="log-out"
-							color="#FF3B30"
+							color={colors.danger}
 							size={20}
 						/>
 					</View>
 					<Text
-						style={[styles.menuText, { color: "#FF3B30", fontWeight: "600" }]}
+						style={[
+							styles.menuText,
+							{ color: colors.danger, fontWeight: "600" },
+						]}
 					>
 						Log Out
 					</Text>
@@ -145,11 +150,11 @@ export default function More() {
 }
 
 const styles = StyleSheet.create({
-	container: { flex: 1, backgroundColor: "#F4F6F9" },
+	container: { flex: 1, backgroundColor: colors.background },
 	profileCard: {
 		flexDirection: "row",
 		alignItems: "center",
-		backgroundColor: "#FFF",
+		backgroundColor: colors.card,
 		marginTop: 16,
 		marginHorizontal: 16,
 		padding: 16,
@@ -157,7 +162,7 @@ const styles = StyleSheet.create({
 	},
 	avatar: { width: 50, height: 50, borderRadius: 25 },
 	profileMeta: { marginLeft: 14, flex: 1 },
-	profileName: { fontSize: 17, fontWeight: "700", color: "#1A1A1A" },
+	profileName: { fontSize: 17, fontWeight: "700", color: colors.textPrimary },
 	profileEmail: {
 		fontSize: 13,
 		color: "#007AFF",
@@ -166,29 +171,21 @@ const styles = StyleSheet.create({
 	},
 
 	menuContainer: {
-		backgroundColor: "#FFF",
+		backgroundColor: colors.card,
 		borderRadius: 12,
 		marginHorizontal: 16,
 		marginTop: 16,
 		paddingVertical: 6,
 		marginBottom: 30,
 	},
-	sectionHeading: {
-		fontSize: 12,
-		fontWeight: "700",
-		color: "#8E8E93",
-		textTransform: "uppercase",
-		marginLeft: 16,
-		marginTop: 14,
-		marginBottom: 6,
-	},
+	sectionHeading: { ...commonStyles.sectionHeading, marginLeft: 16 },
 	menuItem: {
 		flexDirection: "row",
 		alignItems: "center",
 		paddingVertical: 12,
 		paddingHorizontal: 16,
 		borderBottomWidth: 1,
-		borderBottomColor: "#F2F2F7",
+		borderBottomColor: colors.border,
 	},
 	logoutItem: { borderBottomWidth: 0, marginTop: 10 },
 	iconBg: {
@@ -199,5 +196,10 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		marginRight: 12,
 	},
-	menuText: { fontSize: 15, fontWeight: "500", color: "#1A1A1A", flex: 1 },
+	menuText: {
+		fontSize: 15,
+		fontWeight: "500",
+		color: colors.textPrimary,
+		flex: 1,
+	},
 });

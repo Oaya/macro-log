@@ -1,3 +1,5 @@
+import { colors } from "@/styles/colors";
+import { commonStyles } from "@/styles/common";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -6,15 +8,15 @@ export default function Log() {
 	const router = useRouter();
 
 	return (
-		<View style={styles.container}>
-			<Text style={styles.heading}>What would you like to log?</Text>
+		<View style={commonStyles.container}>
+			<Text style={commonStyles.heading}>What would you like to log?</Text>
 
 			<View style={styles.menuContainer}>
 				<TouchableOpacity
 					style={styles.menuItem}
-					// onPress={() => router.push("/(tabs)/log/food")}
+					onPress={() => router.push("/(tabs)/log/food")}
 				>
-					<View style={[styles.iconBg, { backgroundColor: "#FFF3E0" }]}>
+					<View style={[commonStyles.iconBg, { backgroundColor: "#FFF3E0" }]}>
 						<Ionicons
 							name="restaurant"
 							color="#FF9500"
@@ -31,9 +33,9 @@ export default function Log() {
 
 				<TouchableOpacity
 					style={styles.menuItem}
-					// onPress={() => router.push("/(tabs)/log/workout")}
+					onPress={() => router.push("/(tabs)/log/workout")}
 				>
-					<View style={[styles.iconBg, { backgroundColor: "#E3F2FD" }]}>
+					<View style={[commonStyles.iconBg, { backgroundColor: "#E3F2FD" }]}>
 						<Ionicons
 							name="barbell"
 							color="#007AFF"
@@ -52,7 +54,7 @@ export default function Log() {
 					style={[styles.menuItem, styles.menuItemLast]}
 					onPress={() => router.push("/(tabs)/log/weight")}
 				>
-					<View style={[styles.iconBg, { backgroundColor: "#E8F5E9" }]}>
+					<View style={[commonStyles.iconBg, { backgroundColor: "#E8F5E9" }]}>
 						<Ionicons
 							name="scale"
 							color="#34C759"
@@ -72,14 +74,10 @@ export default function Log() {
 }
 
 const styles = StyleSheet.create({
-	container: { flex: 1, paddingTop: 20 },
-	heading: { fontSize: 20, padding: 20, fontWeight: "bold", marginBottom: 20 },
 	menuContainer: {
-		backgroundColor: "#FFF",
+		backgroundColor: colors.card,
 		borderRadius: 12,
-		marginHorizontal: 16,
 		paddingVertical: 6,
-		marginBottom: 30,
 	},
 	menuItem: {
 		flexDirection: "row",
@@ -87,18 +85,10 @@ const styles = StyleSheet.create({
 		paddingVertical: 12,
 		paddingHorizontal: 16,
 		borderBottomWidth: 1,
-		borderBottomColor: "#F2F2F7",
+		borderBottomColor: colors.border,
 	},
 	menuItemLast: {
 		borderBottomWidth: 0,
-	},
-	iconBg: {
-		width: 36,
-		height: 36,
-		borderRadius: 8,
-		justifyContent: "center",
-		alignItems: "center",
-		marginRight: 12,
 	},
 	menuText: { flex: 1, fontSize: 16 },
 });
