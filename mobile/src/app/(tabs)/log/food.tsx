@@ -37,6 +37,7 @@ type LogFoodData = {
 type LogFoodVariables = {
 	food: {
 		name: string;
+		servingSize: string | null;
 		calories: number;
 		proteinG: number;
 		carbsG: number;
@@ -103,7 +104,7 @@ export default function LogFood() {
 
 	const [datePickerVisible, setDatePickerVisible] = useState(false);
 	const [date, setDate] = useState(formatDateToISO(new Date()));
-	const [quantity, setQuantity] = useState("100");
+	const [quantity, setQuantity] = useState("1");
 	const [mealType, setMealType] =
 		useState<(typeof MEAL_TYPES)[number]>(defaultMealType());
 
@@ -114,9 +115,7 @@ export default function LogFood() {
 		}
 	};
 
-	// Open Food Facts nutriments are per 100g, so scale by grams / 100.
-	const grams = parseFloat(quantity) || 0;
-	const qty = grams / 100;
+	const qty = parseFloat(quantity) || 0;
 
 	const preview = useMemo(() => {
 		if (!selected) return null;
@@ -130,7 +129,7 @@ export default function LogFood() {
 
 	const resetForm = () => {
 		setSelected(null);
-		setQuantity("100");
+		setQuantity("1");
 		setMealType(defaultMealType());
 	};
 
@@ -145,6 +144,7 @@ export default function LogFood() {
 				variables: {
 					food: {
 						name: selected.name,
+						servingSize: "100g",
 						calories: selected.calories,
 						proteinG: selected.proteinG,
 						carbsG: selected.carbsG,
@@ -210,7 +210,7 @@ export default function LogFood() {
 					<View>
 						<View style={commonStyles.row}>
 							<View style={commonStyles.leftContainer}>
-								<Text style={commonStyles.label}>Amount (g)</Text>
+								<Text style={commonStyles.label}>Quantity</Text>
 							</View>
 
 							<View style={commonStyles.inputInlineWrapper}>
