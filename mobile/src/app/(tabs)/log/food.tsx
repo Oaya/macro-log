@@ -20,7 +20,7 @@ import {
 
 type FoodResult = {
 	name: string;
-	brand: string | null;
+	brand: string[] | null;
 	barcode: string | null;
 	servingSize: string | null;
 	quantity: string | null;

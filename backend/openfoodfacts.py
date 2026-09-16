@@ -52,7 +52,7 @@ def search_foods(query: str, limit: int = 30) -> list[dict]:
         results.append(
             {
                 "name": name,
-                "brand": product.get("brands"),
+                "brands": product.get("brands"),
                 "barcode": product.get("code"),
                 "serving_size": product.get("serving_size"),
                 "quantity": product.get("quantity"),
