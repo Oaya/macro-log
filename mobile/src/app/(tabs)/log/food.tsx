@@ -23,7 +23,7 @@ type FoodResult = {
 	brand: string | null;
 	barcode: string | null;
 	servingSize: string | null;
-	quantity: number | null;
+	quantity: string | null;
 	calories: number;
 	proteinG: number;
 	carbsG: number;

@@ -79,7 +79,7 @@ class BodyWeight:
 @strawberry.type
 class FoodSearchResult:
     name: str
-    brand: str | None
+    brands: list[str] | None
     barcode: str | None
     serving_size: str | None
     quantity: str | None
