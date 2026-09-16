@@ -66,7 +66,6 @@ class TestCalculateMacros:
 class TestCalculateGoal:
     def test_weight_loss_goal(self):
         result = calculate_goal(
-            weight_kg=90,
             height_cm=180,
             age=30,
             sex="MALE",
@@ -88,7 +87,6 @@ class TestCalculateGoal:
         bmr = calculate_bmr(70, 175, 25, "MALE")
         tdee = bmr * 1.55
         result = calculate_goal(
-            weight_kg=70,
             height_cm=175,
             age=25,
             sex="MALE",
@@ -103,7 +101,6 @@ class TestCalculateGoal:
         bmr = calculate_bmr(70, 175, 25, "FEMALE")
         tdee = bmr * 1.375
         result = calculate_goal(
-            weight_kg=70,
             height_cm=175,
             age=25,
             sex="FEMALE",
@@ -117,7 +114,6 @@ class TestCalculateGoal:
     def test_safety_floor_triggers_on_aggressive_deficit(self):
         # Huge deficit over a short window should be floored, not go negative.
         result = calculate_goal(
-            weight_kg=100,
             height_cm=170,
             age=40,
             sex="FEMALE",
@@ -131,7 +127,6 @@ class TestCalculateGoal:
     def test_all_activity_levels_accepted(self):
         for level in ["SEDENTARY", "LIGHT", "MODERATE", "ACTIVE"]:
             result = calculate_goal(
-                weight_kg=75,
                 height_cm=175,
                 age=30,
                 sex="MALE",
@@ -145,7 +140,6 @@ class TestCalculateGoal:
     def test_unknown_activity_level_raises(self):
         with pytest.raises(KeyError):
             calculate_goal(
-                weight_kg=75,
                 height_cm=175,
                 age=30,
                 sex="MALE",
@@ -157,7 +151,6 @@ class TestCalculateGoal:
 
     def test_result_contains_macro_keys(self):
         result = calculate_goal(
-            weight_kg=75,
             height_cm=175,
             age=30,
             sex="MALE",
