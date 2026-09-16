@@ -39,6 +39,7 @@ class SummaryQuery:
                 .all()
             )
 
+            # log.quantity is a multiplier of 100g (Food values are per 100g).
             calories_consumed = protein = carbs = fat = 0.0
             for log in food_logs:
                 calories_consumed += log.food.calories * log.quantity

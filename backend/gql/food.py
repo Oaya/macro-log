@@ -76,7 +76,7 @@ class FoodMutation:
         self,
         info: Info,
         food: FoodInput,
-        quantity: float,
+        quantity: float,  # multiplier of 100g, not a serving count
         meal_type: MealType,
         log_date: date | None = None,
     ) -> FoodLog:
@@ -89,6 +89,7 @@ class FoodMutation:
             # snapshot the food into our foods table.
             db_food = FoodModel(
                 name=food.name,
+                serving_size=food.serving_size,
                 calories=food.calories,
                 protein_g=food.protein_g,
                 carbs_g=food.carbs_g,
