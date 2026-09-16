@@ -54,6 +54,7 @@ class CaloriesEstimateStatus(enum.Enum):
 class FoodSource(enum.Enum):
     YOUR_FOODS = "YOUR_FOODS"
     DATABASE = "DATABASE"
+    RECENT = "RECENT"
 
 
 @strawberry.type
