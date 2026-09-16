@@ -9,7 +9,8 @@ HEADERS = {"User-Agent": "MacroLog/1.0 (youremail@example.com)"}
 def search_foods(query: str, limit: int = 30) -> list[dict]:
     """
     Search Open Food Facts via the Search-a-licious API (full-text).
-    Returns a list of clean dicts. Skips products missing name or calories.
+    Returns a list of clean dicts, all nutriment values per 100g.
+    Skips products missing name or calories.
     """
     # Search-a-licious uses POST with a JSON body.
     payload = {
@@ -19,10 +20,8 @@ def search_foods(query: str, limit: int = 30) -> list[dict]:
         "fields": [
             "product_name",
             "code",
-            "serving_size",
             "nutriments",
             "brands",
-            "quantity",
         ],
     }
 
@@ -61,8 +60,6 @@ def search_foods(query: str, limit: int = 30) -> list[dict]:
                 "name": name,
                 "brands": brands,
                 "barcode": product.get("code"),
-                "serving_size": product.get("serving_size"),
-                "quantity": product.get("quantity"),
                 "calories": calories,
                 "protein_g": nutriments.get("proteins_100g", 0.0),
                 "carbs_g": nutriments.get("carbohydrates_100g", 0.0),
