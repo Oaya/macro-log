@@ -48,6 +48,7 @@ export const commonStyles = {
 		fontSize: 18,
 		fontWeight: "600" as const,
 		flex: 1,
+		marginRight: 4,
 		color: colors.textPrimary,
 	},
 	changeText: { color: colors.primary, fontSize: 14 },

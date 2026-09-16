@@ -70,6 +70,54 @@ class FoodQuery:
         finally:
             db.close()
 
+    def recent_foods(self, info: Info, limit: int = 20) -> list[FoodSearchResult]:
+        current_user = require_user(info)
+        db = SessionLocal()
+
+        try:
+            # distinct foods from your recent logs, most recent first
+            recent_logs = (
+                db.execute(
+                    select(FoodLogModel)
+                    .where(FoodLogModel.user_id == current_user.id)
+                    .order_by(FoodLogModel.created_at.desc())
+                    .limit(limit * 3)  # over-fetch to allow de-duping by name
+                )
+                .scalars()
+                .all()
+            )
+
+            seen = set()
+            results = []
+            for log in recent_logs:
+                if log.food.id in seen:
+                    continue
+
+                seen.add(log.food.id)
+
+                results.append(
+                    FoodSearchResult(
+                        id=strawberry.ID(str(log.food.id)),
+                        brands=None,
+                        name=log.food.name,
+                        calories=log.food.calories,
+                        protein_g=log.food.protein_g,
+                        fat_g=log.food.fat_g,
+                        carbs_g=log.food.carbs_g,
+                        fiber_g=log.food.fiber_g,
+                        sodium_mg=log.food.sodium_mg,
+                        serving_size=log.food.serving_size,
+                        source=FoodSource.RECENT,
+                    )
+                )
+
+                if len(results) >= limit:
+                    break
+
+            return results
+        finally:
+            db.close()
+
     @strawberry.field
     def food_logs(self, info: Info, log_date: date | None = None) -> list[FoodLog]:
         current_user = require_user(info)
@@ -132,8 +180,8 @@ class FoodMutation:
                 fat_g=food.fat_g,
                 fiber_g=food.fiber_g,
                 sodium_mg=food.sodium_mg,
-                created_by_user_id=current_user.id,
-                is_public=False,
+                created_by_user_id=None,
+                is_public=True,
             )
             db.add(db_food)
             db.flush()
@@ -164,6 +212,58 @@ class FoodMutation:
                 fat_g=db_food.fat_g,
                 fiber_g=db_food.fiber_g,
                 sodium_mg=db_food.sodium_mg,
+            )
+        finally:
+            db.close()
+
+    def create_food(
+        self,
+        info: Info,
+        name: str,
+        serving_size: str,
+        calories: float,
+        protein_g: float,
+        carbs_g: float,
+        fat_g: float,
+        fiber_g: float | None = None,
+        sodium_mg: float | None = None,
+    ) -> FoodSearchResult:
+        current_user = require_user(info)
+
+        db = SessionLocal()
+
+        try:
+            db_food = FoodModel(
+                name=name,
+                serving_size=serving_size,
+                calories=calories,
+                protein_g=protein_g,
+                carbs_g=carbs_g,
+                fat_g=fat_g,
+                fiber_g=fiber_g,
+                sodium_mg=sodium_mg,
+                created_by_user_id=current_user.id,
+                is_public=False,
+            )
+
+            db.add(db_food)
+            db.commit()
+            db.refresh(db_food)
+
+            return FoodSearchResult(
+                name=db_food.name,
+                brands=None,
+                id=str(
+                    db_food.id
+                ),  # matches whatever field your USDA results use for identifying a food — adjust if named differently
+                serving_size=db_food.serving_size,
+                calories=db_food.calories,
+                protein_g=db_food.protein_g,
+                carbs_g=db_food.carbs_g,
+                fat_g=db_food.fat_g,
+                fiber_g=db_food.fiber_g,
+                sodium_mg=db_food.sodium_mg,
+                source=FoodSource.YOUR_FOODS,
             )
         finally:
             db.close()

@@ -21,13 +21,15 @@ import {
 type FoodResult = {
 	name: string;
 	brands: string[] | null;
-	barcode: string | null;
+	id: string | null;
 	calories: number;
 	proteinG: number;
 	carbsG: number;
 	fatG: number;
 	fiberG: number | null;
 	sodiumMg: number | null;
+	source: "YOUR_FOODS" | "DATABASE";
+	servingSize: string | null;
 };
 type SearchData = { searchFoods: FoodResult[] };
 
@@ -55,13 +57,15 @@ const SEARCH_FOODS: TypedDocumentNode<SearchData> = gql`
 		searchFoods(query: $query, limit: 30) {
 			name
 			brands
-			barcode
+			id
 			calories
 			proteinG
 			carbsG
 			fatG
 			fiberG
 			sodiumMg
+			source
+			servingSize
 		}
 	}
 `;
@@ -144,7 +148,7 @@ export default function LogFood() {
 				variables: {
 					food: {
 						name: selected.name,
-						servingSize: "100g",
+						servingSize: selected.servingSize,
 						calories: selected.calories,
 						proteinG: selected.proteinG,
 						carbsG: selected.carbsG,
@@ -323,9 +327,7 @@ export default function LogFood() {
 				) : (
 					<FlatList
 						data={data?.searchFoods ?? []}
-						keyExtractor={(item, index) =>
-							item.barcode ?? `${item.name}-${index}`
-						}
+						keyExtractor={(item, index) => item.id ?? `${item.name}-${index}`}
 						scrollEnabled={false}
 						renderItem={({ item }) => (
 							<TouchableOpacity
@@ -355,7 +357,8 @@ export default function LogFood() {
 									)}
 									<Text style={styles.resultSubtitle}>
 										{Math.round(item.calories)} cal ·{" "}
-										{Math.round(item.proteinG)}g protein / 100g
+										{Math.round(item.proteinG)}g protein{" "}
+										{item.servingSize ? `/ Per ${item.servingSize}` : null}
 									</Text>
 								</View>
 								<Ionicons

@@ -42,6 +42,7 @@ def search_foods(query: str, limit: int = 1) -> list[dict]:
         "pageSize": limit,
         "api_key": USDA_API_KEY,
         "nutrients": list(NUTRIENT_NUMBERS.values()),
+        "dataType": "Foundation,SR Legacy,Branded",
     }
 
     try:
@@ -70,11 +71,11 @@ def search_foods(query: str, limit: int = 1) -> list[dict]:
         brands = [brands_raw.strip()] if brands_raw else None
 
         serving_size_value = food.get("servingSize")
-        serving_size = (
-            f"{serving_size_value} {food.get('servingSizeUnit', '')}".strip()
-            if serving_size_value is not None
-            else None
-        )
+        serving_size_unit = food.get("servingSizeUnit", "")
+        if serving_size_value:
+            serving_size = f"{serving_size_value}{serving_size_unit}"
+        else:
+            serving_size = "100g"
 
         results.append(
             {
