@@ -82,7 +82,7 @@ class FoodSearchResult:
     brand: str | None
     barcode: str | None
     serving_size: str | None
-    quantity: float | None
+    quantity: str | None
     calories: float
     protein_g: float
     carbs_g: float
