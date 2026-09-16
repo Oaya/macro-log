@@ -3,9 +3,10 @@ import { formatDateToISO, parseISODate } from "@/lib/date";
 import { colors } from "@/styles/colors";
 import { commonStyles, rowLayout } from "@/styles/common";
 import { gql, TypedDocumentNode } from "@apollo/client";
-import { useLazyQuery, useMutation } from "@apollo/client/react";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client/react";
 import { Ionicons } from "@expo/vector-icons";
 import { useMemo, useState } from "react";
+
 import {
 	Alert,
 	FlatList,
@@ -28,10 +29,18 @@ type FoodResult = {
 	fatG: number;
 	fiberG: number | null;
 	sodiumMg: number | null;
-	source: "YOUR_FOODS" | "DATABASE";
+	source: "YOUR_FOODS" | "DATABASE" | "RECENT";
 	servingSize: string | null;
 };
 type SearchData = { searchFoods: FoodResult[] };
+
+type RecentFoodsData = {
+	recentFoods: FoodResult[];
+};
+
+type MyFoodsData = {
+	myFoods: FoodResult[];
+};
 
 type LogFoodData = {
 	logFood: { foodName: string; calories: number };
@@ -54,7 +63,7 @@ type LogFoodVariables = {
 
 const SEARCH_FOODS: TypedDocumentNode<SearchData> = gql`
 	query SearchFoods($query: String!) {
-		searchFoods(query: $query, limit: 30) {
+		searchFoods(query: $query, limit: 100) {
 			name
 			brands
 			id
@@ -70,6 +79,41 @@ const SEARCH_FOODS: TypedDocumentNode<SearchData> = gql`
 	}
 `;
 
+const RECENT_FOODS: TypedDocumentNode<RecentFoodsData> = gql`
+	query RecentFoods {
+		recentFoods(limit: 100) {
+			id
+			name
+			brands
+			calories
+			proteinG
+			carbsG
+			fatG
+			fiberG
+			sodiumMg
+			source
+			servingSize
+		}
+	}
+`;
+
+const MY_FOODS: TypedDocumentNode<MyFoodsData> = gql`
+	query MyFoods {
+		myFoods(limit: 100) {
+			id
+			name
+			brands
+			calories
+			proteinG
+			carbsG
+			fatG
+			fiberG
+			sodiumMg
+			source
+			servingSize
+		}
+	}
+`;
 const LOG_FOOD: TypedDocumentNode<LogFoodData, LogFoodVariables> = gql`
 	mutation LogFood(
 		$food: FoodInput!
@@ -100,7 +144,11 @@ function defaultMealType(): (typeof MEAL_TYPES)[number] {
 }
 
 export default function LogFood() {
+	const [activeTab, setActiveTab] = useState<"recent" | "my">("recent");
 	const [runSearch, { data, loading }] = useLazyQuery(SEARCH_FOODS);
+	const { data: recentData, loading: recentLoading } = useQuery(RECENT_FOODS);
+	const { data: myFoodsData, loading: myFoodsLoading } = useQuery(MY_FOODS);
+
 	const [logFood, { loading: saving }] = useMutation(LOG_FOOD);
 
 	const [search, setSearch] = useState("");
@@ -118,6 +166,20 @@ export default function LogFood() {
 			runSearch({ variables: { query: text } });
 		}
 	};
+
+	const isSearching = search.trim().length > 1;
+
+	const displayedFoods = isSearching
+		? (data?.searchFoods ?? [])
+		: activeTab === "recent"
+			? (recentData?.recentFoods ?? [])
+			: (myFoodsData?.myFoods ?? []);
+
+	const listLoading = isSearching
+		? loading
+		: activeTab === "recent"
+			? recentLoading
+			: myFoodsLoading;
 
 	const qty = parseFloat(quantity) || 0;
 
@@ -309,8 +371,22 @@ export default function LogFood() {
 			bounces={false}
 			showsVerticalScrollIndicator={false}
 		>
-			<Text style={commonStyles.heading}>What did you eat?</Text>
+			<View style={styles.headingRow}>
+				<Text style={commonStyles.heading}>What did you eat?</Text>
 
+				<TouchableOpacity
+					style={styles.createFoodButton}
+					// onPress={() => router.push("/create-food")}
+				>
+					<Ionicons
+						name="add-circle-outline"
+						size={20}
+						color={colors.primary}
+					/>
+
+					<Text style={styles.createFoodText}>Create Food</Text>
+				</TouchableOpacity>
+			</View>
 			<View style={commonStyles.menuContainer}>
 				<TextInput
 					value={search}
@@ -319,14 +395,48 @@ export default function LogFood() {
 					placeholderTextColor={colors.placeholder}
 					style={commonStyles.searchInput}
 				/>
+
+				{!isSearching && (
+					<View style={styles.tabHeader}>
+						<View style={styles.tabs}>
+							<Pressable
+								style={[styles.tab, activeTab === "recent" && styles.activeTab]}
+								onPress={() => setActiveTab("recent")}
+							>
+								<Text
+									style={[
+										styles.tabText,
+										activeTab === "recent" && styles.activeTabText,
+									]}
+								>
+									Recent
+								</Text>
+							</Pressable>
+
+							<Pressable
+								style={[styles.tab, activeTab === "my" && styles.activeTab]}
+								onPress={() => setActiveTab("my")}
+							>
+								<Text
+									style={[
+										styles.tabText,
+										activeTab === "my" && styles.activeTabText,
+									]}
+								>
+									My Foods
+								</Text>
+							</Pressable>
+						</View>
+					</View>
+				)}
 			</View>
 
 			<View style={commonStyles.menuContainer}>
-				{loading ? (
+				{listLoading ? (
 					<Text style={commonStyles.cardText}>Loading foods...</Text>
 				) : (
 					<FlatList
-						data={data?.searchFoods ?? []}
+						data={displayedFoods}
 						keyExtractor={(item, index) => item.id ?? `${item.name}-${index}`}
 						scrollEnabled={false}
 						renderItem={({ item }) => (
@@ -340,6 +450,7 @@ export default function LogFood() {
 									color="#666"
 									style={styles.resultIcon}
 								/>
+
 								<View style={styles.resultTextContainer}>
 									<Text
 										style={styles.resultName}
@@ -347,6 +458,7 @@ export default function LogFood() {
 									>
 										{item.name}
 									</Text>
+
 									{item.brands && item.brands.length > 0 && (
 										<Text
 											style={styles.resultBrand}
@@ -355,12 +467,14 @@ export default function LogFood() {
 											{item.brands.join(", ")}
 										</Text>
 									)}
+
 									<Text style={styles.resultSubtitle}>
 										{Math.round(item.calories)} cal ·{" "}
 										{Math.round(item.proteinG)}g protein{" "}
 										{item.servingSize ? `/ Per ${item.servingSize}` : null}
 									</Text>
 								</View>
+
 								<Ionicons
 									name="chevron-forward"
 									size={16}
@@ -369,9 +483,13 @@ export default function LogFood() {
 							</TouchableOpacity>
 						)}
 						ListEmptyComponent={
-							search.length > 1 && !loading ? (
-								<Text style={commonStyles.cardText}>No results</Text>
-							) : null
+							<Text style={commonStyles.cardText}>
+								{isSearching
+									? "No results"
+									: activeTab === "recent"
+										? "No recent foods"
+										: "No saved foods"}
+							</Text>
 						}
 					/>
 				)}
@@ -457,5 +575,58 @@ const styles = StyleSheet.create({
 	resultBrand: {
 		fontSize: 12,
 		color: colors.textSecondary,
+	},
+
+	tabs: {
+		flexDirection: "row",
+		marginTop: 12,
+		borderBottomWidth: 1,
+		borderBottomColor: "#E5E5EA",
+	},
+
+	tab: {
+		flex: 1,
+		alignItems: "center",
+		paddingVertical: 10,
+		borderBottomWidth: 2,
+		borderBottomColor: "transparent",
+	},
+
+	activeTab: {
+		borderBottomColor: colors.primary,
+	},
+
+	tabText: {
+		fontSize: 14,
+		color: colors.textSecondary,
+		fontWeight: "500",
+	},
+
+	activeTabText: {
+		color: colors.primary,
+		fontWeight: "600",
+	},
+
+	tabHeader: {
+		gap: 10,
+	},
+
+	headingRow: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "space-between",
+		marginBottom: 12,
+	},
+
+	createFoodButton: {
+		flexDirection: "row",
+		alignItems: "center",
+		gap: 5,
+	},
+
+	createFoodText: {
+		fontSize: 14,
+		fontWeight: "600",
+		color: colors.primary,
 	},
 });
