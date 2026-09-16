@@ -7,32 +7,68 @@ from strawberry.types import Info
 from database import SessionLocal
 from gql.context import require_user
 from gql.inputs import FoodInput
-from gql.types import FoodLog, FoodSearchResult, MealType
+from gql.types import FoodLog, FoodSearchResult, FoodSource, MealType
 from models import Food as FoodModel
 from models import FoodLog as FoodLogModel
-from openfoodfacts import search_foods
+from USDAFoodSearch import search_foods
 
 
 @strawberry.type
 class FoodQuery:
     @strawberry.field
-    def search_foods(self, query: str, limit: int = 30) -> list[FoodSearchResult]:
-        raw_results = search_foods(query, limit)
+    def search_foods(
+        self, info: Info, query: str, limit: int = 15
+    ) -> list[FoodSearchResult]:
+        current_user = info.context[
+            "current_user"
+        ]  # optional — search works logged out too
 
-        return [
-            FoodSearchResult(
-                name=r["name"],
-                brands=r["brands"],
-                barcode=r["barcode"],
-                calories=r["calories"],
-                protein_g=r["protein_g"],
-                carbs_g=r["carbs_g"],
-                fat_g=r["fat_g"],
-                fiber_g=r["fiber_g"],
-                sodium_mg=r["sodium_mg"],
-            )
-            for r in raw_results
-        ]
+        db = SessionLocal()
+        try:
+            my_foods = []
+            if current_user is not None:
+                db_foods = (
+                    db.execute(
+                        select(FoodModel)
+                        .where(
+                            FoodModel.name.ilike(f"%{query}%"),
+                            FoodModel.created_by_user_id
+                            == current_user.id,  # ONLY explicit My Foods
+                        )
+                        .order_by(FoodModel.created_at.desc())
+                        .limit(limit)
+                    )
+                    .scalars()
+                    .all()
+                )
+                my_foods = [
+                    FoodSearchResult(
+                        id=strawberry.ID(str(f.id)),
+                        name=f.name,
+                        brands=None,
+                        calories=f.calories,
+                        protein_g=f.protein_g,
+                        carbs_g=f.carbs_g,
+                        fat_g=f.fat_g,
+                        fiber_g=f.fiber_g,
+                        sodium_mg=f.sodium_mg,
+                        serving_size=f.serving_size,
+                        source=FoodSource.YOUR_FOODS,
+                    )
+                    for f in db_foods
+                ]
+
+            remaining = limit - len(my_foods)
+            external = []
+            if remaining > 0:
+                raw = search_foods(query, remaining)
+                external = [
+                    FoodSearchResult(**r, source=FoodSource.DATABASE) for r in raw
+                ]
+
+            return my_foods + external
+        finally:
+            db.close()
 
     @strawberry.field
     def food_logs(self, info: Info, log_date: date | None = None) -> list[FoodLog]:

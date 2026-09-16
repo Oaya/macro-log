@@ -1,5 +1,8 @@
 FROM python:3.12-slim
 
+# Force stdout/stderr to be unbuffered so print()/logs show up in
+# `docker compose logs -f` immediately instead of being block-buffered.
+ENV PYTHONUNBUFFERED=1
 
 # Where our code lives inside the container
 WORKDIR /app
