@@ -82,7 +82,7 @@ const TYPE_ICON: Record<string, keyof typeof Ionicons.glyphMap> = {
 	FLEXIBILITY: "body",
 };
 
-export default function LogWorkoutScreen() {
+export default function LogWorkout() {
 	const { data, loading } = useQuery(EXERCISES);
 	const [logWorkout, { loading: saving }] = useMutation(LOG_WORKOUT);
 
@@ -116,6 +116,7 @@ export default function LogWorkoutScreen() {
 		setReps("");
 		setWeight("");
 		setDuration("");
+		setSelected(null);
 	};
 
 	const handleLog = async () => {
@@ -139,7 +140,6 @@ export default function LogWorkoutScreen() {
 				calories ? `~${Math.round(calories)} cal burned` : "Workout saved",
 			);
 			resetForm();
-			setSelected(null);
 		} catch (e: any) {
 			Alert.alert("Error", e.message);
 		}
@@ -149,26 +149,26 @@ export default function LogWorkoutScreen() {
 	if (selected) {
 		return (
 			<ScrollView style={commonStyles.container}>
-				<View style={styles.header}>
+				<View style={commonStyles.header}>
 					<Ionicons
 						name={TYPE_ICON[selected.type] ?? "fitness"}
 						size={20}
-						color="#4bb7e1"
-						style={styles.headerIcon}
+						color={colors.primary}
+						style={commonStyles.headerIcon}
 					/>
-					<Text style={styles.headerTitle}>{selected.name}</Text>
+					<Text style={commonStyles.headerTitle}>{selected.name}</Text>
 					<TouchableOpacity onPress={() => setSelected(null)}>
-						<Text style={styles.changeText}>Back</Text>
+						<Text style={commonStyles.changeText}>Back</Text>
 					</TouchableOpacity>
 				</View>
 
-				<View style={styles.menuContainer}>
+				<View style={commonStyles.menuContainer}>
 					<Text style={commonStyles.sectionHeading}>Workout</Text>
 					{isStrength ? (
 						<View>
-							<View style={styles.row}>
+							<View style={commonStyles.row}>
 								<View style={commonStyles.leftContainer}>
-									<Text style={styles.label}>Sets</Text>
+									<Text style={commonStyles.label}>Sets</Text>
 								</View>
 
 								<View style={commonStyles.inputInlineWrapper}>
@@ -176,15 +176,15 @@ export default function LogWorkoutScreen() {
 										value={sets}
 										onChangeText={setSets}
 										keyboardType="numeric"
-										placeholderTextColor="#C7C7CC"
-										style={styles.input}
+										placeholderTextColor={colors.placeholder}
+										style={commonStyles.input}
 									/>
 								</View>
 							</View>
 
-							<View style={styles.row}>
+							<View style={commonStyles.row}>
 								<View style={commonStyles.leftContainer}>
-									<Text style={styles.label}>Reps </Text>
+									<Text style={commonStyles.label}>Reps </Text>
 								</View>
 
 								<View style={commonStyles.inputInlineWrapper}>
@@ -192,15 +192,15 @@ export default function LogWorkoutScreen() {
 										value={reps}
 										onChangeText={setReps}
 										keyboardType="numeric"
-										placeholderTextColor="#C7C7CC"
-										style={styles.input}
+										placeholderTextColor={colors.placeholder}
+										style={commonStyles.input}
 									/>
 								</View>
 							</View>
 
-							<View style={styles.row}>
+							<View style={commonStyles.row}>
 								<View style={commonStyles.leftContainer}>
-									<Text style={styles.label}>Weight</Text>
+									<Text style={commonStyles.label}>Weight</Text>
 								</View>
 
 								<View style={commonStyles.inputInlineWrapper}>
@@ -208,15 +208,15 @@ export default function LogWorkoutScreen() {
 										value={weight}
 										onChangeText={setWeight}
 										keyboardType="numeric"
-										placeholderTextColor="#C7C7CC"
-										style={styles.input}
+										placeholderTextColor={colors.placeholder}
+										style={commonStyles.input}
 									/>
 								</View>
 							</View>
 
-							<View style={styles.row}>
+							<View style={commonStyles.row}>
 								<View style={commonStyles.leftContainer}>
-									<Text style={styles.label}>Weight Type</Text>
+									<Text style={commonStyles.label}>Weight Type</Text>
 								</View>
 
 								<View style={styles.optionGroup}>
@@ -228,15 +228,17 @@ export default function LogWorkoutScreen() {
 												commonStyles.optionPill,
 												{
 													borderColor:
-														weightType === option ? "#4bb7e1" : "#ccc",
+														weightType === option ? colors.primary : "#ccc",
 													backgroundColor:
-														weightType === option ? "#4bb7e1" : "#fff",
+														weightType === option
+															? colors.primary
+															: colors.card,
 												},
 											]}
 										>
 											<Text
 												style={{
-													color: weightType === option ? "#fff" : "#000",
+													color: weightType === option ? colors.card : "#000",
 												}}
 											>
 												{option}
@@ -247,17 +249,17 @@ export default function LogWorkoutScreen() {
 							</View>
 						</View>
 					) : (
-						<View style={styles.row}>
+						<View style={commonStyles.row}>
 							<View style={commonStyles.leftContainer}>
-								<Text style={styles.label}>Duration (minutes)</Text>
+								<Text style={commonStyles.label}>Duration (minutes)</Text>
 							</View>
 
 							<View style={commonStyles.inputInlineWrapper}>
 								<TextInput
-									style={styles.input}
+									style={commonStyles.input}
 									value={duration}
 									keyboardType="decimal-pad"
-									placeholderTextColor="#C7C7CC"
+									placeholderTextColor={colors.placeholder}
 									onChangeText={setDuration}
 								/>
 
@@ -267,7 +269,7 @@ export default function LogWorkoutScreen() {
 					)}
 				</View>
 
-				<View style={styles.menuContainer}>
+				<View style={commonStyles.menuContainer}>
 					<Text style={commonStyles.sectionHeading}>Date</Text>
 
 					<Pressable
@@ -278,7 +280,7 @@ export default function LogWorkoutScreen() {
 						<Ionicons
 							name="chevron-down"
 							size={14}
-							color="#8E8E93"
+							color={colors.textSecondary}
 						/>
 					</Pressable>
 				</View>
@@ -314,13 +316,13 @@ export default function LogWorkoutScreen() {
 		>
 			<Text style={commonStyles.heading}>What workout did you do?</Text>
 
-			<View style={styles.menuContainer}>
+			<View style={commonStyles.menuContainer}>
 				<TextInput
 					value={search}
 					onChangeText={setSearch}
 					placeholder="Search exercises..."
-					placeholderTextColor="#C7C7CC"
-					style={styles.searchInput}
+					placeholderTextColor={colors.placeholder}
+					style={commonStyles.searchInput}
 				/>
 
 				<View style={styles.filters}>
@@ -346,9 +348,9 @@ export default function LogWorkoutScreen() {
 				</View>
 			</View>
 
-			<View style={styles.menuContainer}>
+			<View style={commonStyles.menuContainer}>
 				{loading ? (
-					<Text style={styles.cardText}>Loading exercises...</Text>
+					<Text style={commonStyles.cardText}>Loading exercises...</Text>
 				) : (
 					<FlatList
 						data={filteredExercises}
@@ -357,19 +359,19 @@ export default function LogWorkoutScreen() {
 						renderItem={({ item }) => (
 							<TouchableOpacity
 								onPress={() => setSelected(item)}
-								style={styles.row}
+								style={styles.exerciseRow}
 							>
 								<Ionicons
 									name={TYPE_ICON[item.type] ?? "fitness"}
 									size={18}
-									color="#8E8E93"
+									color={colors.textSecondary}
 									style={styles.exerciseIcon}
 								/>
 								<Text style={styles.exerciseName}>{item.name}</Text>
 							</TouchableOpacity>
 						)}
 						ListEmptyComponent={
-							<Text style={styles.cardText}>No exercises found</Text>
+							<Text style={commonStyles.cardText}>No exercises found</Text>
 						}
 					/>
 				)}
@@ -379,30 +381,7 @@ export default function LogWorkoutScreen() {
 }
 
 const styles = StyleSheet.create({
-	menuContainer: { ...commonStyles.card, marginBottom: 16 },
-	header: {
-		flexDirection: "row",
-		alignItems: "center",
-		marginBottom: 20,
-	},
-	headerIcon: { marginRight: 8 },
-	headerTitle: { fontSize: 18, fontWeight: "600", flex: 1, color: colors.textPrimary },
-	changeText: { color: colors.primary, fontSize: 14 },
-	row: { ...rowLayout, gap: 10 },
-	label: { fontSize: 15, color: colors.textPrimary, fontWeight: "500", marginBottom: 4 },
-	cardText: { fontSize: 15, color: colors.textSecondary, paddingVertical: 14 },
-
-	input: {
-		fontSize: 15,
-		color: colors.textPrimary,
-		backgroundColor: colors.background,
-		borderRadius: 6,
-		paddingHorizontal: 10,
-		paddingVertical: 8,
-		flex: 0,
-		width: 90,
-	},
-
+	exerciseRow: { ...rowLayout, gap: 10 },
 	optionGroup: {
 		flexDirection: "row",
 		justifyContent: "flex-end",
@@ -417,16 +396,6 @@ const styles = StyleSheet.create({
 
 	submitButton: { ...commonStyles.saveButton, height: 48, marginTop: 12 },
 	submitButtonText: commonStyles.saveButtonText,
-	searchInput: {
-		fontSize: 15,
-		color: colors.textPrimary,
-		backgroundColor: colors.background,
-		borderRadius: 8,
-		paddingHorizontal: 12,
-		paddingVertical: 10,
-		marginTop: 16,
-		marginBottom: 12,
-	},
 	filters: {
 		flexDirection: "row",
 		justifyContent: "space-between",

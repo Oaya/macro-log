@@ -1,11 +1,12 @@
-import { TypedDocumentNode, gql } from "@apollo/client";
-import { useMutation, useQuery } from "@apollo/client/react";
-import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
 import { DatePickerModal } from "@/components/date-picker-modal";
 import { formatDateToISO, parseISODate } from "@/lib/date";
 import { colors } from "@/styles/colors";
 import { commonStyles } from "@/styles/common";
+import { profileStyles } from "@/styles/profile";
+import { TypedDocumentNode, gql } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client/react";
+import { Ionicons } from "@expo/vector-icons";
+import { useState } from "react";
 import {
 	ActivityIndicator,
 	Alert,
@@ -16,7 +17,6 @@ import {
 	Platform,
 	Pressable,
 	ScrollView,
-	StyleSheet,
 	Text,
 	TouchableOpacity,
 	View,
@@ -132,9 +132,7 @@ export default function Profile() {
 	const [unit, setUnit] = useState<string>("METRIC");
 	const [heightPickerVisible, setHeightPickerVisible] = useState(false);
 	const [dobPickerVisible, setDobPickerVisible] = useState(false);
-	const [initializedMe, setInitializedMe] = useState<MeData["me"] | null>(
-		null,
-	);
+	const [initializedMe, setInitializedMe] = useState<MeData["me"] | null>(null);
 
 	// Initialize local state when Apollo data loads
 	if (meData?.me && meData.me !== initializedMe) {
@@ -233,15 +231,15 @@ export default function Profile() {
 				bounces={false}
 				showsVerticalScrollIndicator={false}
 			>
-				<View style={styles.avatarBlock}>
+				<View style={profileStyles.avatarBlock}>
 					<Image
 						source={{
 							uri: "https://plus.unsplash.com/premium_photo-1739786996040-32bde1db0610?w=500&auto=format&fit=crop&q=60",
 						}}
-						style={styles.avatar}
+						style={profileStyles.avatar}
 					/>
-					<Text style={styles.name}>{meData?.me.username}</Text>
-					<Text style={styles.joined}>
+					<Text style={profileStyles.name}>{meData?.me.username}</Text>
+					<Text style={profileStyles.joined}>
 						Member since{" "}
 						{meData?.me.createdAt
 							? new Date(meData.me.createdAt).toISOString().split("T")[0]
@@ -249,7 +247,7 @@ export default function Profile() {
 					</Text>
 				</View>
 
-				<View style={styles.detailsCard}>
+				<View style={profileStyles.detailsCard}>
 					{/* Email Row */}
 					<View style={commonStyles.row}>
 						<View style={commonStyles.leftContainer}>
@@ -281,7 +279,7 @@ export default function Profile() {
 								<Ionicons
 									name="chevron-down"
 									size={14}
-									color="#8E8E93"
+									color={colors.textSecondary}
 								/>
 							</Pressable>
 						) : (
@@ -311,7 +309,7 @@ export default function Profile() {
 								<Ionicons
 									name="chevron-down"
 									size={14}
-									color="#8E8E93"
+									color={colors.textSecondary}
 								/>
 							</Pressable>
 						) : (
@@ -331,23 +329,24 @@ export default function Profile() {
 							<Text style={commonStyles.label}>Sex</Text>
 						</View>
 						{isEditing ? (
-							<View style={styles.optionGroup}>
+							<View style={profileStyles.optionGroup}>
 								{(["MALE", "FEMALE"] as const).map((option) => (
 									<Pressable
 										key={option}
 										onPress={() => setSex(option)}
 										style={[
 											commonStyles.optionPill,
-											{
-												borderColor: sex === option ? "#4bb7e1" : "#ccc",
-												backgroundColor: sex === option ? "#4bb7e1" : "#fff",
-											},
+											sex === option
+												? profileStyles.pillSelected
+												: profileStyles.pillUnselected,
 										]}
 									>
 										<Text
-											style={{
-												color: sex === option ? "#fff" : "#000",
-											}}
+											style={
+												sex === option
+													? profileStyles.pillTextSelected
+													: profileStyles.pillTextUnselected
+											}
 										>
 											{option}
 										</Text>
@@ -371,23 +370,24 @@ export default function Profile() {
 							<Text style={commonStyles.label}>Unit Preference</Text>
 						</View>
 						{isEditing ? (
-							<View style={styles.optionGroup}>
+							<View style={profileStyles.optionGroup}>
 								{(["METRIC", "IMPERIAL"] as const).map((option) => (
 									<Pressable
 										key={option}
 										onPress={() => setUnit(option)}
 										style={[
 											commonStyles.optionPill,
-											{
-												borderColor: unit === option ? "#4bb7e1" : "#ccc",
-												backgroundColor: unit === option ? "#4bb7e1" : "#fff",
-											},
+											unit === option
+												? profileStyles.pillSelected
+												: profileStyles.pillUnselected,
 										]}
 									>
 										<Text
-											style={{
-												color: unit === option ? "#fff" : "#000",
-											}}
+											style={
+												unit === option
+													? profileStyles.pillTextSelected
+													: profileStyles.pillTextUnselected
+											}
 										>
 											{option}
 										</Text>
@@ -408,7 +408,7 @@ export default function Profile() {
 
 				{/*  Dynamic Footer Action Layout */}
 				{isEditing ? (
-					<View style={commonStyles.editActionsContainer}>
+					<View style={commonStyles.submitActionsContainer}>
 						<TouchableOpacity
 							style={[commonStyles.actionButton, commonStyles.cancelButton]}
 							onPress={handleCancel}
@@ -432,10 +432,10 @@ export default function Profile() {
 					</View>
 				) : (
 					<TouchableOpacity
-						style={commonStyles.editButton}
+						style={commonStyles.submitButton}
 						onPress={() => setIsEditing(true)}
 					>
-						<Text style={commonStyles.editButtonText}>Edit Profile</Text>
+						<Text style={commonStyles.submitButtonText}>Edit Profile</Text>
 					</TouchableOpacity>
 				)}
 			</ScrollView>
@@ -504,15 +504,3 @@ export default function Profile() {
 		</KeyboardAvoidingView>
 	);
 }
-
-const styles = StyleSheet.create({
-	avatarBlock: { alignItems: "center", marginTop: 20, marginBottom: 24 },
-	avatar: { width: 100, height: 100, borderRadius: 50, marginBottom: 12 },
-	name: { fontSize: 22, fontWeight: "700", color: colors.textPrimary },
-	joined: { fontSize: 13, color: colors.textSecondary, marginTop: 4 },
-	detailsCard: { ...commonStyles.card, marginBottom: 24 },
-	optionGroup: {
-		flexDirection: "row",
-		gap: 4,
-	},
-});

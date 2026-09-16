@@ -1,7 +1,7 @@
-import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
 import { colors } from "@/styles/colors";
 import { commonStyles } from "@/styles/common";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function Log() {
@@ -14,7 +14,7 @@ export default function Log() {
 			<View style={styles.menuContainer}>
 				<TouchableOpacity
 					style={styles.menuItem}
-					// onPress={() => router.push("/(tabs)/log/food")}
+					onPress={() => router.push("/(tabs)/log/food")}
 				>
 					<View style={[commonStyles.iconBg, { backgroundColor: "#FFF3E0" }]}>
 						<Ionicons

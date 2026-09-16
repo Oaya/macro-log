@@ -1,13 +1,16 @@
+
+import { colors } from "@/styles/colors";
 import { DateTimePicker } from "@expo/ui/community/datetime-picker";
-import {
-	Modal,
-	Platform,
-	Pressable,
-	StyleSheet,
-	Text,
-	TouchableOpacity,
-	View,
-} from "react-native";
+import
+    {
+        Modal,
+        Platform,
+        Pressable,
+        StyleSheet,
+        Text,
+        TouchableOpacity,
+        View,
+    } from "react-native";
 
 type DatePickerModalProps = {
 	visible: boolean;
@@ -94,7 +97,7 @@ const styles = StyleSheet.create({
 	},
 
 	sheet: {
-		backgroundColor: "#FFF",
+		backgroundColor: colors.card,
 		borderTopLeftRadius: 16,
 		borderTopRightRadius: 16,
 		maxHeight: "60%",
@@ -108,18 +111,18 @@ const styles = StyleSheet.create({
 		paddingVertical: 14,
 		paddingHorizontal: 20,
 		borderBottomWidth: 1,
-		borderBottomColor: "#F2F2F7",
+		borderBottomColor: colors.border,
 	},
 
 	title: {
 		fontSize: 16,
 		fontWeight: "600",
-		color: "#1A1A1A",
+		color: colors.textPrimary,
 	},
 
 	doneText: {
 		fontSize: 16,
 		fontWeight: "600",
-		color: "#4bb7e1",
+		color: colors.primary,
 	},
 });

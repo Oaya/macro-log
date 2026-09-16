@@ -79,7 +79,7 @@ export default function More() {
 				</View>
 				<Ionicons
 					name="chevron-forward"
-					color="#C7C7CC"
+					color={colors.placeholder}
 					size={20}
 				/>
 			</TouchableOpacity>
@@ -102,7 +102,7 @@ export default function More() {
 					<Text style={styles.menuText}>Calorie & Goals</Text>
 					<Ionicons
 						name="chevron-forward"
-						color="#C7C7CC"
+						color={colors.placeholder}
 						size={18}
 					/>
 				</TouchableOpacity>
@@ -118,7 +118,7 @@ export default function More() {
 					<Text style={styles.menuText}>Weight Goals</Text>
 					<Ionicons
 						name="chevron-forward"
-						color="#C7C7CC"
+						color={colors.placeholder}
 						size={18}
 					/>
 				</TouchableOpacity> */}
@@ -131,12 +131,15 @@ export default function More() {
 					<View style={[styles.iconBg, { backgroundColor: "#FFEBEE" }]}>
 						<Ionicons
 							name="log-out"
-							color="#FF3B30"
+							color={colors.danger}
 							size={20}
 						/>
 					</View>
 					<Text
-						style={[styles.menuText, { color: colors.danger, fontWeight: "600" }]}
+						style={[
+							styles.menuText,
+							{ color: colors.danger, fontWeight: "600" },
+						]}
 					>
 						Log Out
 					</Text>
@@ -193,5 +196,10 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		marginRight: 12,
 	},
-	menuText: { fontSize: 15, fontWeight: "500", color: colors.textPrimary, flex: 1 },
+	menuText: {
+		fontSize: 15,
+		fontWeight: "500",
+		color: colors.textPrimary,
+		flex: 1,
+	},
 });

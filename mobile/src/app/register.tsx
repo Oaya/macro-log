@@ -1,4 +1,5 @@
 import { useAuth } from "@/lib/auth-context";
+import { authStyles } from "@/styles/auth";
 import { gql, TypedDocumentNode } from "@apollo/client";
 import { useMutation } from "@apollo/client/react";
 import { useRouter } from "expo-router";
@@ -51,18 +52,8 @@ export default function Register() {
 	};
 
 	return (
-		<View
-			style={{
-				flex: 1,
-				padding: 20,
-				paddingTop: 80,
-				gap: 12,
-				backgroundColor: "#fff",
-			}}
-		>
-			<Text style={{ fontSize: 28, fontWeight: "bold", marginBottom: 20 }}>
-				Create your account
-			</Text>
+		<View style={authStyles.container}>
+			<Text style={authStyles.title}>Create your account</Text>
 			<TextInput
 				placeholder="Email"
 				placeholderTextColor="#888"
@@ -70,13 +61,7 @@ export default function Register() {
 				onChangeText={setEmail}
 				autoCapitalize="none"
 				keyboardType="email-address"
-				style={{
-					borderWidth: 1,
-					borderColor: "#ccc",
-					padding: 12,
-					borderRadius: 8,
-					color: "#000",
-				}}
+				style={authStyles.input}
 			/>
 			<TextInput
 				placeholder="Username"
@@ -84,13 +69,7 @@ export default function Register() {
 				value={username}
 				onChangeText={setUsername}
 				autoCapitalize="none"
-				style={{
-					borderWidth: 1,
-					borderColor: "#ccc",
-					padding: 12,
-					borderRadius: 8,
-					color: "#000",
-				}}
+				style={authStyles.input}
 			/>
 			<TextInput
 				placeholder="Password"
@@ -98,25 +77,14 @@ export default function Register() {
 				value={password}
 				onChangeText={setPassword}
 				secureTextEntry
-				style={{
-					borderWidth: 1,
-					borderColor: "#ccc",
-					padding: 12,
-					borderRadius: 8,
-					color: "#000",
-				}}
+				style={authStyles.input}
 			/>
 			<Pressable
 				onPress={handleRegister}
 				disabled={loading}
-				style={{
-					backgroundColor: "#000",
-					padding: 16,
-					borderRadius: 8,
-					alignItems: "center",
-				}}
+				style={authStyles.button}
 			>
-				<Text style={{ color: "#fff", fontWeight: "bold" }}>
+				<Text style={authStyles.buttonText}>
 					{loading ? "Creating..." : "Sign up"}
 				</Text>
 			</Pressable>

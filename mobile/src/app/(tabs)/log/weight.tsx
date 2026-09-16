@@ -51,7 +51,7 @@ const RECORD_WEIGHT = gql`
 	}
 `;
 
-export default function Weight() {
+export default function LogWeight() {
 	const [recordWeight, { loading: creating }] = useMutation(RECORD_WEIGHT);
 	const { data: meData, loading, error, refetch } = useQuery(ME);
 
@@ -156,20 +156,16 @@ export default function Weight() {
 
 						<View style={commonStyles.inputInlineWrapper}>
 							<TextInput
-								style={[
-									commonStyles.input,
-									{
-										flex: 0,
-										width: 90,
-									},
-								]}
+								style={commonStyles.input}
 								value={weight}
 								keyboardType="decimal-pad"
-								placeholderTextColor="#C7C7CC"
+								placeholderTextColor={colors.placeholder}
 								onChangeText={setWeight}
 							/>
 
-							<Text style={commonStyles.inputSuffix}>{isImperial ? "lb" : "kg"}</Text>
+							<Text style={commonStyles.inputSuffix}>
+								{isImperial ? "lb" : "kg"}
+							</Text>
 						</View>
 					</View>
 
@@ -186,18 +182,18 @@ export default function Weight() {
 							<Ionicons
 								name="chevron-down"
 								size={14}
-								color="#8E8E93"
+								color={colors.textSecondary}
 							/>
 						</Pressable>
 					</View>
 				</View>
 
 				<TouchableOpacity
-					style={commonStyles.editButton}
+					style={commonStyles.submitButton}
 					onPress={handleSave}
 					disabled={creating}
 				>
-					<Text style={commonStyles.editButtonText}>
+					<Text style={commonStyles.submitButtonText}>
 						{creating ? "Saving..." : "Record Weight"}
 					</Text>
 				</TouchableOpacity>

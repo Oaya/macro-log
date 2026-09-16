@@ -267,17 +267,11 @@ export default function SetGoal() {
 						{isEditing ? (
 							<View style={commonStyles.inputInlineWrapper}>
 								<TextInput
-									style={[
-										commonStyles.input,
-										{
-											flex: 0,
-											width: 90,
-										},
-									]}
+									style={commonStyles.input}
 									value={startWeight}
 									keyboardType="decimal-pad"
 									placeholder={isImperial ? "130.0" : "60.0"}
-									placeholderTextColor="#C7C7CC"
+									placeholderTextColor={colors.placeholder}
 									onChangeText={setStartWeight}
 								/>
 
@@ -301,17 +295,11 @@ export default function SetGoal() {
 						{isEditing ? (
 							<View style={commonStyles.inputInlineWrapper}>
 								<TextInput
-									style={[
-										commonStyles.input,
-										{
-											flex: 0,
-											width: 90,
-										},
-									]}
+									style={commonStyles.input}
 									value={targetWeight}
 									keyboardType="decimal-pad"
 									placeholder={isImperial ? "120.0" : "55.0"}
-									placeholderTextColor="#C7C7CC"
+									placeholderTextColor={colors.placeholder}
 									onChangeText={setTargetWeight}
 								/>
 
@@ -343,7 +331,7 @@ export default function SetGoal() {
 								<Ionicons
 									name="chevron-down"
 									size={14}
-									color="#8E8E93"
+									color={colors.textSecondary}
 								/>
 							</Pressable>
 						) : (
@@ -374,7 +362,7 @@ export default function SetGoal() {
 								<Ionicons
 									name="chevron-down"
 									size={14}
-									color="#8E8E93"
+									color={colors.textSecondary}
 								/>
 							</Pressable>
 						) : (
@@ -419,7 +407,7 @@ export default function SetGoal() {
 
 				{/* Actions */}
 				{isEditing ? (
-					<View style={commonStyles.editActionsContainer}>
+					<View style={commonStyles.submitActionsContainer}>
 						<TouchableOpacity
 							style={[commonStyles.actionButton, commonStyles.cancelButton]}
 							onPress={handleCancel}
@@ -434,7 +422,7 @@ export default function SetGoal() {
 						>
 							{updating ? (
 								<ActivityIndicator
-									color="#FFF"
+									color={colors.card}
 									size="small"
 								/>
 							) : (
@@ -444,10 +432,10 @@ export default function SetGoal() {
 					</View>
 				) : (
 					<TouchableOpacity
-						style={commonStyles.editButton}
+						style={commonStyles.submitButton}
 						onPress={() => setIsEditing(true)}
 					>
-						<Text style={commonStyles.editButtonText}>Edit Goal</Text>
+						<Text style={commonStyles.submitButtonText}>Edit Goal</Text>
 					</TouchableOpacity>
 				)}
 			</ScrollView>

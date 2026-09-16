@@ -32,12 +32,55 @@ export const commonStyles = {
 		borderRadius: 12,
 		paddingHorizontal: 16,
 	},
-	row: { ...rowLayout, justifyContent: "space-between" as const, gap: 16, minHeight: 56 },
+	menuContainer: {
+		backgroundColor: colors.card,
+		borderRadius: 12,
+		paddingHorizontal: 16,
+		marginBottom: 16,
+	},
+	header: {
+		flexDirection: "row" as const,
+		alignItems: "center" as const,
+		marginBottom: 20,
+	},
+	headerIcon: { marginRight: 8 },
+	headerTitle: {
+		fontSize: 18,
+		fontWeight: "600" as const,
+		flex: 1,
+		color: colors.textPrimary,
+	},
+	changeText: { color: colors.primary, fontSize: 14 },
+	cardText: {
+		fontSize: 15,
+		color: colors.textSecondary,
+		paddingVertical: 14,
+	},
+	searchInput: {
+		fontSize: 15,
+		color: colors.textPrimary,
+		backgroundColor: colors.background,
+		borderRadius: 8,
+		paddingHorizontal: 12,
+		paddingVertical: 10,
+		marginTop: 16,
+		marginBottom: 12,
+	},
+	row: {
+		...rowLayout,
+		justifyContent: "space-between" as const,
+		gap: 16,
+		minHeight: 56,
+	},
 	leftContainer: {
 		flexDirection: "row" as const,
 		alignItems: "center" as const,
 	},
-	label: { fontSize: 15, color: colors.textPrimary, fontWeight: "500" as const },
+	label: {
+		fontSize: 15,
+		color: colors.textPrimary,
+		fontWeight: "500" as const,
+	},
 	value: {
 		fontSize: 15,
 		color: colors.textSecondary,
@@ -52,7 +95,8 @@ export const commonStyles = {
 		paddingHorizontal: 10,
 		paddingVertical: 6,
 		textAlign: "right" as const,
-		flex: 1,
+		flex: 0,
+		width: 90,
 		maxWidth: "65%" as const,
 	},
 	inputInlineWrapper: {
@@ -77,7 +121,7 @@ export const commonStyles = {
 		alignItems: "center" as const,
 		marginRight: 12,
 	},
-	editButton: {
+	submitButton: {
 		backgroundColor: colors.primary,
 		height: 48,
 		borderRadius: 10,
@@ -85,8 +129,8 @@ export const commonStyles = {
 		alignItems: "center" as const,
 		marginBottom: 40,
 	},
-	editButtonText: { ...boldText16, color: colors.card },
-	editActionsContainer: {
+	submitButtonText: { ...boldText16, color: colors.card },
+	submitActionsContainer: {
 		flexDirection: "row" as const,
 		justifyContent: "space-between" as const,
 		marginBottom: 40,
@@ -122,7 +166,14 @@ export const commonStyles = {
 	},
 	modalTitle: { ...boldText16, color: colors.textPrimary },
 	modalDoneText: { ...boldText16, color: colors.primary },
-	modalOptionRow: { height: 44, justifyContent: "center" as const, paddingHorizontal: 20 },
+	modalOptionRow: {
+		height: 44,
+		justifyContent: "center" as const,
+		paddingHorizontal: 20,
+	},
 	modalOptionText: { fontSize: 16, color: colors.textPrimary },
-	modalOptionTextSelected: { color: colors.primary, fontWeight: "600" as const },
+	modalOptionTextSelected: {
+		color: colors.primary,
+		fontWeight: "600" as const,
+	},
 };
