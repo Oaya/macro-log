@@ -22,8 +22,10 @@ class FoodQuery:
         return [
             FoodSearchResult(
                 name=r["name"],
+                brand=r["brand"],
                 barcode=r["barcode"],
                 serving_size=r["serving_size"],
+                quantity=r["quantity"],
                 calories=r["calories"],
                 protein_g=r["protein_g"],
                 carbs_g=r["carbs_g"],

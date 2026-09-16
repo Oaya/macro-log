@@ -20,8 +20,10 @@ import {
 
 type FoodResult = {
 	name: string;
+	brand: string | null;
 	barcode: string | null;
 	servingSize: string | null;
+	quantity: number | null;
 	calories: number;
 	proteinG: number;
 	carbsG: number;
@@ -54,8 +56,10 @@ const SEARCH_FOODS: TypedDocumentNode<SearchData> = gql`
 	query SearchFoods($query: String!) {
 		searchFoods(query: $query, limit: 30) {
 			name
+			brand
 			barcode
 			servingSize
+			quantity
 			calories
 			proteinG
 			carbsG
@@ -298,7 +302,7 @@ export default function LogFood() {
 		);
 	}
 
-	//  Step 1: search + pick an exercise
+	//  Step 1: search + pick a food
 	return (
 		<ScrollView
 			style={commonStyles.container}
@@ -312,7 +316,7 @@ export default function LogFood() {
 					value={search}
 					onChangeText={handleSearch}
 					placeholder="Search foods..."
-					placeholderTextColor="#C7C7CC"
+					placeholderTextColor={colors.placeholder}
 					style={commonStyles.searchInput}
 				/>
 			</View>

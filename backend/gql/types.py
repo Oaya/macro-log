@@ -79,8 +79,10 @@ class BodyWeight:
 @strawberry.type
 class FoodSearchResult:
     name: str
+    brand: str | None
     barcode: str | None
     serving_size: str | None
+    quantity: float | None
     calories: float
     protein_g: float
     carbs_g: float
