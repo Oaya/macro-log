@@ -24,8 +24,6 @@ class FoodQuery:
                 name=r["name"],
                 brands=r["brands"],
                 barcode=r["barcode"],
-                serving_size=r["serving_size"],
-                quantity=r["quantity"],
                 calories=r["calories"],
                 protein_g=r["protein_g"],
                 carbs_g=r["carbs_g"],
@@ -91,7 +89,6 @@ class FoodMutation:
             # snapshot the food into our foods table.
             db_food = FoodModel(
                 name=food.name,
-                serving_size=food.serving_size,
                 calories=food.calories,
                 protein_g=food.protein_g,
                 carbs_g=food.carbs_g,

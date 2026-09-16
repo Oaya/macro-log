@@ -81,8 +81,6 @@ class FoodSearchResult:
     name: str
     brands: list[str] | None
     barcode: str | None
-    serving_size: str | None
-    quantity: str | None
     calories: float
     protein_g: float
     carbs_g: float

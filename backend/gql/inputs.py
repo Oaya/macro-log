@@ -4,7 +4,6 @@ import strawberry
 @strawberry.input
 class FoodInput:
     name: str
-    serving_size: str | None = None
     calories: float
     protein_g: float
     carbs_g: float

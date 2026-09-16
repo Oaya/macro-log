@@ -22,8 +22,6 @@ type FoodResult = {
 	name: string;
 	brands: string[] | null;
 	barcode: string | null;
-	servingSize: string | null;
-	quantity: string | null;
 	calories: number;
 	proteinG: number;
 	carbsG: number;
@@ -39,7 +37,6 @@ type LogFoodData = {
 type LogFoodVariables = {
 	food: {
 		name: string;
-		servingSize: string | null;
 		calories: number;
 		proteinG: number;
 		carbsG: number;
@@ -58,8 +55,6 @@ const SEARCH_FOODS: TypedDocumentNode<SearchData> = gql`
 			name
 			brands
 			barcode
-			servingSize
-			quantity
 			calories
 			proteinG
 			carbsG
@@ -108,7 +103,7 @@ export default function LogFood() {
 
 	const [datePickerVisible, setDatePickerVisible] = useState(false);
 	const [date, setDate] = useState(formatDateToISO(new Date()));
-	const [quantity, setQuantity] = useState("1");
+	const [quantity, setQuantity] = useState("100");
 	const [mealType, setMealType] =
 		useState<(typeof MEAL_TYPES)[number]>(defaultMealType());
 
@@ -119,9 +114,9 @@ export default function LogFood() {
 		}
 	};
 
-	console.log("data", data);
-
-	const qty = parseFloat(quantity) || 0;
+	// Open Food Facts nutriments are per 100g, so scale by grams / 100.
+	const grams = parseFloat(quantity) || 0;
+	const qty = grams / 100;
 
 	const preview = useMemo(() => {
 		if (!selected) return null;
@@ -135,7 +130,7 @@ export default function LogFood() {
 
 	const resetForm = () => {
 		setSelected(null);
-		setQuantity("1");
+		setQuantity("100");
 		setMealType(defaultMealType());
 	};
 
@@ -150,7 +145,6 @@ export default function LogFood() {
 				variables: {
 					food: {
 						name: selected.name,
-						servingSize: selected.servingSize,
 						calories: selected.calories,
 						proteinG: selected.proteinG,
 						carbsG: selected.carbsG,
@@ -216,7 +210,7 @@ export default function LogFood() {
 					<View>
 						<View style={commonStyles.row}>
 							<View style={commonStyles.leftContainer}>
-								<Text style={commonStyles.label}>Serving</Text>
+								<Text style={commonStyles.label}>Amount (g)</Text>
 							</View>
 
 							<View style={commonStyles.inputInlineWrapper}>
@@ -351,9 +345,17 @@ export default function LogFood() {
 									>
 										{item.name}
 									</Text>
+									{item.brands && item.brands.length > 0 && (
+										<Text
+											style={styles.resultBrand}
+											numberOfLines={1}
+										>
+											{item.brands.join(", ")}
+										</Text>
+									)}
 									<Text style={styles.resultSubtitle}>
 										{Math.round(item.calories)} cal ·{" "}
-										{Math.round(item.proteinG)}g protein
+										{Math.round(item.proteinG)}g protein / 100g
 									</Text>
 								</View>
 								<Ionicons
@@ -446,6 +448,10 @@ const styles = StyleSheet.create({
 		fontWeight: "500",
 	},
 	resultSubtitle: {
+		fontSize: 12,
+		color: colors.textSecondary,
+	},
+	resultBrand: {
 		fontSize: 12,
 		color: colors.textSecondary,
 	},
