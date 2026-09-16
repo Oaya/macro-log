@@ -3,7 +3,7 @@ import { formatDateToISO, parseISODate } from "@/lib/date";
 import { displayWeightToKg, kgToDisplayWeight } from "@/lib/units";
 import { colors } from "@/styles/colors";
 import { commonStyles } from "@/styles/common";
-import { gql, TypedDocumentNode } from "@apollo/client";
+import { ME_WEIGHT, RECORD_WEIGHT } from "@/graphql/user";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
@@ -21,39 +21,9 @@ import {
 	View,
 } from "react-native";
 
-type MeData = {
-	me: { id: string; unitPreference: string };
-	latestBodyWeight: {
-		weightKg: number;
-		recordedDate: string;
-	};
-};
-
-const ME: TypedDocumentNode<MeData> = gql`
-	query {
-		me {
-			id
-			unitPreference
-		}
-		latestBodyWeight {
-			weightKg
-			recordedDate
-		}
-	}
-`;
-
-const RECORD_WEIGHT = gql`
-	mutation RecordWeight($weightKg: Float!, $recordedDate: Date!) {
-		recordWeight(weightKg: $weightKg, recordedDate: $recordedDate) {
-			weightKg
-			recordedDate
-		}
-	}
-`;
-
 export default function LogWeight() {
 	const [recordWeight, { loading: creating }] = useMutation(RECORD_WEIGHT);
-	const { data: meData, loading, error, refetch } = useQuery(ME);
+	const { data: meData, loading, error, refetch } = useQuery(ME_WEIGHT);
 
 	const [datePickerVisible, setDatePickerVisible] = useState(false);
 

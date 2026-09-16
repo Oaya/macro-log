@@ -1,29 +1,9 @@
 import { useAuth } from "@/lib/auth-context";
-import { gql, TypedDocumentNode } from "@apollo/client";
+import { LOGIN } from "@/graphql/auth";
 import { useMutation } from "@apollo/client/react";
 import { Link, useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, Pressable, Text, TextInput, View } from "react-native";
-
-type LoginData = {
-	login: { token: string; user: { email: string } };
-};
-
-type LoginVariables = {
-	email: string;
-	password: string;
-};
-
-const LOGIN: TypedDocumentNode<LoginData, LoginVariables> = gql`
-	mutation Login($email: String!, $password: String!) {
-		login(email: $email, password: $password) {
-			token
-			user {
-				email
-			}
-		}
-	}
-`;
 
 export default function Login() {
 	const [email, setEmail] = useState("");

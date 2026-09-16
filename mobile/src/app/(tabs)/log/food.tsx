@@ -2,10 +2,17 @@ import { DatePickerModal } from "@/components/date-picker-modal";
 import { formatDateToISO, parseISODate } from "@/lib/date";
 import { colors } from "@/styles/colors";
 import { commonStyles, rowLayout } from "@/styles/common";
-import { gql, TypedDocumentNode } from "@apollo/client";
+import {
+	FoodResult,
+	LOG_FOOD,
+	MY_FOODS,
+	RECENT_FOODS,
+	SEARCH_FOODS,
+} from "@/graphql/food";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client/react";
 import { Ionicons } from "@expo/vector-icons";
-import { useMemo, useState } from "react";
+import { router, useLocalSearchParams } from "expo-router";
+import { useEffect, useMemo, useState } from "react";
 
 import {
 	Alert,
@@ -19,120 +26,6 @@ import {
 	View,
 } from "react-native";
 
-type FoodResult = {
-	name: string;
-	brands: string[] | null;
-	id: string | null;
-	calories: number;
-	proteinG: number;
-	carbsG: number;
-	fatG: number;
-	fiberG: number | null;
-	sodiumMg: number | null;
-	source: "YOUR_FOODS" | "DATABASE" | "RECENT";
-	servingSize: string | null;
-};
-type SearchData = { searchFoods: FoodResult[] };
-
-type RecentFoodsData = {
-	recentFoods: FoodResult[];
-};
-
-type MyFoodsData = {
-	myFoods: FoodResult[];
-};
-
-type LogFoodData = {
-	logFood: { foodName: string; calories: number };
-};
-type LogFoodVariables = {
-	food: {
-		name: string;
-		servingSize: string | null;
-		calories: number;
-		proteinG: number;
-		carbsG: number;
-		fatG: number;
-		fiberG: number | null;
-		sodiumMg: number | null;
-	};
-	quantity: number;
-	mealType: (typeof MEAL_TYPES)[number];
-	logDate: string;
-};
-
-const SEARCH_FOODS: TypedDocumentNode<SearchData> = gql`
-	query SearchFoods($query: String!) {
-		searchFoods(query: $query, limit: 100) {
-			name
-			brands
-			id
-			calories
-			proteinG
-			carbsG
-			fatG
-			fiberG
-			sodiumMg
-			source
-			servingSize
-		}
-	}
-`;
-
-const RECENT_FOODS: TypedDocumentNode<RecentFoodsData> = gql`
-	query RecentFoods {
-		recentFoods(limit: 100) {
-			id
-			name
-			brands
-			calories
-			proteinG
-			carbsG
-			fatG
-			fiberG
-			sodiumMg
-			source
-			servingSize
-		}
-	}
-`;
-
-const MY_FOODS: TypedDocumentNode<MyFoodsData> = gql`
-	query MyFoods {
-		myFoods(limit: 100) {
-			id
-			name
-			brands
-			calories
-			proteinG
-			carbsG
-			fatG
-			fiberG
-			sodiumMg
-			source
-			servingSize
-		}
-	}
-`;
-const LOG_FOOD: TypedDocumentNode<LogFoodData, LogFoodVariables> = gql`
-	mutation LogFood(
-		$food: FoodInput!
-		$quantity: Float!
-		$mealType: MealType!
-		$logDate: Date
-	) {
-		logFood(
-			food: $food
-			quantity: $quantity
-			mealType: $mealType
-			logDate: $logDate
-		) {
-			foodName
-			calories
-		}
-	}
-`;
-
 const MEAL_TYPES = ["BREAKFAST", "LUNCH", "DINNER", "SNACK"] as const;
 
 function defaultMealType(): (typeof MEAL_TYPES)[number] {
@@ -144,6 +37,8 @@ function defaultMealType(): (typeof MEAL_TYPES)[number] {
 }
 
 export default function LogFood() {
+	const params = useLocalSearchParams<{ createdFood?: string }>();
+
 	const [activeTab, setActiveTab] = useState<"recent" | "my">("recent");
 	const [runSearch, { data, loading }] = useLazyQuery(SEARCH_FOODS);
 	const { data: recentData, loading: recentLoading } = useQuery(RECENT_FOODS);
@@ -153,6 +48,22 @@ export default function LogFood() {
 
 	const [search, setSearch] = useState("");
 	const [selected, setSelected] = useState<FoodResult | null>(null);
+
+	const [handledCreatedFood, setHandledCreatedFood] = useState<
+		string | undefined
+	>(undefined);
+	if (params.createdFood && params.createdFood !== handledCreatedFood) {
+		setHandledCreatedFood(params.createdFood);
+		try {
+			setSelected(JSON.parse(params.createdFood));
+		} catch {}
+	}
+
+	useEffect(() => {
+		if (handledCreatedFood !== undefined) {
+			router.setParams({ createdFood: undefined });
+		}
+	}, [handledCreatedFood]);
 
 	const [datePickerVisible, setDatePickerVisible] = useState(false);
 	const [date, setDate] = useState(formatDateToISO(new Date()));
@@ -301,15 +212,15 @@ export default function LogFood() {
 										style={[
 											commonStyles.optionPill,
 											mealType === option
-												? styles.mealOptionPillSelected
-												: styles.mealOptionPillUnselected,
+												? commonStyles.optionPillSelected
+												: commonStyles.optionPillUnselected,
 										]}
 									>
 										<Text
 											style={
 												mealType === option
-													? styles.mealOptionTextSelected
-													: styles.mealOptionTextUnselected
+													? commonStyles.optionPillTextSelected
+													: commonStyles.optionPillTextUnselected
 											}
 										>
 											{option}
@@ -372,20 +283,24 @@ export default function LogFood() {
 			showsVerticalScrollIndicator={false}
 		>
 			<View style={styles.headingRow}>
-				<Text style={commonStyles.heading}>What did you eat?</Text>
+				<View style={styles.headingRow}>
+					<Text style={[commonStyles.heading, styles.headingInRow]}>
+						What did you eat?
+					</Text>
 
-				<TouchableOpacity
-					style={styles.createFoodButton}
-					// onPress={() => router.push("/create-food")}
-				>
-					<Ionicons
-						name="add-circle-outline"
-						size={20}
-						color={colors.primary}
-					/>
+					<TouchableOpacity
+						style={styles.createFoodButton}
+						onPress={() => router.push("/(tabs)/log/create-food")}
+					>
+						<Ionicons
+							name="add-circle-outline"
+							size={20}
+							color={colors.primary}
+						/>
 
-					<Text style={styles.createFoodText}>Create Food</Text>
-				</TouchableOpacity>
+						<Text style={styles.createFoodText}>Create Food</Text>
+					</TouchableOpacity>
+				</View>
 			</View>
 			<View style={commonStyles.menuContainer}>
 				<TextInput
@@ -396,39 +311,43 @@ export default function LogFood() {
 					style={commonStyles.searchInput}
 				/>
 
-				{!isSearching && (
-					<View style={styles.tabHeader}>
-						<View style={styles.tabs}>
-							<Pressable
-								style={[styles.tab, activeTab === "recent" && styles.activeTab]}
-								onPress={() => setActiveTab("recent")}
+				<View style={styles.tabHeader}>
+					<View style={styles.tabs}>
+						<Pressable
+							style={[styles.tab, activeTab === "recent" && styles.activeTab]}
+							onPress={() => {
+								setActiveTab("recent");
+								setSearch("");
+							}}
+						>
+							<Text
+								style={[
+									styles.tabText,
+									activeTab === "recent" && styles.activeTabText,
+								]}
 							>
-								<Text
-									style={[
-										styles.tabText,
-										activeTab === "recent" && styles.activeTabText,
-									]}
-								>
-									Recent
-								</Text>
-							</Pressable>
+								Recent
+							</Text>
+						</Pressable>
 
-							<Pressable
-								style={[styles.tab, activeTab === "my" && styles.activeTab]}
-								onPress={() => setActiveTab("my")}
+						<Pressable
+							style={[styles.tab, activeTab === "my" && styles.activeTab]}
+							onPress={() => {
+								setActiveTab("my");
+								setSearch("");
+							}}
+						>
+							<Text
+								style={[
+									styles.tabText,
+									activeTab === "my" && styles.activeTabText,
+								]}
 							>
-								<Text
-									style={[
-										styles.tabText,
-										activeTab === "my" && styles.activeTabText,
-									]}
-								>
-									My Foods
-								</Text>
-							</Pressable>
-						</View>
+								My Foods
+							</Text>
+						</Pressable>
 					</View>
-				)}
+				</View>
 			</View>
 
 			<View style={commonStyles.menuContainer}>
@@ -544,20 +463,6 @@ const styles = StyleSheet.create({
 		fontSize: 10,
 		color: colors.textSecondary,
 	},
-	mealOptionPillSelected: {
-		borderColor: colors.primary,
-		backgroundColor: colors.primary,
-	},
-	mealOptionPillUnselected: {
-		borderColor: "#ccc",
-		backgroundColor: colors.card,
-	},
-	mealOptionTextSelected: {
-		color: colors.card,
-	},
-	mealOptionTextUnselected: {
-		color: colors.textPrimary,
-	},
 	resultIcon: {
 		marginRight: 10,
 	},
@@ -615,7 +520,12 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "space-between",
-		marginBottom: 12,
+		marginBottom: 16,
+	},
+
+	headingInRow: {
+		marginBottom: 0,
+		flex: 1,
 	},
 
 	createFoodButton: {

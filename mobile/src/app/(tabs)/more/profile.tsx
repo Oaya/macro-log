@@ -3,7 +3,7 @@ import { formatDateToISO, parseISODate } from "@/lib/date";
 import { colors } from "@/styles/colors";
 import { commonStyles } from "@/styles/common";
 import { profileStyles } from "@/styles/profile";
-import { TypedDocumentNode, gql } from "@apollo/client";
+import { ME_PROFILE, MeProfileData, UPDATE_PROFILE } from "@/graphql/user";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
@@ -69,59 +69,10 @@ const findNearestOptionIndex = (options: HeightOption[], cm: number) => {
 	return nearestIndex;
 };
 
-type MeData = {
-	me: {
-		id: string;
-		email: string;
-		username: string;
-		createdAt: string;
-		heightCm: number | null;
-		dateOfBirth: string | null;
-		sex: string | null;
-		unitPreference: string;
-	};
-};
-
-const ME: TypedDocumentNode<MeData> = gql`
-	query GetMe {
-		me {
-			id
-			email
-			username
-			createdAt
-			heightCm
-			dateOfBirth
-			sex
-			unitPreference
-		}
-	}
-`;
-
-const UPDATE_PROFILE = gql`
-	mutation UpdateProfile(
-		$heightCm: Float
-		$sex: Sex
-		$dateOfBirth: Date
-		$unitPreference: UnitPreference
-	) {
-		updateProfile(
-			heightCm: $heightCm
-			sex: $sex
-			dateOfBirth: $dateOfBirth
-			unitPreference: $unitPreference
-		) {
-			heightCm
-			dateOfBirth
-			sex
-			unitPreference
-		}
-	}
-`;
-
 export default function Profile() {
-	const { data: meData, loading, error } = useQuery(ME);
+	const { data: meData, loading, error } = useQuery(ME_PROFILE);
 	const [updateProfile, { loading: updating }] = useMutation(UPDATE_PROFILE, {
-		refetchQueries: [{ query: ME }],
+		refetchQueries: [{ query: ME_PROFILE }],
 	});
 
 	// Local State Management for Editing
@@ -132,7 +83,9 @@ export default function Profile() {
 	const [unit, setUnit] = useState<string>("METRIC");
 	const [heightPickerVisible, setHeightPickerVisible] = useState(false);
 	const [dobPickerVisible, setDobPickerVisible] = useState(false);
-	const [initializedMe, setInitializedMe] = useState<MeData["me"] | null>(null);
+	const [initializedMe, setInitializedMe] = useState<
+		MeProfileData["me"] | null
+	>(null);
 
 	// Initialize local state when Apollo data loads
 	if (meData?.me && meData.me !== initializedMe) {

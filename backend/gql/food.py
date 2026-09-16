@@ -70,7 +70,8 @@ class FoodQuery:
         finally:
             db.close()
 
-    def recent_foods(self, info: Info, limit: int = 20) -> list[FoodSearchResult]:
+    @strawberry.field
+    def recent_foods(self, info: Info, limit: int = 100) -> list[FoodSearchResult]:
         current_user = require_user(info)
         db = SessionLocal()
 
@@ -90,10 +91,10 @@ class FoodQuery:
             seen = set()
             results = []
             for log in recent_logs:
-                if log.food.id in seen:
+                if log.food.name in seen:
                     continue
 
-                seen.add(log.food.id)
+                seen.add(log.food.name)
 
                 results.append(
                     FoodSearchResult(
@@ -114,6 +115,44 @@ class FoodQuery:
                 if len(results) >= limit:
                     break
 
+            return results
+        finally:
+            db.close()
+
+    @strawberry.field
+    def my_foods(self, info: Info, limit: int = 100) -> list[FoodSearchResult]:
+        current_user = require_user(info)
+        db = SessionLocal()
+
+        try:
+            # distinct foods from your recent logs, most recent first
+            my_foods = (
+                db.execute(
+                    select(FoodModel)
+                    .where(FoodModel.created_by_user_id == current_user.id)
+                    .order_by(FoodModel.created_at.desc())
+                    .limit(limit)
+                )
+                .scalars()
+                .all()
+            )
+
+            results = [
+                FoodSearchResult(
+                    id=strawberry.ID(str(f.id)),
+                    name=f.name,
+                    brands=None,
+                    calories=f.calories,
+                    protein_g=f.protein_g,
+                    carbs_g=f.carbs_g,
+                    fat_g=f.fat_g,
+                    fiber_g=f.fiber_g,
+                    sodium_mg=f.sodium_mg,
+                    serving_size=f.serving_size,
+                    source=FoodSource.YOUR_FOODS,
+                )
+                for f in my_foods
+            ]
             return results
         finally:
             db.close()
@@ -216,6 +255,7 @@ class FoodMutation:
         finally:
             db.close()
 
+    @strawberry.mutation
     def create_food(
         self,
         info: Info,
@@ -253,9 +293,7 @@ class FoodMutation:
             return FoodSearchResult(
                 name=db_food.name,
                 brands=None,
-                id=str(
-                    db_food.id
-                ),  # matches whatever field your USDA results use for identifying a food — adjust if named differently
+                id=str(db_food.id),
                 serving_size=db_food.serving_size,
                 calories=db_food.calories,
                 protein_g=db_food.protein_g,

@@ -16,6 +16,15 @@ export const boldText16 = {
 	fontWeight: "600" as const,
 };
 
+export const submitButtonBase = {
+	backgroundColor: colors.primary,
+	height: 48,
+	borderRadius: 10,
+	justifyContent: "center" as const,
+	alignItems: "center" as const,
+	marginBottom: 40,
+};
+
 export const commonStyles = {
 	container: { flex: 1, backgroundColor: colors.background, padding: 20 },
 	heading: { fontSize: 20, fontWeight: "bold" as const, marginBottom: 28 },
@@ -114,6 +123,16 @@ export const commonStyles = {
 	},
 	dropdownTriggerText: { fontSize: 15, color: colors.textPrimary },
 	optionPill: { padding: 6, borderRadius: 8, borderWidth: 1 },
+	optionPillSelected: {
+		borderColor: colors.primary,
+		backgroundColor: colors.primary,
+	},
+	optionPillUnselected: {
+		borderColor: "#ccc",
+		backgroundColor: colors.card,
+	},
+	optionPillTextSelected: { color: colors.card },
+	optionPillTextUnselected: { color: colors.textPrimary },
 	iconBg: {
 		width: 36,
 		height: 36,
@@ -122,14 +141,8 @@ export const commonStyles = {
 		alignItems: "center" as const,
 		marginRight: 12,
 	},
-	submitButton: {
-		backgroundColor: colors.primary,
-		height: 48,
-		borderRadius: 10,
-		justifyContent: "center" as const,
-		alignItems: "center" as const,
-		marginBottom: 40,
-	},
+	submitButton: submitButtonBase,
+	submitButtonTight: { ...submitButtonBase, marginTop: 12 },
 	submitButtonText: { ...boldText16, color: colors.card },
 	submitActionsContainer: {
 		flexDirection: "row" as const,

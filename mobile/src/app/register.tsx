@@ -1,31 +1,10 @@
 import { useAuth } from "@/lib/auth-context";
 import { authStyles } from "@/styles/auth";
-import { gql, TypedDocumentNode } from "@apollo/client";
+import { REGISTER } from "@/graphql/auth";
 import { useMutation } from "@apollo/client/react";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, Pressable, Text, TextInput, View } from "react-native";
-
-type RegisterData = {
-	register: { token: string; user: { email: string } };
-};
-
-type RegisterVariables = {
-	email: string;
-	username: string;
-	password: string;
-};
-
-const REGISTER: TypedDocumentNode<RegisterData, RegisterVariables> = gql`
-	mutation Register($email: String!, $username: String!, $password: String!) {
-		register(email: $email, username: $username, password: $password) {
-			token
-			user {
-				email
-			}
-		}
-	}
-`;
 
 export default function Register() {
 	const [email, setEmail] = useState("");

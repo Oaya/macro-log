@@ -1,7 +1,7 @@
 import { useAuth } from "@/lib/auth-context";
 import { colors } from "@/styles/colors";
 import { commonStyles } from "@/styles/common";
-import { gql, TypedDocumentNode } from "@apollo/client";
+import { ME_ACCOUNT } from "@/graphql/user";
 import { useQuery } from "@apollo/client/react";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -15,22 +15,8 @@ import {
 	View,
 } from "react-native";
 
-type MeData = {
-	me: { id: string; email: string; username: string };
-};
-
-const ME: TypedDocumentNode<MeData> = gql`
-	query {
-		me {
-			id
-			email
-			username
-		}
-	}
-`;
-
 export default function More() {
-	const { data: meData, loading, error } = useQuery(ME);
+	const { data: meData, loading, error } = useQuery(ME_ACCOUNT);
 	const router = useRouter();
 	const { logout } = useAuth();
 

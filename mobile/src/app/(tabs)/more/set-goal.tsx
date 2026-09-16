@@ -1,9 +1,9 @@
 import { DatePickerModal } from "@/components/date-picker-modal";
+import { GOAL, SET_WEIGHT_GOAL } from "@/graphql/goal";
 import { formatDateToISO, parseISODate } from "@/lib/date";
 import { displayWeightToKg, kgToDisplayWeight } from "@/lib/units";
 import { colors } from "@/styles/colors";
 import { commonStyles } from "@/styles/common";
-import { TypedDocumentNode, gql } from "@apollo/client";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
@@ -24,83 +24,6 @@ import {
 } from "react-native";
 
 const ACTIVITY_LEVEL = ["SEDENTARY", "LIGHT", "MODERATE", "ACTIVE"];
-
-type GoalData = {
-	goal: {
-		id: string;
-		dailyCalories: number;
-		proteinG: number;
-		fatG: number;
-		carbsG: number;
-		startWeightKg: number | null;
-		targetWeightKg: number | null;
-		targetDate: string | null;
-		activityLevel: string;
-	} | null;
-	me: {
-		id: string;
-		unitPreference: string;
-	};
-};
-
-type SetWeightGoalData = {
-	setWeightGoal: {
-		startWeightKg: number;
-		targetWeightKg: number;
-		targetDate: string;
-		activityLevel: string;
-	};
-};
-
-type SetWeightGoalVariables = {
-	startWeightKg: number;
-	targetWeightKg: number;
-	targetDate: string;
-	activityLevel: string;
-};
-
-const GOAL: TypedDocumentNode<GoalData> = gql`
-	query GetGoal {
-		goal {
-			dailyCalories
-			proteinG
-			fatG
-			carbsG
-			startWeightKg
-			targetWeightKg
-			targetDate
-			activityLevel
-		}
-		me {
-			id
-			unitPreference
-		}
-	}
-`;
-
-const SET_WEIGHT_GOAL: TypedDocumentNode<
-	SetWeightGoalData,
-	SetWeightGoalVariables
-> = gql`
-	mutation SetWeightGoal(
-		$startWeightKg: Float!
-		$targetWeightKg: Float!
-		$targetDate: Date!
-		$activityLevel: String!
-	) {
-		setWeightGoal(
-			startWeightKg: $startWeightKg
-			targetWeightKg: $targetWeightKg
-			targetDate: $targetDate
-			activityLevel: $activityLevel
-		) {
-			startWeightKg
-			targetWeightKg
-			targetDate
-			activityLevel
-		}
-	}
-`;
 
 export default function SetGoal() {
 	const { data: goalData, loading, error } = useQuery(GOAL);

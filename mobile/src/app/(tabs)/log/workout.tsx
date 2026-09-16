@@ -2,7 +2,7 @@ import { DatePickerModal } from "@/components/date-picker-modal";
 import { formatDateToISO, parseISODate } from "@/lib/date";
 import { colors } from "@/styles/colors";
 import { commonStyles, rowLayout } from "@/styles/common";
-import { gql, TypedDocumentNode } from "@apollo/client";
+import { EXERCISES, Exercise, LOG_WORKOUT } from "@/graphql/workout";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { Ionicons } from "@expo/vector-icons";
 import { useMemo, useState } from "react";
@@ -17,62 +17,6 @@ import {
 	TouchableOpacity,
 	View,
 } from "react-native";
-
-type Exercise = {
-	id: string;
-	name: string;
-	type: string;
-	metValue: number | null;
-};
-type ExercisesData = { exercises: Exercise[] };
-type LogWorkoutData = {
-	logWorkout: { exerciseName: string; caloriesBurned: number | null };
-};
-type LogWorkoutVariables = {
-	exerciseId: string;
-	sets: number | null;
-	reps: number | null;
-	weight: number | null;
-	weightType: string | null;
-	durationMin: number | null;
-	logDate: string;
-};
-
-const EXERCISES: TypedDocumentNode<ExercisesData> = gql`
-	query {
-		exercises {
-			id
-			name
-			type
-			metValue
-		}
-	}
-`;
-
-const LOG_WORKOUT: TypedDocumentNode<LogWorkoutData, LogWorkoutVariables> = gql`
-	mutation LogWorkout(
-		$exerciseId: ID!
-		$sets: Int
-		$reps: Int
-		$weight: Float
-		$weightType: String
-		$durationMin: Int
-		$logDate: Date
-	) {
-		logWorkout(
-			exerciseId: $exerciseId
-			sets: $sets
-			reps: $reps
-			weight: $weight
-			weightType: $weightType
-			durationMin: $durationMin
-			logDate: $logDate
-		) {
-			exerciseName
-			caloriesBurned
-		}
-	}
-`;
 
 const FILTERS = ["ALL", "STRENGTH", "CARDIO", "FLEXIBILITY"] as const;
 
@@ -226,20 +170,17 @@ export default function LogWorkout() {
 											onPress={() => setWeightType(option)}
 											style={[
 												commonStyles.optionPill,
-												{
-													borderColor:
-														weightType === option ? colors.primary : "#ccc",
-													backgroundColor:
-														weightType === option
-															? colors.primary
-															: colors.card,
-												},
+												weightType === option
+													? commonStyles.optionPillSelected
+													: commonStyles.optionPillUnselected,
 											]}
 										>
 											<Text
-												style={{
-													color: weightType === option ? colors.card : "#000",
-												}}
+												style={
+													weightType === option
+														? commonStyles.optionPillTextSelected
+														: commonStyles.optionPillTextUnselected
+												}
 											>
 												{option}
 											</Text>
@@ -288,9 +229,9 @@ export default function LogWorkout() {
 				<TouchableOpacity
 					onPress={handleLog}
 					disabled={saving}
-					style={styles.submitButton}
+					style={commonStyles.submitButtonTight}
 				>
-					<Text style={styles.submitButtonText}>
+					<Text style={commonStyles.submitButtonText}>
 						{saving ? "Saving..." : "Log workout"}
 					</Text>
 				</TouchableOpacity>
@@ -394,8 +335,6 @@ const styles = StyleSheet.create({
 		paddingBottom: 14,
 	},
 
-	submitButton: { ...commonStyles.saveButton, height: 48, marginTop: 12 },
-	submitButtonText: commonStyles.saveButtonText,
 	filters: {
 		flexDirection: "row",
 		justifyContent: "space-between",
