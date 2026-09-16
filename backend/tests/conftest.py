@@ -1,9 +1,12 @@
+import os
 import uuid
 
 import pytest
 from fastapi.testclient import TestClient
 
-from main import app
+os.environ.setdefault("JWT_SECRET", "test-secret-for-local-tests-only")
+
+from main import app  # noqa: E402
 
 
 @pytest.fixture

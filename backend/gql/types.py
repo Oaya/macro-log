@@ -50,6 +50,12 @@ class CaloriesEstimateStatus(enum.Enum):
     NO_BODY_WEIGHT = "NO_BODY_WEIGHT"
 
 
+@strawberry.enum
+class FoodSource(enum.Enum):
+    YOUR_FOODS = "YOUR_FOODS"
+    DATABASE = "DATABASE"
+
+
 @strawberry.type
 class User:
     id: strawberry.ID
@@ -80,13 +86,15 @@ class BodyWeight:
 class FoodSearchResult:
     name: str
     brands: list[str] | None
-    barcode: str | None
+    id: str | None
     calories: float
     protein_g: float
     carbs_g: float
     fat_g: float
     fiber_g: float | None
     sodium_mg: float | None
+    source: FoodSource
+    serving_size: str | None = None
 
 
 @strawberry.type
