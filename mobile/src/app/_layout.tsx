@@ -1,4 +1,5 @@
 import { AuthProvider, useAuth } from "@/lib/auth-context";
+import { commonStyles } from "@/styles/common";
 import { ApolloProvider } from "@apollo/client/react";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { ReactNode, useEffect } from "react";
@@ -7,7 +8,7 @@ import { client } from "../lib/apollo";
 
 function LoadingScreen() {
 	return (
-		<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+		<View style={commonStyles.loadingContainer}>
 			<ActivityIndicator size="large" />
 		</View>
 	);

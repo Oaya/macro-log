@@ -1,4 +1,3 @@
-import { colors } from "@/styles/colors";
 import { commonStyles } from "@/styles/common";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -11,9 +10,9 @@ export default function Log() {
 		<View style={commonStyles.container}>
 			<Text style={commonStyles.heading}>What would you like to log?</Text>
 
-			<View style={styles.menuContainer}>
+			<View style={commonStyles.menuContainer}>
 				<TouchableOpacity
-					style={styles.menuItem}
+					style={commonStyles.menuItem}
 					onPress={() => router.push("/(tabs)/log/food")}
 				>
 					<View style={[commonStyles.iconBg, { backgroundColor: "#FFF3E0" }]}>
@@ -23,7 +22,7 @@ export default function Log() {
 							size={20}
 						/>
 					</View>
-					<Text style={styles.menuText}>Log Food</Text>
+					<Text style={commonStyles.menuText}>Log Food</Text>
 					<Ionicons
 						name="chevron-forward"
 						color="#C7C7CC"
@@ -32,7 +31,7 @@ export default function Log() {
 				</TouchableOpacity>
 
 				<TouchableOpacity
-					style={styles.menuItem}
+					style={commonStyles.menuItem}
 					onPress={() => router.push("/(tabs)/log/workout")}
 				>
 					<View style={[commonStyles.iconBg, { backgroundColor: "#E3F2FD" }]}>
@@ -42,7 +41,7 @@ export default function Log() {
 							size={20}
 						/>
 					</View>
-					<Text style={styles.menuText}>Log Workout</Text>
+					<Text style={commonStyles.menuText}>Log Workout</Text>
 					<Ionicons
 						name="chevron-forward"
 						color="#C7C7CC"
@@ -51,7 +50,7 @@ export default function Log() {
 				</TouchableOpacity>
 
 				<TouchableOpacity
-					style={[styles.menuItem, styles.menuItemLast]}
+					style={[commonStyles.menuItem, styles.menuItemLast]}
 					onPress={() => router.push("/(tabs)/log/weight")}
 				>
 					<View style={[commonStyles.iconBg, { backgroundColor: "#E8F5E9" }]}>
@@ -61,7 +60,7 @@ export default function Log() {
 							size={20}
 						/>
 					</View>
-					<Text style={styles.menuText}>Record Weight</Text>
+					<Text style={commonStyles.menuText}>Record Weight</Text>
 					<Ionicons
 						name="chevron-forward"
 						color="#C7C7CC"
@@ -74,21 +73,7 @@ export default function Log() {
 }
 
 const styles = StyleSheet.create({
-	menuContainer: {
-		backgroundColor: colors.card,
-		borderRadius: 12,
-		paddingVertical: 6,
-	},
-	menuItem: {
-		flexDirection: "row",
-		alignItems: "center",
-		paddingVertical: 12,
-		paddingHorizontal: 16,
-		borderBottomWidth: 1,
-		borderBottomColor: colors.border,
-	},
 	menuItemLast: {
 		borderBottomWidth: 0,
 	},
-	menuText: { flex: 1, fontSize: 16 },
 });

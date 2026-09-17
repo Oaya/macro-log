@@ -1,7 +1,7 @@
+import { ME_ACCOUNT } from "@/graphql/user";
 import { useAuth } from "@/lib/auth-context";
 import { colors } from "@/styles/colors";
 import { commonStyles } from "@/styles/common";
-import { ME_ACCOUNT } from "@/graphql/user";
 import { useQuery } from "@apollo/client/react";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -27,7 +27,7 @@ export default function More() {
 
 	if (loading) {
 		return (
-			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+			<View style={commonStyles.loadingContainer}>
 				<ActivityIndicator size="large" />
 				<Text>Loading...</Text>
 			</View>
@@ -36,15 +36,15 @@ export default function More() {
 
 	if (error) {
 		return (
-			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-				<Text>Error: {error.message}</Text>
+			<View style={commonStyles.errorContainer}>
+				<Text style={commonStyles.errorText}>Error: {error.message}</Text>
 			</View>
 		);
 	}
 
 	return (
 		<ScrollView
-			style={styles.container}
+			style={commonStyles.container}
 			showsVerticalScrollIndicator={false}
 		>
 			{/*  Profile Row */}
@@ -71,11 +71,11 @@ export default function More() {
 			</TouchableOpacity>
 
 			{/*  Menu Options List */}
-			<View style={styles.menuContainer}>
+			<View style={commonStyles.menuContainer}>
 				<Text style={styles.sectionHeading}>Nutrition & Goals</Text>
 
 				<TouchableOpacity
-					style={styles.menuItem}
+					style={commonStyles.menuItem}
 					onPress={() => router.push("/(tabs)/more/set-goal")}
 				>
 					<View style={[styles.iconBg, { backgroundColor: "#E3F2FD" }]}>
@@ -85,7 +85,7 @@ export default function More() {
 							size={20}
 						/>
 					</View>
-					<Text style={styles.menuText}>Calorie & Goals</Text>
+					<Text style={commonStyles.menuText}>Calorie & Goals</Text>
 					<Ionicons
 						name="chevron-forward"
 						color={colors.placeholder}
@@ -111,7 +111,7 @@ export default function More() {
 
 				{/* Logout */}
 				<TouchableOpacity
-					style={[styles.menuItem, styles.logoutItem]}
+					style={[commonStyles.menuItem, styles.logoutItem]}
 					onPress={handleLogout}
 				>
 					<View style={[styles.iconBg, { backgroundColor: "#FFEBEE" }]}>
@@ -123,7 +123,7 @@ export default function More() {
 					</View>
 					<Text
 						style={[
-							styles.menuText,
+							commonStyles.menuText,
 							{ color: colors.danger, fontWeight: "600" },
 						]}
 					>
@@ -136,13 +136,11 @@ export default function More() {
 }
 
 const styles = StyleSheet.create({
-	container: { flex: 1, backgroundColor: colors.background },
 	profileCard: {
 		flexDirection: "row",
 		alignItems: "center",
 		backgroundColor: colors.card,
 		marginTop: 16,
-		marginHorizontal: 16,
 		padding: 16,
 		borderRadius: 12,
 	},
@@ -155,24 +153,8 @@ const styles = StyleSheet.create({
 		fontWeight: "500",
 		marginTop: 2,
 	},
-
-	menuContainer: {
-		backgroundColor: colors.card,
-		borderRadius: 12,
-		marginHorizontal: 16,
-		marginTop: 16,
-		paddingVertical: 6,
-		marginBottom: 30,
-	},
 	sectionHeading: { ...commonStyles.sectionHeading, marginLeft: 16 },
-	menuItem: {
-		flexDirection: "row",
-		alignItems: "center",
-		paddingVertical: 12,
-		paddingHorizontal: 16,
-		borderBottomWidth: 1,
-		borderBottomColor: colors.border,
-	},
+
 	logoutItem: { borderBottomWidth: 0, marginTop: 10 },
 	iconBg: {
 		width: 34,
@@ -181,11 +163,5 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		alignItems: "center",
 		marginRight: 12,
-	},
-	menuText: {
-		fontSize: 15,
-		fontWeight: "500",
-		color: colors.textPrimary,
-		flex: 1,
 	},
 });

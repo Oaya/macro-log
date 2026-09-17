@@ -27,7 +27,58 @@ export const submitButtonBase = {
 
 export const commonStyles = {
 	container: { flex: 1, backgroundColor: colors.background, padding: 20 },
-	heading: { fontSize: 20, fontWeight: "bold" as const, marginBottom: 28 },
+
+	menuContainer: {
+		backgroundColor: colors.card,
+		borderRadius: 12,
+		paddingHorizontal: 16,
+		marginTop: 16,
+		marginBottom: 30,
+	},
+	menuCard: {
+		backgroundColor: colors.card,
+		borderRadius: 12,
+		paddingHorizontal: 16,
+		marginBottom: 16,
+	},
+	menuItem: {
+		flexDirection: "row" as const,
+		alignItems: "center" as const,
+		paddingVertical: 12,
+		paddingHorizontal: 16,
+		borderBottomWidth: 1,
+		borderBottomColor: colors.border,
+	},
+	menuText: {
+		fontSize: 15,
+		fontWeight: "500" as const,
+		color: colors.textPrimary,
+		flex: 1,
+	},
+
+	loadingContainer: {
+		flex: 1,
+		justifyContent: "center" as const,
+		alignItems: "center" as const,
+	},
+	loadingCard: {
+		flex: 1,
+		justifyContent: "center" as const,
+		alignItems: "center" as const,
+	},
+
+	card: {
+		backgroundColor: colors.card,
+		borderRadius: 12,
+		paddingHorizontal: 16,
+	},
+	cardText: {
+		fontSize: 15,
+		color: colors.textSecondary,
+		paddingVertical: 14,
+	},
+
+	heading: { fontSize: 24, fontWeight: "bold" as const, marginBottom: 28 },
 	sectionHeading: {
 		fontSize: 12,
 		fontWeight: "700" as const,
@@ -36,17 +87,7 @@ export const commonStyles = {
 		marginTop: 14,
 		marginBottom: 6,
 	},
-	card: {
-		backgroundColor: colors.card,
-		borderRadius: 12,
-		paddingHorizontal: 16,
-	},
-	menuContainer: {
-		backgroundColor: colors.card,
-		borderRadius: 12,
-		paddingHorizontal: 16,
-		marginBottom: 16,
-	},
+
 	header: {
 		flexDirection: "row" as const,
 		alignItems: "center" as const,
@@ -60,12 +101,23 @@ export const commonStyles = {
 		marginRight: 4,
 		color: colors.textPrimary,
 	},
-	changeText: { color: colors.primary, fontSize: 14 },
-	cardText: {
-		fontSize: 15,
-		color: colors.textSecondary,
-		paddingVertical: 14,
+
+	errorContainer: {
+		flex: 1,
+		justifyContent: "center" as const,
+		alignItems: "center" as const,
+		padding: 20,
 	},
+	errorText: { color: colors.danger, textAlign: "center" as const },
+	errorCard: {
+		flex: 1,
+		justifyContent: "center" as const,
+		alignItems: "center" as const,
+		padding: 20,
+	},
+
+	changeText: { color: colors.primary, fontSize: 14 },
+
 	searchInput: {
 		fontSize: 15,
 		color: colors.textPrimary,
@@ -97,6 +149,7 @@ export const commonStyles = {
 		flexShrink: 1,
 		textAlign: "right" as const,
 	},
+
 	input: {
 		fontSize: 15,
 		color: colors.textPrimary,
@@ -116,6 +169,7 @@ export const commonStyles = {
 		flex: 1,
 	},
 	inputSuffix: { marginLeft: 6, fontSize: 14, color: colors.textSecondary },
+
 	dropdownTrigger: {
 		flexDirection: "row" as const,
 		alignItems: "center" as const,
@@ -127,12 +181,14 @@ export const commonStyles = {
 		borderColor: colors.primary,
 		backgroundColor: colors.primary,
 	},
+
 	optionPillUnselected: {
 		borderColor: "#ccc",
 		backgroundColor: colors.card,
 	},
 	optionPillTextSelected: { color: colors.card },
 	optionPillTextUnselected: { color: colors.textPrimary },
+
 	iconBg: {
 		width: 36,
 		height: 36,
@@ -141,6 +197,7 @@ export const commonStyles = {
 		alignItems: "center" as const,
 		marginRight: 12,
 	},
+
 	submitButton: submitButtonBase,
 	submitButtonTight: { ...submitButtonBase, marginTop: 12 },
 	submitButtonText: { ...boldText16, color: colors.card },
@@ -159,8 +216,10 @@ export const commonStyles = {
 	},
 	cancelButton: { backgroundColor: colors.cancel },
 	cancelButtonText: { ...boldText16, color: colors.cancelText },
+
 	saveButton: { backgroundColor: colors.success },
 	saveButtonText: { ...boldText16, color: colors.card },
+
 	modalBackdrop: {
 		flex: 1,
 		backgroundColor: colors.backdrop,

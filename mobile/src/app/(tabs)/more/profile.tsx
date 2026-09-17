@@ -1,9 +1,9 @@
 import { DatePickerModal } from "@/components/date-picker-modal";
+import { ME_PROFILE, MeProfileData, UPDATE_PROFILE } from "@/graphql/user";
 import { formatDateToISO, parseISODate } from "@/lib/date";
 import { colors } from "@/styles/colors";
 import { commonStyles } from "@/styles/common";
 import { profileStyles } from "@/styles/profile";
-import { ME_PROFILE, MeProfileData, UPDATE_PROFILE } from "@/graphql/user";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
@@ -69,6 +69,10 @@ const findNearestOptionIndex = (options: HeightOption[], cm: number) => {
 	return nearestIndex;
 };
 
+export function getNavOptions() {
+	return { title: "" };
+}
+
 export default function Profile() {
 	const { data: meData, loading, error } = useQuery(ME_PROFILE);
 	const [updateProfile, { loading: updating }] = useMutation(UPDATE_PROFILE, {
@@ -98,7 +102,7 @@ export default function Profile() {
 
 	if (loading) {
 		return (
-			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+			<View style={commonStyles.loadingContainer}>
 				<ActivityIndicator size="large" />
 				<Text style={{ marginTop: 8 }}>Loading...</Text>
 			</View>
@@ -107,17 +111,8 @@ export default function Profile() {
 
 	if (error) {
 		return (
-			<View
-				style={{
-					flex: 1,
-					justifyContent: "center",
-					alignItems: "center",
-					padding: 20,
-				}}
-			>
-				<Text style={{ color: colors.danger, textAlign: "center" }}>
-					Error: {error.message}
-				</Text>
+			<View style={commonStyles.errorContainer}>
+				<Text style={commonStyles.errorText}>Error: {error.message}</Text>
 			</View>
 		);
 	}
@@ -174,6 +169,13 @@ export default function Profile() {
 		parseHeightCm(height),
 	);
 
+	const avatarUri =
+		meData?.me.sex === "FEMALE"
+			? "https://plus.unsplash.com/premium_photo-1739786996040-32bde1db0610?w=500&auto=format&fit=crop&q=60"
+			: meData?.me.sex === "MALE"
+				? "https://images.unsplash.com/photo-1740252117070-7aa2955b25f8?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGF2YXRhcnxlbnwwfHwwfHx8MA%3D%3D"
+				: "https://images.unsplash.com/photo-1655650876411-baf437280c44?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDQyfHx8ZW58MHx8fHx8";
+
 	return (
 		<KeyboardAvoidingView
 			behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -187,7 +189,7 @@ export default function Profile() {
 				<View style={profileStyles.avatarBlock}>
 					<Image
 						source={{
-							uri: "https://plus.unsplash.com/premium_photo-1739786996040-32bde1db0610?w=500&auto=format&fit=crop&q=60",
+							uri: avatarUri,
 						}}
 						style={profileStyles.avatar}
 					/>

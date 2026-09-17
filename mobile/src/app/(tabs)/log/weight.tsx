@@ -1,9 +1,9 @@
 import { DatePickerModal } from "@/components/date-picker-modal";
+import { ME_WEIGHT, RECORD_WEIGHT } from "@/graphql/user";
 import { formatDateToISO, parseISODate } from "@/lib/date";
 import { displayWeightToKg, kgToDisplayWeight } from "@/lib/units";
 import { colors } from "@/styles/colors";
 import { commonStyles } from "@/styles/common";
-import { ME_WEIGHT, RECORD_WEIGHT } from "@/graphql/user";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
@@ -51,28 +51,6 @@ export default function LogWeight() {
 		}
 	}
 
-	if (error) {
-		return (
-			<View
-				style={{
-					flex: 1,
-					justifyContent: "center",
-					alignItems: "center",
-					padding: 20,
-				}}
-			>
-				<Text
-					style={{
-						color: colors.danger,
-						textAlign: "center",
-					}}
-				>
-					Error: {error.message}
-				</Text>
-			</View>
-		);
-	}
-
 	const handleSave = async () => {
 		if (!weight) return Alert.alert("Enter a weight");
 
@@ -91,15 +69,17 @@ export default function LogWeight() {
 
 	if (loading) {
 		return (
-			<View
-				style={{
-					flex: 1,
-					justifyContent: "center",
-					alignItems: "center",
-				}}
-			>
+			<View style={commonStyles.loadingContainer}>
 				<ActivityIndicator size="large" />
 				<Text style={{ marginTop: 8 }}>Loading...</Text>
+			</View>
+		);
+	}
+
+	if (error) {
+		return (
+			<View style={commonStyles.errorContainer}>
+				<Text style={commonStyles.errorText}>Error: {error.message}</Text>
 			</View>
 		);
 	}

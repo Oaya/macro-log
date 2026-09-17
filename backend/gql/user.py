@@ -28,7 +28,9 @@ class UserQuery:
             )
             if recorded_date is not None:
                 query = query.where(BodyWeightModel.recorded_date == recorded_date)
-            query = query.order_by(BodyWeightModel.recorded_date)
+            query = query.order_by(
+                BodyWeightModel.recorded_date.desc(),
+            )
 
             db_weights = db.execute(query).scalars().all()
             return [
