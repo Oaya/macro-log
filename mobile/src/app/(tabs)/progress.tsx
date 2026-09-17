@@ -74,7 +74,9 @@ export default function Progress() {
 				{latest && (
 					<View style={styles.summaryCard}>
 						<Text style={styles.currentWeightLabel}>Current weight</Text>
-						<Text style={styles.currentWeightValue}>{latest.weightKg} kg</Text>
+						<Text style={styles.currentWeightValue}>
+							{kgToDisplayWeight(latest.weightKg, isImperial)} {weightUnit}
+						</Text>
 						{change !== null && bodyWeights.length > 1 && (
 							<View style={styles.changeRow}>
 								{change < 0 ? (
@@ -94,7 +96,8 @@ export default function Progress() {
 									/>
 								)}
 								<Text style={[styles.changeText, { color: trendColor }]}>
-									{Math.abs(change).toFixed(1)} kg since {earliest.recordedDate}
+									{kgToDisplayWeight(Math.abs(change), isImperial)} {weightUnit} since{" "}
+									{earliest.recordedDate}
 								</Text>
 							</View>
 						)}
@@ -151,7 +154,9 @@ export default function Progress() {
 									]}
 								>
 									<Text style={styles.historyDate}>{item.recordedDate}</Text>
-									<Text style={styles.historyWeight}>{item.weightKg} kg</Text>
+									<Text style={styles.historyWeight}>
+										{kgToDisplayWeight(item.weightKg, isImperial)} {weightUnit}
+									</Text>
 								</View>
 							)}
 							ListEmptyComponent={
