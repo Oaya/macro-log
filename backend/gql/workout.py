@@ -75,6 +75,7 @@ class WorkoutQuery:
                 WorkoutLog(
                     id=strawberry.ID(str(w.id)),
                     exercise_name=w.exercise.name,
+                    exercise_type=ExerciseType(w.exercise.type),
                     sets=w.sets,
                     reps=w.reps,
                     weight=w.weight,

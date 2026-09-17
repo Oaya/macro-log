@@ -1,12 +1,17 @@
 import { DatePickerModal } from "@/components/date-picker-modal";
 import { MacroStat } from "@/components/macro-stat";
+import MealHistory from "@/components/meal-history";
+import WorkoutHistory from "@/components/workout-history";
 import { HOME_DATA } from "@/graphql/home";
 import { formatDateToISO, parseISODate } from "@/lib/date";
+import { kgToDisplayWeight } from "@/lib/units";
 import { colors } from "@/styles/colors";
 import { commonStyles } from "@/styles/common";
 import { useQuery } from "@apollo/client/react";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { ChevronDown } from "lucide-react-native";
+
 import moment from "moment";
 import { useState } from "react";
 import {
@@ -30,8 +35,6 @@ export default function Index() {
 		variables: { date: date },
 	});
 
-	console.log("d", data);
-
 	const router = useRouter();
 
 	const today = formatDateToISO(new Date());
@@ -45,6 +48,8 @@ export default function Index() {
 				: date === tomorrow
 					? "Tomorrow"
 					: date;
+
+	const isImperial = data?.me.unitPreference?.toUpperCase() === "IMPERIAL";
 
 	const summary = data?.dailySummary;
 	const goalCalories = summary?.goalCalories ?? null;
@@ -82,10 +87,11 @@ export default function Index() {
 	return (
 		<KeyboardAvoidingView
 			behavior={Platform.OS === "ios" ? "padding" : "height"}
-			style={styles.flex1}
+			style={commonStyles.logRowTextContainer}
 		>
 			<ScrollView
 				style={commonStyles.container}
+				contentContainerStyle={styles.scrollContent}
 				bounces={false}
 				showsVerticalScrollIndicator={false}
 			>
@@ -94,8 +100,7 @@ export default function Index() {
 					onPress={() => setDatePickerVisible(true)}
 				>
 					<Text style={styles.heading}>{displayDate}</Text>
-					<Ionicons
-						name="chevron-down"
+					<ChevronDown
 						size={20}
 						color={colors.textSecondary}
 					/>
@@ -181,130 +186,41 @@ export default function Index() {
 						</View>
 
 						{/* Today's weight */}
-						{data.bodyWeights.length > 0 && (
-							<View
-								style={{
-									flexDirection: "row",
-									alignItems: "center",
-									gap: 10,
-									backgroundColor: "#f5f5f5",
-									borderRadius: 12,
-									padding: 12,
-									marginBottom: 16,
-								}}
-							>
-								<Ionicons
-									name="scale-outline"
-									size={18}
-									color="#34C759"
-								/>
-								<Text style={{ flex: 1, fontSize: 13, color: "#666" }}>
-									Weight logged
-								</Text>
-								<Text style={{ fontSize: 15, fontWeight: "600" }}>
-									{data.bodyWeights[0].weightKg} kg
-								</Text>
-							</View>
-						)}
+
+						<View style={[commonStyles.menuContainer, styles.weightRow]}>
+							<Ionicons
+								name="scale-outline"
+								size={18}
+								color={colors.primary}
+							/>
+							{data.todayBodyWeight ? (
+								<>
+									<Text style={styles.weightLabel}>Weight logged</Text>
+									<Text style={styles.weightValue}>
+										{kgToDisplayWeight(
+											data.todayBodyWeight.weightKg,
+											isImperial,
+										)}{" "}
+										{isImperial ? "lb" : "kg"}
+									</Text>
+								</>
+							) : (
+								<>
+									<Text style={styles.weightLabel}>No weight logged</Text>
+									<TouchableOpacity
+										onPress={() => router.push("/(tabs)/log/weight")}
+									>
+										<Text style={commonStyles.addText}>+ Add</Text>
+									</TouchableOpacity>
+								</>
+							)}
+						</View>
 
 						{/* Meals */}
-						<SectionHeader
-							title="Meals"
-							onAdd={() => router.push("/(tabs)/log/food")}
-						/>
-						<View
-							style={{
-								backgroundColor: "#f5f5f5",
-								borderRadius: 12,
-								paddingHorizontal: 14,
-								marginBottom: 16,
-							}}
-						>
-							{data.foodLogs.length === 0 ? (
-								<Text style={{ color: "#999", paddingVertical: 12 }}>
-									No meals logged
-								</Text>
-							) : (
-								data.foodLogs.map((log, i) => (
-									<View
-										key={log.id}
-										style={{
-											flexDirection: "row",
-											alignItems: "center",
-											gap: 10,
-											paddingVertical: 10,
-											borderBottomWidth: i < data.foodLogs.length - 1 ? 1 : 0,
-											borderBottomColor: "#e5e5e5",
-										}}
-									>
-										<View style={{ flex: 1 }}>
-											<Text style={{ fontSize: 13, fontWeight: "500" }}>
-												{log.foodName}
-											</Text>
-											<Text style={{ fontSize: 11, color: "#999" }}>
-												{log.mealType.charAt(0) +
-													log.mealType.slice(1).toLowerCase()}{" "}
-												· {log.quantity} serving(s)
-											</Text>
-										</View>
-										<Text style={{ fontSize: 12, color: "#666" }}>
-											{Math.round(log.calories)} cal
-										</Text>
-									</View>
-								))
-							)}
-						</View>
+						<MealHistory foodLogs={data.foodLogs} />
 
 						{/* Workouts */}
-						<SectionHeader
-							title="Workouts"
-							onAdd={() => router.push("/(tabs)/log/workout")}
-						/>
-						<View
-							style={{
-								backgroundColor: "#f5f5f5",
-								borderRadius: 12,
-								paddingHorizontal: 14,
-								marginBottom: 20,
-							}}
-						>
-							{data.workoutLogs.length === 0 ? (
-								<Text style={{ color: "#999", paddingVertical: 12 }}>
-									No workouts logged
-								</Text>
-							) : (
-								data.workoutLogs.map((log, i) => (
-									<View
-										key={log.id}
-										style={{
-											flexDirection: "row",
-											alignItems: "center",
-											gap: 10,
-											paddingVertical: 10,
-											borderBottomWidth:
-												i < data.workoutLogs.length - 1 ? 1 : 0,
-											borderBottomColor: "#e5e5e5",
-										}}
-									>
-										<View style={{ flex: 1 }}>
-											<Text style={{ fontSize: 13, fontWeight: "500" }}>
-												{log.exerciseName}
-											</Text>
-											{log.durationMin != null && (
-												<Text style={{ fontSize: 11, color: "#999" }}>
-													{log.durationMin} min
-												</Text>
-											)}
-										</View>
-										{log.caloriesBurned != null && (
-											<Text style={{ fontSize: 12, color: "#666" }}>
-												{Math.round(log.caloriesBurned)} cal
-											</Text>
-										)}
-									</View>
-								))
-							)}
-						</View>
+						<WorkoutHistory workoutLogs={data.workoutLogs} />
 					</>
 				)}
 			</ScrollView>
@@ -352,26 +268,11 @@ function StatRow({
 	);
 }
 
-function SectionHeader({ title, onAdd }: { title: string; onAdd: () => void }) {
-	return (
-		<View
-			style={{
-				flexDirection: "row",
-				justifyContent: "space-between",
-				alignItems: "center",
-				marginBottom: 8,
-			}}
-		>
-			<Text style={{ fontSize: 14, fontWeight: "600" }}>{title}</Text>
-			<TouchableOpacity onPress={onAdd}>
-				<Text style={{ fontSize: 12, color: "#007AFF" }}>+ Add</Text>
-			</TouchableOpacity>
-		</View>
-	);
-}
-
 const styles = StyleSheet.create({
-	flex1: { flex: 1 },
+	scrollContent: { paddingBottom: 100 },
 	loadingText: { marginTop: 8 },
 	heading: { ...commonStyles.heading, marginTop: 30 },
+	weightRow: { flexDirection: "row", alignItems: "center", gap: 10 },
+	weightLabel: { flex: 1, fontSize: 13, color: colors.textSecondary },
+	weightValue: { fontSize: 15, fontWeight: "600" },
 });

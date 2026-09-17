@@ -62,7 +62,7 @@ export default function Progress() {
 	return (
 		<KeyboardAvoidingView
 			behavior={Platform.OS === "ios" ? "padding" : "height"}
-			style={styles.flex1}
+			style={commonStyles.logRowTextContainer}
 		>
 			<ScrollView
 				style={commonStyles.container}
@@ -176,7 +176,6 @@ function StatBox({ label, value }: { label: string; value: string | number }) {
 }
 
 const styles = StyleSheet.create({
-	flex1: { flex: 1 },
 	loadingText: { marginTop: 8 },
 	heading: { ...commonStyles.heading, marginTop: 26 },
 	currentWeightLabel: { fontSize: 13, color: colors.textSecondary },

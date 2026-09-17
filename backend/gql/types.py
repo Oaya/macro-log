@@ -125,6 +125,7 @@ class Exercise:
 class WorkoutLog:
     id: strawberry.ID
     exercise_name: str
+    exercise_type: ExerciseType
     sets: int | None
     reps: int | None
     weight: float | None

@@ -82,6 +82,15 @@ export const commonStyles = {
 		marginTop: 14,
 		marginBottom: 6,
 	},
+	sectionHeadingFlat: { marginTop: 0, marginBottom: 0 },
+	sectionHeaderRow: {
+		flexDirection: "row" as const,
+		justifyContent: "space-between" as const,
+		alignItems: "center" as const,
+		marginTop: 14,
+		marginBottom: 6,
+	},
+	addText: { fontSize: 12, color: colors.primary },
 
 	header: {
 		flexDirection: "row" as const,
@@ -132,6 +141,14 @@ export const commonStyles = {
 		...rowLayout,
 		gap: 10,
 	},
+	logRowTextContainer: { flex: 1 },
+	logRowName: {
+		fontSize: 13,
+		fontWeight: "500" as const,
+		color: colors.textPrimary,
+	},
+	logRowSubtitle: { fontSize: 11, color: colors.textSecondary },
+	logRowValue: { fontSize: 12, color: colors.textSecondary },
 	leftContainer: {
 		flexDirection: "row" as const,
 		alignItems: "center" as const,

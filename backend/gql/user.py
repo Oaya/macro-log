@@ -45,6 +45,33 @@ class UserQuery:
             db.close()
 
     @strawberry.field
+    def today_body_weight(self, info: Info) -> BodyWeight | None:
+        current_user = require_user(info)
+
+        db = SessionLocal()
+
+        try:
+            db_weight = db.execute(
+                select(BodyWeightModel)
+                .where(
+                    BodyWeightModel.user_id == current_user.id,
+                    BodyWeightModel.recorded_date == date.today(),
+                )
+                .limit(1)
+            ).scalar_one_or_none()
+
+            if db_weight is None:
+                return None
+
+            return BodyWeight(
+                id=strawberry.ID(str(db_weight.id)),
+                weight_kg=db_weight.weight_kg,
+                recorded_date=str(db_weight.recorded_date),
+            )
+        finally:
+            db.close()
+
+    @strawberry.field
     def latest_body_weight(self, info: Info) -> BodyWeight | None:
         current_user = require_user(info)
 

@@ -29,13 +29,14 @@ export type HomeData = {
 	workoutLogs: {
 		id: string;
 		exerciseName: string;
+		exerciseType: string;
 		durationMin: number | null;
 		caloriesBurned: number | null;
 	}[];
-	bodyWeights: {
+	todayBodyWeight: {
 		id: string;
 		weightKg: number;
-	}[];
+	};
 };
 
 export const HOME_DATA: TypedDocumentNode<HomeData> = gql`
@@ -66,10 +67,11 @@ export const HOME_DATA: TypedDocumentNode<HomeData> = gql`
 		workoutLogs(logDate: $date) {
 			id
 			exerciseName
+			exerciseType
 			durationMin
 			caloriesBurned
 		}
-		bodyWeights(recordedDate: $date) {
+		todayBodyWeight {
 			id
 			weightKg
 		}
