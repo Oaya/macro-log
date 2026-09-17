@@ -264,4 +264,12 @@ export const commonStyles = {
 		color: colors.primary,
 		fontWeight: "600" as const,
 	},
+
+	deleteAction: {
+		backgroundColor: colors.danger,
+		justifyContent: "center" as const,
+		alignItems: "center" as const,
+		width: 64,
+		borderRadius: 8,
+	},
 };

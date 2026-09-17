@@ -98,3 +98,15 @@ export const UPDATE_PROFILE = gql`
 		}
 	}
 `;
+
+type DeleteBodyWeightData = { deleteBodyWeight: boolean };
+type DeleteBodyWeightVariables = { id: string };
+
+export const DELETE_BODY_WEIGHT: TypedDocumentNode<
+	DeleteBodyWeightData,
+	DeleteBodyWeightVariables
+> = gql`
+	mutation DeleteBodyWeight($id: ID!) {
+		deleteBodyWeight(id: $id)
+	}
+`;

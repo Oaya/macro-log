@@ -126,6 +126,18 @@ type CreateFoodVariables = {
 	sodiumMg: number | null;
 };
 
+type DeleteFoodLogData = { deleteFoodLog: boolean };
+type DeleteFoodLogVariables = { id: string };
+
+export const DELETE_FOOD_LOG: TypedDocumentNode<
+	DeleteFoodLogData,
+	DeleteFoodLogVariables
+> = gql`
+	mutation DeleteFoodLog($id: ID!) {
+		deleteFoodLog(id: $id)
+	}
+`;
+
 export const CREATE_FOOD: TypedDocumentNode<
 	CreateFoodData,
 	CreateFoodVariables

@@ -1,3 +1,4 @@
+import uuid
 from datetime import date
 
 import strawberry
@@ -175,5 +176,26 @@ class UserMutation:
             db.commit()
             db.refresh(db_user)
             return to_graphql_user(db_user)
+        finally:
+            db.close()
+
+    @strawberry.mutation
+    def delete_body_weight(self, info: Info, id: strawberry.ID) -> bool:
+
+        current_user = require_user(info)
+
+        db = SessionLocal()
+
+        try:
+            log = db.get(BodyWeightModel, uuid.UUID(str(id)))
+            if log is None:
+                raise Exception("BodyWeight log not found")
+
+            if log.user_id != current_user.id:
+                raise Exception("Not authorized to delete this log")
+
+            db.delete(log)
+            db.commit()
+            return True
         finally:
             db.close()

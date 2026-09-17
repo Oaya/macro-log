@@ -1,15 +1,19 @@
-import { MEAL_TYPE, MealType } from "@/graphql/food";
+import { DELETE_FOOD_LOG, MEAL_TYPE, MealType } from "@/graphql/food";
 import { colors } from "@/styles/colors";
 import { commonStyles, edgeItemStyle } from "@/styles/common";
+import { useMutation } from "@apollo/client/react";
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Coffee, Cookie, Sandwich, UtensilsCrossed } from "lucide-react-native";
 import {
+	Alert,
 	FlatList,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
 	View,
 } from "react-native";
+import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 
 const MEAL_TYPE_ICON: Record<MealType, typeof Coffee> = {
 	BREAKFAST: Coffee,
@@ -36,6 +40,25 @@ type Props = {
 };
 
 export default function MealHistory({ foodLogs }: Props) {
+	const [deleteFoodLog] = useMutation(DELETE_FOOD_LOG, {
+		refetchQueries: ["HomeData"],
+	});
+
+	const handleDelete = (id: string, foodName: string) => {
+		Alert.alert("Delete entry", `Remove "${foodName}" from today's log?`, [
+			{ text: "Cancel", style: "cancel" },
+			{
+				text: "Delete",
+				style: "destructive",
+				onPress: () => {
+					deleteFoodLog({ variables: { id } }).catch((e: Error) => {
+						Alert.alert("Error", e.message);
+					});
+				},
+			},
+		]);
+	};
+
 	return (
 		<View style={[commonStyles.menuContainer, commonStyles.menuItemFirst]}>
 			<View style={commonStyles.sectionHeaderRow}>
@@ -92,28 +115,43 @@ export default function MealHistory({ foodLogs }: Props) {
 								keyExtractor={(item) => item.id}
 								scrollEnabled={false}
 								renderItem={({ item, index }) => (
-									<View
-										style={[
-											commonStyles.listRow,
-											styles.mealLogRow,
-											...edgeItemStyle(index, items.length),
-										]}
-									>
-										<View style={commonStyles.logRowTextContainer}>
-											<Text
-												style={commonStyles.logRowName}
-												numberOfLines={1}
+									<Swipeable
+										renderRightActions={() => (
+											<TouchableOpacity
+												style={commonStyles.deleteAction}
+												onPress={() => handleDelete(item.id, item.foodName)}
 											>
-												{item.foodName}
-											</Text>
-											<Text style={commonStyles.logRowSubtitle}>
-												{item.quantity} serving(s)
+												<Ionicons
+													name="trash-outline"
+													size={18}
+													color={colors.card}
+												/>
+											</TouchableOpacity>
+										)}
+									>
+										<View
+											style={[
+												commonStyles.listRow,
+												styles.mealLogRow,
+												...edgeItemStyle(index, items.length),
+											]}
+										>
+											<View style={commonStyles.logRowTextContainer}>
+												<Text
+													style={commonStyles.logRowName}
+													numberOfLines={1}
+												>
+													{item.foodName}
+												</Text>
+												<Text style={commonStyles.logRowSubtitle}>
+													{item.quantity} serving(s)
+												</Text>
+											</View>
+											<Text style={commonStyles.logRowValue}>
+												{Math.round(item.calories)} cal
 											</Text>
 										</View>
-										<Text style={commonStyles.logRowValue}>
-											{Math.round(item.calories)} cal
-										</Text>
-									</View>
+									</Swipeable>
 								)}
 							/>
 						</View>
@@ -141,7 +179,6 @@ const styles = StyleSheet.create({
 		marginTop: 6,
 	},
 	mealGroupIcon: { marginTop: 2 },
-
 	mealLogRow: { paddingVertical: 8 },
 	mealEmptyText: { paddingVertical: 0, color: colors.primary },
 	mealGroupLabel: {

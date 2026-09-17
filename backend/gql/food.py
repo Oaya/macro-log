@@ -1,3 +1,4 @@
+import uuid
 from datetime import date
 
 import strawberry
@@ -303,5 +304,24 @@ class FoodMutation:
                 sodium_mg=db_food.sodium_mg,
                 source=FoodSource.YOUR_FOODS,
             )
+        finally:
+            db.close()
+
+    @strawberry.mutation
+    def delete_food_log(self, info: Info, id: strawberry.ID) -> bool:
+        current_user = require_user(info)
+
+        db = SessionLocal()
+
+        try:
+            log = db.get(FoodLogModel, uuid.UUID(str(id)))
+            if log is None:
+                raise Exception("Food log not found")
+            if log.user_id != current_user.id:
+                raise Exception("Not authorized to delete this log")
+
+            db.delete(log)
+            db.commit()
+            return True
         finally:
             db.close()

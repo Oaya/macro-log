@@ -1,24 +1,32 @@
 import { WeightChart } from "@/components/weight-chart";
 import { PROGRESS_DATA } from "@/graphql/progress";
+import { DELETE_BODY_WEIGHT } from "@/graphql/user";
 import { kgToDisplayWeight } from "@/lib/units";
 import { colors } from "@/styles/colors";
 import { commonStyles } from "@/styles/common";
-import { useQuery } from "@apollo/client/react";
+import { useMutation, useQuery } from "@apollo/client/react";
+import { Ionicons } from "@expo/vector-icons";
 import { Minus, TrendingDown, TrendingUp } from "lucide-react-native";
 import moment from "moment";
 import {
 	ActivityIndicator,
+	Alert,
 	FlatList,
 	KeyboardAvoidingView,
 	Platform,
 	ScrollView,
 	StyleSheet,
 	Text,
+	TouchableOpacity,
 	View,
 } from "react-native";
+import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 
 export default function Progress() {
 	const { data, loading, error } = useQuery(PROGRESS_DATA);
+	const [deleteBodyWeight] = useMutation(DELETE_BODY_WEIGHT, {
+		refetchQueries: ["ProgressData"],
+	});
 
 	const bodyWeights = data?.bodyWeights ?? [];
 
@@ -59,6 +67,21 @@ export default function Progress() {
 		);
 	}
 
+	const handleDelete = (id: string, date: string) => {
+		Alert.alert("Delete entry", `Remove ${date}'s weight history?`, [
+			{ text: "Cancel", style: "cancel" },
+			{
+				text: "Delete",
+				style: "destructive",
+				onPress: () => {
+					deleteBodyWeight({ variables: { id } }).catch((e: Error) => {
+						Alert.alert("Error", e.message);
+					});
+				},
+			},
+		]);
+	};
+
 	return (
 		<KeyboardAvoidingView
 			behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -68,6 +91,7 @@ export default function Progress() {
 				style={commonStyles.container}
 				bounces={false}
 				showsVerticalScrollIndicator={false}
+				contentContainerStyle={styles.scrollContent}
 			>
 				<Text style={styles.heading}>Progress</Text>
 				{/* Summary card */}
@@ -144,17 +168,32 @@ export default function Progress() {
 						keyExtractor={(item) => item.id}
 						scrollEnabled={false}
 						renderItem={({ item, index }) => (
-							<View
-								style={[
-									styles.historyRow,
-									index === bodyWeights.length - 1 && styles.historyRowLast,
-								]}
+							<Swipeable
+								renderRightActions={() => (
+									<TouchableOpacity
+										style={commonStyles.deleteAction}
+										onPress={() => handleDelete(item.id, item.recordedDate)}
+									>
+										<Ionicons
+											name="trash-outline"
+											size={18}
+											color={colors.card}
+										/>
+									</TouchableOpacity>
+								)}
 							>
-								<Text style={styles.historyDate}>{item.recordedDate}</Text>
-								<Text style={styles.historyWeight}>
-									{kgToDisplayWeight(item.weightKg, isImperial)} {weightUnit}
-								</Text>
-							</View>
+								<View
+									style={[
+										styles.historyRow,
+										index === bodyWeights.length - 1 && styles.historyRowLast,
+									]}
+								>
+									<Text style={styles.historyDate}>{item.recordedDate}</Text>
+									<Text style={styles.historyWeight}>
+										{kgToDisplayWeight(item.weightKg, isImperial)} {weightUnit}
+									</Text>
+								</View>
+							</Swipeable>
 						)}
 						ListEmptyComponent={
 							<Text style={styles.emptyText}>No weight entries yet</Text>
@@ -176,6 +215,7 @@ function StatBox({ label, value }: { label: string; value: string | number }) {
 }
 
 const styles = StyleSheet.create({
+	scrollContent: { paddingBottom: 100 },
 	loadingText: { marginTop: 8 },
 	heading: { ...commonStyles.heading, marginTop: 26 },
 	currentWeightLabel: { fontSize: 13, color: colors.textSecondary },

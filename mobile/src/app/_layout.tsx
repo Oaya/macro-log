@@ -4,6 +4,7 @@ import { ApolloProvider } from "@apollo/client/react";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { ReactNode, useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { client } from "../lib/apollo";
 
 function LoadingScreen() {
@@ -44,12 +45,14 @@ function AuthGate({ children }: { children: ReactNode }) {
 
 export default function RootLayout() {
 	return (
-		<ApolloProvider client={client}>
-			<AuthProvider>
-				<AuthGate>
-					<Stack screenOptions={{ headerShown: false }} />
-				</AuthGate>
-			</AuthProvider>
-		</ApolloProvider>
+		<GestureHandlerRootView style={{ flex: 1 }}>
+			<ApolloProvider client={client}>
+				<AuthProvider>
+					<AuthGate>
+						<Stack screenOptions={{ headerShown: false }} />
+					</AuthGate>
+				</AuthProvider>
+			</ApolloProvider>
+		</GestureHandlerRootView>
 	);
 }
