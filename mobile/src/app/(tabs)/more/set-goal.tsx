@@ -1,5 +1,10 @@
 import { DatePickerModal } from "@/components/date-picker-modal";
-import { GOAL, SET_WEIGHT_GOAL } from "@/graphql/goal";
+import {
+	ACTIVITY_LEVEL,
+	ActivityLevel,
+	GOAL,
+	SET_WEIGHT_GOAL,
+} from "@/graphql/goal";
 import { formatDateToISO, parseISODate } from "@/lib/date";
 import { displayWeightToKg, kgToDisplayWeight } from "@/lib/units";
 import { colors } from "@/styles/colors";
@@ -16,18 +21,11 @@ import {
 	Platform,
 	Pressable,
 	ScrollView,
-	StyleSheet,
 	Text,
 	TextInput,
 	TouchableOpacity,
 	View,
 } from "react-native";
-
-const ACTIVITY_LEVEL = ["SEDENTARY", "LIGHT", "MODERATE", "ACTIVE"];
-
-export function getNavOptions() {
-	return { title: "" };
-}
 
 export default function SetGoal() {
 	const { data: goalData, loading, error } = useQuery(GOAL);
@@ -44,7 +42,7 @@ export default function SetGoal() {
 	const [startWeight, setStartWeight] = useState("");
 	const [targetWeight, setTargetWeight] = useState("");
 	const [targetDate, setTargetDate] = useState("");
-	const [activity, setActivity] = useState("MODERATE");
+	const [activity, setActivity] = useState<ActivityLevel>("MODERATE");
 	const [initializedGoalKey, setInitializedGoalKey] = useState<string | null>(
 		null,
 	);
@@ -156,14 +154,20 @@ export default function SetGoal() {
 	return (
 		<KeyboardAvoidingView
 			behavior={Platform.OS === "ios" ? "padding" : "height"}
-			style={{ flex: 1 }}
+			style={commonStyles.logRowTextContainer}
 		>
 			<ScrollView
 				style={commonStyles.container}
 				bounces={false}
 				showsVerticalScrollIndicator={false}
 			>
-				<View style={styles.detailsCard}>
+				<View
+					style={[
+						commonStyles.menuContainer,
+						commonStyles.menuItemFirst,
+						commonStyles.menuItemLast,
+					]}
+				>
 					<Text style={commonStyles.sectionHeading}>Goal</Text>
 					{/* Current Weight */}
 					<View style={commonStyles.row}>
@@ -286,7 +290,13 @@ export default function SetGoal() {
 
 				{/* Daily Target */}
 				{goalData?.goal && (
-					<View style={styles.detailsCard}>
+					<View
+						style={[
+							commonStyles.menuContainer,
+							commonStyles.menuItemFirst,
+							commonStyles.menuItemLast,
+						]}
+					>
 						<Text style={commonStyles.sectionHeading}>Daily Goal</Text>
 						<View style={commonStyles.row}>
 							<Text style={commonStyles.label}>Daily Calories</Text>
@@ -410,7 +420,3 @@ export default function SetGoal() {
 		</KeyboardAvoidingView>
 	);
 }
-
-const styles = StyleSheet.create({
-	detailsCard: { ...commonStyles.card, marginBottom: 24 },
-});

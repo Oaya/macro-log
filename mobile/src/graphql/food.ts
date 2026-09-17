@@ -1,5 +1,11 @@
 import { gql, TypedDocumentNode } from "@apollo/client";
 
+export const SOURCE = ["YOUR_FOODS", "DATABASE", "RECENT"] as const;
+export type Source = (typeof SOURCE)[number];
+
+export const MEAL_TYPE = ["BREAKFAST", "LUNCH", "DINNER", "SNACK"] as const;
+export type MealType = (typeof MEAL_TYPE)[number];
+
 export type FoodResult = {
 	name: string;
 	brands: string[] | null;
@@ -10,7 +16,7 @@ export type FoodResult = {
 	fatG: number;
 	fiberG: number | null;
 	sodiumMg: number | null;
-	source: "YOUR_FOODS" | "DATABASE" | "RECENT";
+	source: Source;
 	servingSize: string | null;
 };
 
@@ -32,17 +38,15 @@ const FOOD_RESULT_FIELDS = gql`
 
 type SearchData = { searchFoods: FoodResult[] };
 
-export const SEARCH_FOODS: TypedDocumentNode<
-	SearchData,
-	{ query: string }
-> = gql`
-	query SearchFoods($query: String!) {
-		searchFoods(query: $query, limit: 100) {
-			...FoodResultFields
+export const SEARCH_FOODS: TypedDocumentNode<SearchData, { query: string }> =
+	gql`
+		query SearchFoods($query: String!) {
+			searchFoods(query: $query, limit: 100) {
+				...FoodResultFields
+			}
 		}
-	}
-	${FOOD_RESULT_FIELDS}
-`;
+		${FOOD_RESULT_FIELDS}
+	`;
 
 type RecentFoodsData = {
 	recentFoods: FoodResult[];
@@ -85,7 +89,7 @@ type LogFoodVariables = {
 		sodiumMg: number | null;
 	};
 	quantity: number;
-	mealType: "BREAKFAST" | "LUNCH" | "DINNER" | "SNACK";
+	mealType: MealType;
 	logDate: string;
 };
 
@@ -121,6 +125,18 @@ type CreateFoodVariables = {
 	fiberG: number | null;
 	sodiumMg: number | null;
 };
+
+type DeleteFoodLogData = { deleteFoodLog: boolean };
+type DeleteFoodLogVariables = { id: string };
+
+export const DELETE_FOOD_LOG: TypedDocumentNode<
+	DeleteFoodLogData,
+	DeleteFoodLogVariables
+> = gql`
+	mutation DeleteFoodLog($id: ID!) {
+		deleteFoodLog(id: $id)
+	}
+`;
 
 export const CREATE_FOOD: TypedDocumentNode<
 	CreateFoodData,

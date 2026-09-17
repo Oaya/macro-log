@@ -2,13 +2,15 @@ import { DatePickerModal } from "@/components/date-picker-modal";
 import {
 	FoodResult,
 	LOG_FOOD,
+	MEAL_TYPE,
+	MealType,
 	MY_FOODS,
 	RECENT_FOODS,
 	SEARCH_FOODS,
 } from "@/graphql/food";
 import { formatDateToISO, parseISODate } from "@/lib/date";
 import { colors } from "@/styles/colors";
-import { commonStyles, rowLayout } from "@/styles/common";
+import { commonStyles, edgeItemStyle, rowLayout } from "@/styles/common";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client/react";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
@@ -26,9 +28,7 @@ import {
 	View,
 } from "react-native";
 
-const MEAL_TYPES = ["BREAKFAST", "LUNCH", "DINNER", "SNACK"] as const;
-
-function defaultMealType(): (typeof MEAL_TYPES)[number] {
+function defaultMealType(): MealType {
 	const hour = new Date().getHours();
 	if (hour < 11) return "BREAKFAST";
 	if (hour < 16) return "LUNCH";
@@ -44,7 +44,9 @@ export default function LogFood() {
 	const { data: recentData, loading: recentLoading } = useQuery(RECENT_FOODS);
 	const { data: myFoodsData, loading: myFoodsLoading } = useQuery(MY_FOODS);
 
-	const [logFood, { loading: saving }] = useMutation(LOG_FOOD);
+	const [logFood, { loading: saving }] = useMutation(LOG_FOOD, {
+		refetchQueries: ["HomeData"],
+	});
 
 	const [search, setSearch] = useState("");
 	const [selected, setSelected] = useState<FoodResult | null>(null);
@@ -68,8 +70,7 @@ export default function LogFood() {
 	const [datePickerVisible, setDatePickerVisible] = useState(false);
 	const [date, setDate] = useState(formatDateToISO(new Date()));
 	const [quantity, setQuantity] = useState("1");
-	const [mealType, setMealType] =
-		useState<(typeof MEAL_TYPES)[number]>(defaultMealType());
+	const [mealType, setMealType] = useState<MealType>(defaultMealType());
 
 	const handleSearch = (text: string) => {
 		setSearch(text);
@@ -182,7 +183,7 @@ export default function LogFood() {
 					</View>
 				)}
 
-				<View style={commonStyles.menuCard}>
+				<View style={commonStyles.menuContainer}>
 					<Text style={commonStyles.sectionHeading}>Meal log</Text>
 					<View>
 						<View style={commonStyles.row}>
@@ -205,7 +206,7 @@ export default function LogFood() {
 							<Text style={commonStyles.label}>Meal</Text>
 
 							<View style={styles.mealOptionGroup}>
-								{MEAL_TYPES.map((option) => (
+								{MEAL_TYPE.map((option) => (
 									<Pressable
 										key={option}
 										onPress={() => setMealType(option)}
@@ -232,7 +233,7 @@ export default function LogFood() {
 					</View>
 				</View>
 
-				<View style={commonStyles.menuCard}>
+				<View style={commonStyles.menuContainer}>
 					<Text style={commonStyles.sectionHeading}>Date</Text>
 
 					<View style={commonStyles.row}>
@@ -302,7 +303,7 @@ export default function LogFood() {
 					</TouchableOpacity>
 				</View>
 			</View>
-			<View style={commonStyles.menuCard}>
+			<View style={commonStyles.menuContainer}>
 				<TextInput
 					value={search}
 					onChangeText={handleSearch}
@@ -350,7 +351,7 @@ export default function LogFood() {
 				</View>
 			</View>
 
-			<View style={commonStyles.menuCard}>
+			<View style={commonStyles.menuContainer}>
 				{listLoading ? (
 					<Text style={commonStyles.cardText}>Loading foods...</Text>
 				) : (
@@ -358,15 +359,18 @@ export default function LogFood() {
 						data={displayedFoods}
 						keyExtractor={(item, index) => item.id ?? `${item.name}-${index}`}
 						scrollEnabled={false}
-						renderItem={({ item }) => (
+						renderItem={({ item, index }) => (
 							<TouchableOpacity
 								onPress={() => setSelected(item)}
-								style={commonStyles.row}
+								style={[
+									commonStyles.listRow,
+									...edgeItemStyle(index, displayedFoods.length),
+								]}
 							>
 								<Ionicons
 									name="restaurant"
-									size={16}
-									color="#666"
+									size={18}
+									color={colors.textSecondary}
 									style={styles.resultIcon}
 								/>
 
@@ -396,7 +400,7 @@ export default function LogFood() {
 
 								<Ionicons
 									name="chevron-forward"
-									size={16}
+									size={18}
 									color="#ccc"
 								/>
 							</TouchableOpacity>

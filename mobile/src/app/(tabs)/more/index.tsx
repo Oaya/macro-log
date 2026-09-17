@@ -49,7 +49,7 @@ export default function More() {
 		>
 			{/*  Profile Row */}
 			<TouchableOpacity
-				style={styles.profileCard}
+				style={[commonStyles.menuContainer, styles.profileCard]}
 				onPress={() => router.push("/(tabs)/more/profile")}
 				activeOpacity={0.7}
 			>
@@ -72,7 +72,9 @@ export default function More() {
 
 			{/*  Menu Options List */}
 			<View style={commonStyles.menuContainer}>
-				<Text style={styles.sectionHeading}>Nutrition & Goals</Text>
+				<Text style={[commonStyles.sectionHeading, commonStyles.menuItemFirst]}>
+					Nutrition & Goals
+				</Text>
 
 				<TouchableOpacity
 					style={commonStyles.menuItem}
@@ -111,7 +113,7 @@ export default function More() {
 
 				{/* Logout */}
 				<TouchableOpacity
-					style={[commonStyles.menuItem, styles.logoutItem]}
+					style={[commonStyles.menuItem, commonStyles.menuItemLast, styles.logoutItem]}
 					onPress={handleLogout}
 				>
 					<View style={[styles.iconBg, { backgroundColor: "#FFEBEE" }]}>
@@ -139,10 +141,7 @@ const styles = StyleSheet.create({
 	profileCard: {
 		flexDirection: "row",
 		alignItems: "center",
-		backgroundColor: colors.card,
 		marginTop: 16,
-		padding: 16,
-		borderRadius: 12,
 	},
 	avatar: { width: 50, height: 50, borderRadius: 25 },
 	profileMeta: { marginLeft: 14, flex: 1 },
@@ -153,9 +152,8 @@ const styles = StyleSheet.create({
 		fontWeight: "500",
 		marginTop: 2,
 	},
-	sectionHeading: { ...commonStyles.sectionHeading, marginLeft: 16 },
 
-	logoutItem: { borderBottomWidth: 0, marginTop: 10 },
+	logoutItem: { marginTop: 10 },
 	iconBg: {
 		width: 34,
 		height: 34,

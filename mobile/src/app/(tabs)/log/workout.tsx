@@ -1,8 +1,8 @@
 import { DatePickerModal } from "@/components/date-picker-modal";
+import { EXERCISES, Exercise, LOG_WORKOUT } from "@/graphql/workout";
 import { formatDateToISO, parseISODate } from "@/lib/date";
 import { colors } from "@/styles/colors";
-import { commonStyles, rowLayout } from "@/styles/common";
-import { EXERCISES, Exercise, LOG_WORKOUT } from "@/graphql/workout";
+import { commonStyles, edgeItemStyle, rowLayout } from "@/styles/common";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { Ionicons } from "@expo/vector-icons";
 import { useMemo, useState } from "react";
@@ -106,7 +106,13 @@ export default function LogWorkout() {
 					</TouchableOpacity>
 				</View>
 
-				<View style={commonStyles.menuCard}>
+				<View
+					style={[
+						commonStyles.menuContainer,
+						commonStyles.menuItemFirst,
+						commonStyles.menuItemLast,
+					]}
+				>
 					<Text style={commonStyles.sectionHeading}>Workout</Text>
 					{isStrength ? (
 						<View>
@@ -210,20 +216,34 @@ export default function LogWorkout() {
 					)}
 				</View>
 
-				<View style={commonStyles.menuCard}>
+				<View
+					style={[
+						commonStyles.menuContainer,
+						commonStyles.menuItemFirst,
+						commonStyles.menuItemLast,
+					]}
+				>
 					<Text style={commonStyles.sectionHeading}>Date</Text>
 
-					<Pressable
-						style={styles.dropdownTrigger}
-						onPress={() => setDatePickerVisible(true)}
-					>
-						<Text style={commonStyles.dropdownTriggerText}>{date || "--"}</Text>
-						<Ionicons
-							name="chevron-down"
-							size={14}
-							color={colors.textSecondary}
-						/>
-					</Pressable>
+					<View style={commonStyles.row}>
+						<View style={commonStyles.leftContainer}>
+							<Text style={commonStyles.label}>Date</Text>
+						</View>
+
+						<Pressable
+							style={commonStyles.dropdownTrigger}
+							onPress={() => setDatePickerVisible(true)}
+						>
+							<Text style={commonStyles.dropdownTriggerText}>
+								{date || "--"}
+							</Text>
+							<Ionicons
+								name="chevron-down"
+								size={14}
+								color={colors.textSecondary}
+							/>
+						</Pressable>
+					</View>
 				</View>
 
 				<TouchableOpacity
@@ -257,7 +277,7 @@ export default function LogWorkout() {
 		>
 			<Text style={commonStyles.heading}>What workout did you do?</Text>
 
-			<View style={commonStyles.menuCard}>
+			<View style={commonStyles.menuContainer}>
 				<TextInput
 					value={search}
 					onChangeText={setSearch}
@@ -289,7 +309,7 @@ export default function LogWorkout() {
 				</View>
 			</View>
 
-			<View style={commonStyles.menuCard}>
+			<View style={commonStyles.menuContainer}>
 				{loading ? (
 					<Text style={commonStyles.cardText}>Loading exercises...</Text>
 				) : (
@@ -297,10 +317,13 @@ export default function LogWorkout() {
 						data={filteredExercises}
 						keyExtractor={(item) => item.id}
 						scrollEnabled={false}
-						renderItem={({ item }) => (
+						renderItem={({ item, index }) => (
 							<TouchableOpacity
 								onPress={() => setSelected(item)}
-								style={styles.exerciseRow}
+								style={[
+									styles.exerciseRow,
+									...edgeItemStyle(index, filteredExercises.length),
+								]}
 							>
 								<Ionicons
 									name={TYPE_ICON[item.type] ?? "fitness"}
@@ -309,6 +332,12 @@ export default function LogWorkout() {
 									style={styles.exerciseIcon}
 								/>
 								<Text style={styles.exerciseName}>{item.name}</Text>
+
+								<Ionicons
+									name="chevron-forward"
+									size={18}
+									color="#ccc"
+								/>
 							</TouchableOpacity>
 						)}
 						ListEmptyComponent={
@@ -330,15 +359,10 @@ const styles = StyleSheet.create({
 		gap: 10,
 	},
 
-	dropdownTrigger: {
-		...commonStyles.dropdownTrigger,
-		paddingBottom: 14,
-	},
-
 	filters: {
 		flexDirection: "row",
 		justifyContent: "space-between",
-		marginBottom: 16,
+		marginTop: 6,
 		flexWrap: "wrap",
 	},
 	filterChip: {
@@ -356,5 +380,5 @@ const styles = StyleSheet.create({
 	filterChipText: { fontSize: 12, color: colors.textSecondary },
 	filterChipTextActive: { color: colors.card },
 	exerciseIcon: { marginRight: 10 },
-	exerciseName: { fontSize: 15, color: colors.textPrimary },
+	exerciseName: { fontSize: 15, color: colors.textPrimary, flex: 1 },
 });

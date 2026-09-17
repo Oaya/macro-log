@@ -75,6 +75,7 @@ class WorkoutQuery:
                 WorkoutLog(
                     id=strawberry.ID(str(w.id)),
                     exercise_name=w.exercise.name,
+                    exercise_type=ExerciseType(w.exercise.type),
                     sets=w.sets,
                     reps=w.reps,
                     weight=w.weight,
@@ -165,7 +166,29 @@ class WorkoutMutation:
                     exercise.met_value,
                 ),
                 log_date=str(db_workout.log_date),
+                exercise_type=ExerciseType(exercise.type),
             )
 
+        finally:
+            db.close()
+
+    @strawberry.mutation
+    def delete_workout_log(self, info: Info, id: strawberry.ID) -> bool:
+
+        current_user = require_user(info)
+
+        db = SessionLocal()
+
+        try:
+            log = db.get(WorkoutLogModel, uuid.UUID(str(id)))
+            if log is None:
+                raise Exception("Workout log not found")
+
+            if log.user_id != current_user.id:
+                raise Exception("Not authorized to delete this log")
+
+            db.delete(log)
+            db.commit()
+            return True
         finally:
             db.close()

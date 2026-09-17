@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
-import { client } from "./apollo";
+import { client, setOnAuthError } from "./apollo";
 import { deleteToken, getToken, saveToken } from "./auth";
 
 type AuthContextValue = {
@@ -34,6 +34,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		await client.clearStore();
 		setLoggedIn(false);
 	};
+
+	// The token can go stale (expired/revoked) without us touching it locally,
+	// so let the Apollo error link force a logout as soon as the backend says so.
+	useEffect(() => {
+		setOnAuthError(() => {
+			logout();
+		});
+	}, []);
 
 	return (
 		<AuthContext.Provider value={{ checking, loggedIn, login, logout }}>

@@ -14,43 +14,40 @@ export function WeightChart({ data, unit }: WeightChartProps) {
 	if (data.length < 2) return null;
 
 	return (
-		<View style={styles.wrapper}>
-			<View style={commonStyles.card}>
-				<Text style={styles.sectionHeading}>Weight Trend</Text>
+		<View style={[commonStyles.menuContainer, { paddingTop: 0 }]}>
+			<Text style={styles.sectionHeading}>Weight Trend</Text>
 
-				<View style={styles.chartWrapper}>
-					<Text style={styles.unitLabel}>{`(${unit})`}</Text>
+			<View style={styles.chartWrapper}>
+				<Text style={styles.unitLabel}>{`(${unit})`}</Text>
 
-					<LineChart
-						data={data}
-						width={CHART_WIDTH}
-						height={160}
-						color={colors.primary}
-						thickness={2}
-						curved
-						areaChart
-						startFillColor={colors.primary}
-						startOpacity={0.15}
-						endOpacity={0}
-						initialSpacing={20}
-						endSpacing={25}
-						hideDataPoints={data.length > 12}
-						dataPointsColor={colors.primary}
-						yAxisTextStyle={styles.axisText}
-						xAxisLabelTextStyle={styles.axisText}
-						xAxisColor={colors.border}
-						yAxisColor={colors.border}
-						rulesColor={colors.border}
-						noOfSections={4}
-					/>
-				</View>
+				<LineChart
+					data={data}
+					width={CHART_WIDTH}
+					height={160}
+					color={colors.primary}
+					thickness={2}
+					curved
+					areaChart
+					startFillColor={colors.primary}
+					startOpacity={0.15}
+					endOpacity={0}
+					initialSpacing={20}
+					endSpacing={25}
+					hideDataPoints={data.length > 12}
+					dataPointsColor={colors.primary}
+					yAxisTextStyle={styles.axisText}
+					xAxisLabelTextStyle={styles.axisText}
+					xAxisColor={colors.border}
+					yAxisColor={colors.border}
+					rulesColor={colors.border}
+					noOfSections={4}
+				/>
 			</View>
 		</View>
 	);
 }
 
 const styles = StyleSheet.create({
-	wrapper: { marginBottom: 24 },
 	sectionHeading: { ...commonStyles.sectionHeading, marginBottom: 20 },
 	chartWrapper: { position: "relative" },
 	unitLabel: {

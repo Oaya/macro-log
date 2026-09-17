@@ -59,3 +59,15 @@ export const LOG_WORKOUT: TypedDocumentNode<
 		}
 	}
 `;
+
+type DeleteWorkoutLogData = { deleteWorkoutLog: boolean };
+type DeleteWorkoutLogVariables = { id: string };
+
+export const DELETE_WORKOUT_LOG: TypedDocumentNode<
+	DeleteWorkoutLogData,
+	DeleteWorkoutLogVariables
+> = gql`
+	mutation DeleteWorkoutLog($id: ID!) {
+		deleteWorkoutLog(id: $id)
+	}
+`;

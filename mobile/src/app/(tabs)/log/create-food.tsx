@@ -1,6 +1,6 @@
+import { CREATE_FOOD } from "@/graphql/food";
 import { colors } from "@/styles/colors";
 import { commonStyles } from "@/styles/common";
-import { CREATE_FOOD } from "@/graphql/food";
 import { useMutation } from "@apollo/client/react";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -72,7 +72,7 @@ export default function CreateFood() {
 	return (
 		<KeyboardAvoidingView
 			behavior={Platform.OS === "ios" ? "padding" : "height"}
-			style={{ flex: 1 }}
+			style={commonStyles.logRowTextContainer}
 		>
 			<ScrollView
 				style={commonStyles.container}

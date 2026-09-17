@@ -1,24 +1,32 @@
 import { WeightChart } from "@/components/weight-chart";
 import { PROGRESS_DATA } from "@/graphql/progress";
+import { DELETE_BODY_WEIGHT } from "@/graphql/user";
 import { kgToDisplayWeight } from "@/lib/units";
 import { colors } from "@/styles/colors";
 import { commonStyles } from "@/styles/common";
-import { useQuery } from "@apollo/client/react";
+import { useMutation, useQuery } from "@apollo/client/react";
+import { Ionicons } from "@expo/vector-icons";
 import { Minus, TrendingDown, TrendingUp } from "lucide-react-native";
 import moment from "moment";
 import {
 	ActivityIndicator,
+	Alert,
 	FlatList,
 	KeyboardAvoidingView,
 	Platform,
 	ScrollView,
 	StyleSheet,
 	Text,
+	TouchableOpacity,
 	View,
 } from "react-native";
+import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 
 export default function Progress() {
 	const { data, loading, error } = useQuery(PROGRESS_DATA);
+	const [deleteBodyWeight] = useMutation(DELETE_BODY_WEIGHT, {
+		refetchQueries: ["ProgressData"],
+	});
 
 	const bodyWeights = data?.bodyWeights ?? [];
 
@@ -59,20 +67,36 @@ export default function Progress() {
 		);
 	}
 
+	const handleDelete = (id: string, date: string) => {
+		Alert.alert("Delete entry", `Remove ${date}'s weight history?`, [
+			{ text: "Cancel", style: "cancel" },
+			{
+				text: "Delete",
+				style: "destructive",
+				onPress: () => {
+					deleteBodyWeight({ variables: { id } }).catch((e: Error) => {
+						Alert.alert("Error", e.message);
+					});
+				},
+			},
+		]);
+	};
+
 	return (
 		<KeyboardAvoidingView
 			behavior={Platform.OS === "ios" ? "padding" : "height"}
-			style={styles.flex1}
+			style={commonStyles.logRowTextContainer}
 		>
 			<ScrollView
 				style={commonStyles.container}
 				bounces={false}
 				showsVerticalScrollIndicator={false}
+				contentContainerStyle={styles.scrollContent}
 			>
 				<Text style={styles.heading}>Progress</Text>
 				{/* Summary card */}
 				{latest && (
-					<View style={styles.summaryCard}>
+					<View style={commonStyles.menuContainer}>
 						<Text style={styles.currentWeightLabel}>Current weight</Text>
 						<Text style={styles.currentWeightValue}>
 							{kgToDisplayWeight(latest.weightKg, isImperial)} {weightUnit}
@@ -96,8 +120,8 @@ export default function Progress() {
 									/>
 								)}
 								<Text style={[styles.changeText, { color: trendColor }]}>
-									{kgToDisplayWeight(Math.abs(change), isImperial)} {weightUnit} since{" "}
-									{earliest.recordedDate}
+									{kgToDisplayWeight(Math.abs(change), isImperial)} {weightUnit}{" "}
+									since {earliest.recordedDate}
 								</Text>
 							</View>
 						)}
@@ -112,41 +136,52 @@ export default function Progress() {
 
 				{/* Goal targets */}
 				{data?.goal && (
-					<View style={styles.section}>
-						<View style={commonStyles.card}>
-							<Text style={styles.sectionHeading}>Daily Target</Text>
-							<View style={styles.statsRow}>
-								<StatBox
-									label="cal"
-									value={data.goal.dailyCalories}
-								/>
-								<StatBox
-									label="protein"
-									value={`${data.goal.proteinG}g`}
-								/>
-								<StatBox
-									label="carbs"
-									value={`${data.goal.carbsG}g`}
-								/>
-								<StatBox
-									label="fat"
-									value={`${data.goal.fatG}g`}
-								/>
-							</View>
+					<View style={[commonStyles.menuContainer, { paddingTop: 0 }]}>
+						<Text style={styles.sectionHeading}>Daily Target</Text>
+						<View style={styles.statsRow}>
+							<StatBox
+								label="cal"
+								value={data.goal.dailyCalories}
+							/>
+							<StatBox
+								label="protein"
+								value={`${data.goal.proteinG}g`}
+							/>
+							<StatBox
+								label="carbs"
+								value={`${data.goal.carbsG}g`}
+							/>
+							<StatBox
+								label="fat"
+								value={`${data.goal.fatG}g`}
+							/>
 						</View>
 					</View>
 				)}
 
 				{/* Weight history list */}
-				<View style={styles.section}>
-					<View style={commonStyles.card}>
-						<Text style={styles.sectionHeading}>Weight history</Text>
+				<View style={[commonStyles.menuContainer, { paddingTop: 0 }]}>
+					<Text style={styles.sectionHeading}>Weight history</Text>
 
-						<FlatList
-							data={bodyWeights}
-							keyExtractor={(item) => item.id}
-							scrollEnabled={false}
-							renderItem={({ item, index }) => (
+					<FlatList
+						data={bodyWeights}
+						keyExtractor={(item) => item.id}
+						scrollEnabled={false}
+						renderItem={({ item, index }) => (
+							<Swipeable
+								renderRightActions={() => (
+									<TouchableOpacity
+										style={commonStyles.deleteAction}
+										onPress={() => handleDelete(item.id, item.recordedDate)}
+									>
+										<Ionicons
+											name="trash-outline"
+											size={18}
+											color={colors.card}
+										/>
+									</TouchableOpacity>
+								)}
+							>
 								<View
 									style={[
 										styles.historyRow,
@@ -158,12 +193,12 @@ export default function Progress() {
 										{kgToDisplayWeight(item.weightKg, isImperial)} {weightUnit}
 									</Text>
 								</View>
-							)}
-							ListEmptyComponent={
-								<Text style={styles.emptyText}>No weight entries yet</Text>
-							}
-						/>
-					</View>
+							</Swipeable>
+						)}
+						ListEmptyComponent={
+							<Text style={styles.emptyText}>No weight entries yet</Text>
+						}
+					/>
 				</View>
 			</ScrollView>
 		</KeyboardAvoidingView>
@@ -180,22 +215,21 @@ function StatBox({ label, value }: { label: string; value: string | number }) {
 }
 
 const styles = StyleSheet.create({
-	flex1: { flex: 1 },
+	scrollContent: { paddingBottom: 100 },
 	loadingText: { marginTop: 8 },
-	heading: { ...commonStyles.heading, marginTop: 30 },
-	summaryCard: { ...commonStyles.card, padding: 16, marginBottom: 24 },
+	heading: { ...commonStyles.heading, marginTop: 26 },
 	currentWeightLabel: { fontSize: 13, color: colors.textSecondary },
 	currentWeightValue: { fontSize: 28, fontWeight: "bold", marginBottom: 8 },
 	changeRow: { flexDirection: "row", alignItems: "center", gap: 4 },
 	changeText: { fontSize: 13 },
-	section: { marginBottom: 24 },
+
 	sectionHeading: { ...commonStyles.sectionHeading, marginBottom: 10 },
-	statsRow: { flexDirection: "row", paddingBottom: 10 },
+	statsRow: { flexDirection: "row", gap: 8 },
 	statContainer: {
 		flex: 1,
 		backgroundColor: colors.card,
 		borderRadius: 8,
-		paddingVertical: 10,
+		paddingTop: 10,
 		alignItems: "center",
 	},
 	statValue: { fontSize: 15, fontWeight: "600" },

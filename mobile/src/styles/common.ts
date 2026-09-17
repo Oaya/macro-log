@@ -25,30 +25,31 @@ export const submitButtonBase = {
 	marginBottom: 40,
 };
 
+export function edgeItemStyle(index: number, length: number) {
+	return [
+		index === 0 && commonStyles.menuItemFirst,
+		index === length - 1 && commonStyles.menuItemLast,
+	];
+}
+
 export const commonStyles = {
 	container: { flex: 1, backgroundColor: colors.background, padding: 20 },
 
 	menuContainer: {
 		backgroundColor: colors.card,
 		borderRadius: 12,
-		paddingHorizontal: 16,
-		marginTop: 16,
-		marginBottom: 30,
-	},
-	menuCard: {
-		backgroundColor: colors.card,
-		borderRadius: 12,
-		paddingHorizontal: 16,
-		marginBottom: 16,
+		padding: 16,
+		marginBottom: 20,
 	},
 	menuItem: {
 		flexDirection: "row" as const,
 		alignItems: "center" as const,
 		paddingVertical: 12,
-		paddingHorizontal: 16,
 		borderBottomWidth: 1,
 		borderBottomColor: colors.border,
 	},
+	menuItemFirst: { marginTop: 0, paddingTop: 0 },
+	menuItemLast: { borderBottomWidth: 0, paddingBottom: 0 },
 	menuText: {
 		fontSize: 15,
 		fontWeight: "500" as const,
@@ -66,12 +67,6 @@ export const commonStyles = {
 		justifyContent: "center" as const,
 		alignItems: "center" as const,
 	},
-
-	card: {
-		backgroundColor: colors.card,
-		borderRadius: 12,
-		paddingHorizontal: 16,
-	},
 	cardText: {
 		fontSize: 15,
 		color: colors.textSecondary,
@@ -87,6 +82,15 @@ export const commonStyles = {
 		marginTop: 14,
 		marginBottom: 6,
 	},
+	sectionHeadingFlat: { marginTop: 0, marginBottom: 0 },
+	sectionHeaderRow: {
+		flexDirection: "row" as const,
+		justifyContent: "space-between" as const,
+		alignItems: "center" as const,
+		marginTop: 14,
+		marginBottom: 6,
+	},
+	addText: { fontSize: 12, color: colors.primary },
 
 	header: {
 		flexDirection: "row" as const,
@@ -125,7 +129,6 @@ export const commonStyles = {
 		borderRadius: 8,
 		paddingHorizontal: 12,
 		paddingVertical: 10,
-		marginTop: 16,
 		marginBottom: 12,
 	},
 	row: {
@@ -134,6 +137,18 @@ export const commonStyles = {
 		gap: 16,
 		minHeight: 56,
 	},
+	listRow: {
+		...rowLayout,
+		gap: 10,
+	},
+	logRowTextContainer: { flex: 1 },
+	logRowName: {
+		fontSize: 13,
+		fontWeight: "500" as const,
+		color: colors.textPrimary,
+	},
+	logRowSubtitle: { fontSize: 11, color: colors.textSecondary },
+	logRowValue: { fontSize: 12, color: colors.textSecondary },
 	leftContainer: {
 		flexDirection: "row" as const,
 		alignItems: "center" as const,
@@ -248,5 +263,13 @@ export const commonStyles = {
 	modalOptionTextSelected: {
 		color: colors.primary,
 		fontWeight: "600" as const,
+	},
+
+	deleteAction: {
+		backgroundColor: colors.danger,
+		justifyContent: "center" as const,
+		alignItems: "center" as const,
+		width: 64,
+		borderRadius: 8,
 	},
 };
