@@ -1,5 +1,11 @@
 import { gql, TypedDocumentNode } from "@apollo/client";
 
+export const UNIT_PREFERENCE = ["METRIC", "IMPERIAL"] as const;
+export type UnitPreference = (typeof UNIT_PREFERENCE)[number];
+
+export const SEX = ["MALE", "FEMALE"] as const;
+export type Sex = (typeof SEX)[number];
+
 export type MeAccountData = {
 	me: { id: string; email: string; username: string };
 };
@@ -15,7 +21,7 @@ export const ME_ACCOUNT: TypedDocumentNode<MeAccountData> = gql`
 `;
 
 export type MeWeightData = {
-	me: { id: string; unitPreference: string };
+	me: { id: string; unitPreference: UnitPreference };
 	latestBodyWeight: {
 		weightKg: number;
 		recordedDate: string;
@@ -52,8 +58,8 @@ export type MeProfileData = {
 		createdAt: string;
 		heightCm: number | null;
 		dateOfBirth: string | null;
-		sex: string | null;
-		unitPreference: string;
+		sex: Sex | null;
+		unitPreference: UnitPreference;
 	};
 };
 

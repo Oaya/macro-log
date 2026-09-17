@@ -1,4 +1,13 @@
 import { gql, TypedDocumentNode } from "@apollo/client";
+import { UnitPreference } from "./user";
+
+export const ACTIVITY_LEVEL = [
+	"SEDENTARY",
+	"LIGHT",
+	"MODERATE",
+	"ACTIVE",
+] as const;
+export type ActivityLevel = (typeof ACTIVITY_LEVEL)[number];
 
 export type GoalData = {
 	goal: {
@@ -10,11 +19,11 @@ export type GoalData = {
 		startWeightKg: number | null;
 		targetWeightKg: number | null;
 		targetDate: string | null;
-		activityLevel: string;
+		activityLevel: ActivityLevel;
 	} | null;
 	me: {
 		id: string;
-		unitPreference: string;
+		unitPreference: UnitPreference;
 	};
 };
 
@@ -42,7 +51,7 @@ type SetWeightGoalData = {
 		startWeightKg: number;
 		targetWeightKg: number;
 		targetDate: string;
-		activityLevel: string;
+		activityLevel: ActivityLevel;
 	};
 };
 
@@ -50,7 +59,7 @@ type SetWeightGoalVariables = {
 	startWeightKg: number;
 	targetWeightKg: number;
 	targetDate: string;
-	activityLevel: string;
+	activityLevel: ActivityLevel;
 };
 
 export const SET_WEIGHT_GOAL: TypedDocumentNode<

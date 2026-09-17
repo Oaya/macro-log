@@ -25,30 +25,31 @@ export const submitButtonBase = {
 	marginBottom: 40,
 };
 
+export function edgeItemStyle(index: number, length: number) {
+	return [
+		index === 0 && commonStyles.menuItemFirst,
+		index === length - 1 && commonStyles.menuItemLast,
+	];
+}
+
 export const commonStyles = {
 	container: { flex: 1, backgroundColor: colors.background, padding: 20 },
 
 	menuContainer: {
 		backgroundColor: colors.card,
 		borderRadius: 12,
-		paddingHorizontal: 16,
-		marginTop: 16,
-		marginBottom: 30,
-	},
-	menuCard: {
-		backgroundColor: colors.card,
-		borderRadius: 12,
-		paddingHorizontal: 16,
-		marginBottom: 16,
+		padding: 16,
+		marginBottom: 20,
 	},
 	menuItem: {
 		flexDirection: "row" as const,
 		alignItems: "center" as const,
 		paddingVertical: 12,
-		paddingHorizontal: 16,
 		borderBottomWidth: 1,
 		borderBottomColor: colors.border,
 	},
+	menuItemFirst: { marginTop: 0, paddingTop: 0 },
+	menuItemLast: { borderBottomWidth: 0, paddingBottom: 0 },
 	menuText: {
 		fontSize: 15,
 		fontWeight: "500" as const,
@@ -65,12 +66,6 @@ export const commonStyles = {
 		flex: 1,
 		justifyContent: "center" as const,
 		alignItems: "center" as const,
-	},
-
-	card: {
-		backgroundColor: colors.card,
-		borderRadius: 12,
-		paddingHorizontal: 16,
 	},
 	cardText: {
 		fontSize: 15,
@@ -125,7 +120,6 @@ export const commonStyles = {
 		borderRadius: 8,
 		paddingHorizontal: 12,
 		paddingVertical: 10,
-		marginTop: 16,
 		marginBottom: 12,
 	},
 	row: {
@@ -133,6 +127,10 @@ export const commonStyles = {
 		justifyContent: "space-between" as const,
 		gap: 16,
 		minHeight: 56,
+	},
+	listRow: {
+		...rowLayout,
+		gap: 10,
 	},
 	leftContainer: {
 		flexDirection: "row" as const,

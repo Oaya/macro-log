@@ -1,7 +1,7 @@
 import { commonStyles } from "@/styles/common";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
 export default function Log() {
 	const router = useRouter();
@@ -12,7 +12,7 @@ export default function Log() {
 
 			<View style={commonStyles.menuContainer}>
 				<TouchableOpacity
-					style={commonStyles.menuItem}
+					style={[commonStyles.menuItem, commonStyles.menuItemFirst]}
 					onPress={() => router.push("/(tabs)/log/food")}
 				>
 					<View style={[commonStyles.iconBg, { backgroundColor: "#FFF3E0" }]}>
@@ -50,7 +50,7 @@ export default function Log() {
 				</TouchableOpacity>
 
 				<TouchableOpacity
-					style={[commonStyles.menuItem, styles.menuItemLast]}
+					style={[commonStyles.menuItem, commonStyles.menuItemLast]}
 					onPress={() => router.push("/(tabs)/log/weight")}
 				>
 					<View style={[commonStyles.iconBg, { backgroundColor: "#E8F5E9" }]}>
@@ -71,9 +71,3 @@ export default function Log() {
 		</View>
 	);
 }
-
-const styles = StyleSheet.create({
-	menuItemLast: {
-		borderBottomWidth: 0,
-	},
-});

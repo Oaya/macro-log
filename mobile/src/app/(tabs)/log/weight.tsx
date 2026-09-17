@@ -14,7 +14,6 @@ import {
 	Platform,
 	Pressable,
 	ScrollView,
-	StyleSheet,
 	Text,
 	TextInput,
 	TouchableOpacity,
@@ -22,7 +21,9 @@ import {
 } from "react-native";
 
 export default function LogWeight() {
-	const [recordWeight, { loading: creating }] = useMutation(RECORD_WEIGHT);
+	const [recordWeight, { loading: creating }] = useMutation(RECORD_WEIGHT, {
+		refetchQueries: ["HomeData"],
+	});
 	const { data: meData, loading, error, refetch } = useQuery(ME_WEIGHT);
 
 	const [datePickerVisible, setDatePickerVisible] = useState(false);
@@ -96,10 +97,16 @@ export default function LogWeight() {
 			>
 				<Text style={commonStyles.heading}>Record your weight</Text>
 
-				<View style={styles.detailsCard}>
+				<View
+					style={[
+						commonStyles.menuContainer,
+						commonStyles.menuItemFirst,
+						commonStyles.menuItemLast,
+					]}
+				>
 					<Text style={commonStyles.sectionHeading}>Weight</Text>
 
-					<View style={styles.row}>
+					<View style={commonStyles.row}>
 						<View style={commonStyles.leftContainer}>
 							<Text style={commonStyles.label}>Weight</Text>
 						</View>
@@ -119,7 +126,7 @@ export default function LogWeight() {
 						</View>
 					</View>
 
-					<View style={styles.row}>
+					<View style={commonStyles.row}>
 						<View style={commonStyles.leftContainer}>
 							<Text style={commonStyles.label}>Date</Text>
 						</View>
@@ -159,15 +166,3 @@ export default function LogWeight() {
 		</KeyboardAvoidingView>
 	);
 }
-
-const styles = StyleSheet.create({
-	detailsCard: { ...commonStyles.card, marginBottom: 24 },
-	row: {
-		flexDirection: "row",
-		alignItems: "center",
-		justifyContent: "space-between",
-		paddingVertical: 14,
-		gap: 16,
-		minHeight: 56,
-	},
-});

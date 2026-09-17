@@ -1,5 +1,12 @@
 import { DatePickerModal } from "@/components/date-picker-modal";
-import { ME_PROFILE, MeProfileData, UPDATE_PROFILE } from "@/graphql/user";
+import {
+	ME_PROFILE,
+	MeProfileData,
+	SEX,
+	Sex,
+	UnitPreference,
+	UPDATE_PROFILE,
+} from "@/graphql/user";
 import { formatDateToISO, parseISODate } from "@/lib/date";
 import { colors } from "@/styles/colors";
 import { commonStyles } from "@/styles/common";
@@ -81,10 +88,10 @@ export default function Profile() {
 
 	// Local State Management for Editing
 	const [isEditing, setIsEditing] = useState(false);
-	const [sex, setSex] = useState<string | null>(null);
+	const [sex, setSex] = useState<Sex | null>(null);
 	const [dob, setDob] = useState<string | null>(null);
 	const [height, setHeight] = useState<string | null>("");
-	const [unit, setUnit] = useState<string>("METRIC");
+	const [unit, setUnit] = useState<UnitPreference>("METRIC");
 	const [heightPickerVisible, setHeightPickerVisible] = useState(false);
 	const [dobPickerVisible, setDobPickerVisible] = useState(false);
 	const [initializedMe, setInitializedMe] = useState<
@@ -285,7 +292,7 @@ export default function Profile() {
 						</View>
 						{isEditing ? (
 							<View style={profileStyles.optionGroup}>
-								{(["MALE", "FEMALE"] as const).map((option) => (
+								{SEX.map((option) => (
 									<Pressable
 										key={option}
 										onPress={() => setSex(option)}

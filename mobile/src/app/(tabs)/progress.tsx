@@ -72,7 +72,7 @@ export default function Progress() {
 				<Text style={styles.heading}>Progress</Text>
 				{/* Summary card */}
 				{latest && (
-					<View style={styles.summaryCard}>
+					<View style={commonStyles.menuContainer}>
 						<Text style={styles.currentWeightLabel}>Current weight</Text>
 						<Text style={styles.currentWeightValue}>
 							{kgToDisplayWeight(latest.weightKg, isImperial)} {weightUnit}
@@ -96,8 +96,8 @@ export default function Progress() {
 									/>
 								)}
 								<Text style={[styles.changeText, { color: trendColor }]}>
-									{kgToDisplayWeight(Math.abs(change), isImperial)} {weightUnit} since{" "}
-									{earliest.recordedDate}
+									{kgToDisplayWeight(Math.abs(change), isImperial)} {weightUnit}{" "}
+									since {earliest.recordedDate}
 								</Text>
 							</View>
 						)}
@@ -112,58 +112,54 @@ export default function Progress() {
 
 				{/* Goal targets */}
 				{data?.goal && (
-					<View style={styles.section}>
-						<View style={commonStyles.card}>
-							<Text style={styles.sectionHeading}>Daily Target</Text>
-							<View style={styles.statsRow}>
-								<StatBox
-									label="cal"
-									value={data.goal.dailyCalories}
-								/>
-								<StatBox
-									label="protein"
-									value={`${data.goal.proteinG}g`}
-								/>
-								<StatBox
-									label="carbs"
-									value={`${data.goal.carbsG}g`}
-								/>
-								<StatBox
-									label="fat"
-									value={`${data.goal.fatG}g`}
-								/>
-							</View>
+					<View style={[commonStyles.menuContainer, { paddingTop: 0 }]}>
+						<Text style={styles.sectionHeading}>Daily Target</Text>
+						<View style={styles.statsRow}>
+							<StatBox
+								label="cal"
+								value={data.goal.dailyCalories}
+							/>
+							<StatBox
+								label="protein"
+								value={`${data.goal.proteinG}g`}
+							/>
+							<StatBox
+								label="carbs"
+								value={`${data.goal.carbsG}g`}
+							/>
+							<StatBox
+								label="fat"
+								value={`${data.goal.fatG}g`}
+							/>
 						</View>
 					</View>
 				)}
 
 				{/* Weight history list */}
-				<View style={styles.section}>
-					<View style={commonStyles.card}>
-						<Text style={styles.sectionHeading}>Weight history</Text>
+				<View style={[commonStyles.menuContainer, { paddingTop: 0 }]}>
+					<Text style={styles.sectionHeading}>Weight history</Text>
 
-						<FlatList
-							data={bodyWeights}
-							keyExtractor={(item) => item.id}
-							scrollEnabled={false}
-							renderItem={({ item, index }) => (
-								<View
-									style={[
-										styles.historyRow,
-										index === bodyWeights.length - 1 && styles.historyRowLast,
-									]}
-								>
-									<Text style={styles.historyDate}>{item.recordedDate}</Text>
-									<Text style={styles.historyWeight}>
-										{kgToDisplayWeight(item.weightKg, isImperial)} {weightUnit}
-									</Text>
-								</View>
-							)}
-							ListEmptyComponent={
-								<Text style={styles.emptyText}>No weight entries yet</Text>
-							}
-						/>
-					</View>
+					<FlatList
+						data={bodyWeights}
+						keyExtractor={(item) => item.id}
+						scrollEnabled={false}
+						renderItem={({ item, index }) => (
+							<View
+								style={[
+									styles.historyRow,
+									index === bodyWeights.length - 1 && styles.historyRowLast,
+								]}
+							>
+								<Text style={styles.historyDate}>{item.recordedDate}</Text>
+								<Text style={styles.historyWeight}>
+									{kgToDisplayWeight(item.weightKg, isImperial)} {weightUnit}
+								</Text>
+							</View>
+						)}
+						ListEmptyComponent={
+							<Text style={styles.emptyText}>No weight entries yet</Text>
+						}
+					/>
 				</View>
 			</ScrollView>
 		</KeyboardAvoidingView>
@@ -182,20 +178,19 @@ function StatBox({ label, value }: { label: string; value: string | number }) {
 const styles = StyleSheet.create({
 	flex1: { flex: 1 },
 	loadingText: { marginTop: 8 },
-	heading: { ...commonStyles.heading, marginTop: 30 },
-	summaryCard: { ...commonStyles.card, padding: 16, marginBottom: 24 },
+	heading: { ...commonStyles.heading, marginTop: 26 },
 	currentWeightLabel: { fontSize: 13, color: colors.textSecondary },
 	currentWeightValue: { fontSize: 28, fontWeight: "bold", marginBottom: 8 },
 	changeRow: { flexDirection: "row", alignItems: "center", gap: 4 },
 	changeText: { fontSize: 13 },
-	section: { marginBottom: 24 },
+
 	sectionHeading: { ...commonStyles.sectionHeading, marginBottom: 10 },
-	statsRow: { flexDirection: "row", paddingBottom: 10 },
+	statsRow: { flexDirection: "row", gap: 8 },
 	statContainer: {
 		flex: 1,
 		backgroundColor: colors.card,
 		borderRadius: 8,
-		paddingVertical: 10,
+		paddingTop: 10,
 		alignItems: "center",
 	},
 	statValue: { fontSize: 15, fontWeight: "600" },

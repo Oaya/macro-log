@@ -1,4 +1,5 @@
 import { gql, TypedDocumentNode } from "@apollo/client";
+import { UnitPreference } from "./user";
 
 export type WeightEntry = {
 	id: string;
@@ -9,7 +10,7 @@ export type WeightEntry = {
 export type ProgressData = {
 	bodyWeights: WeightEntry[];
 	me: {
-		unitPreference: string;
+		unitPreference: UnitPreference;
 	};
 	goal: {
 		dailyCalories: number;
