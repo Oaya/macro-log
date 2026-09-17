@@ -1,7 +1,4 @@
 import { DatePickerModal } from "@/components/date-picker-modal";
-import { formatDateToISO, parseISODate } from "@/lib/date";
-import { colors } from "@/styles/colors";
-import { commonStyles, rowLayout } from "@/styles/common";
 import {
 	FoodResult,
 	LOG_FOOD,
@@ -9,6 +6,9 @@ import {
 	RECENT_FOODS,
 	SEARCH_FOODS,
 } from "@/graphql/food";
+import { formatDateToISO, parseISODate } from "@/lib/date";
+import { colors } from "@/styles/colors";
+import { commonStyles, rowLayout } from "@/styles/common";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client/react";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
@@ -182,7 +182,7 @@ export default function LogFood() {
 					</View>
 				)}
 
-				<View style={commonStyles.menuContainer}>
+				<View style={commonStyles.menuCard}>
 					<Text style={commonStyles.sectionHeading}>Meal log</Text>
 					<View>
 						<View style={commonStyles.row}>
@@ -232,7 +232,7 @@ export default function LogFood() {
 					</View>
 				</View>
 
-				<View style={commonStyles.menuContainer}>
+				<View style={commonStyles.menuCard}>
 					<Text style={commonStyles.sectionHeading}>Date</Text>
 
 					<View style={commonStyles.row}>
@@ -302,7 +302,7 @@ export default function LogFood() {
 					</TouchableOpacity>
 				</View>
 			</View>
-			<View style={commonStyles.menuContainer}>
+			<View style={commonStyles.menuCard}>
 				<TextInput
 					value={search}
 					onChangeText={handleSearch}
@@ -350,7 +350,7 @@ export default function LogFood() {
 				</View>
 			</View>
 
-			<View style={commonStyles.menuContainer}>
+			<View style={commonStyles.menuCard}>
 				{listLoading ? (
 					<Text style={commonStyles.cardText}>Loading foods...</Text>
 				) : (

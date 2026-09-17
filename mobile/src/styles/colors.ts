@@ -11,4 +11,6 @@ export const colors = {
 	cancelText: "#48484A",
 	danger: "#FF3B30",
 	backdrop: "rgba(0,0,0,0.4)",
+	trendDown: "#34C759",
+	trendUp: "#FF9500",
 };

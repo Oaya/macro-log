@@ -106,7 +106,7 @@ export default function LogWorkout() {
 					</TouchableOpacity>
 				</View>
 
-				<View style={commonStyles.menuContainer}>
+				<View style={commonStyles.menuCard}>
 					<Text style={commonStyles.sectionHeading}>Workout</Text>
 					{isStrength ? (
 						<View>
@@ -210,7 +210,7 @@ export default function LogWorkout() {
 					)}
 				</View>
 
-				<View style={commonStyles.menuContainer}>
+				<View style={commonStyles.menuCard}>
 					<Text style={commonStyles.sectionHeading}>Date</Text>
 
 					<Pressable
@@ -257,7 +257,7 @@ export default function LogWorkout() {
 		>
 			<Text style={commonStyles.heading}>What workout did you do?</Text>
 
-			<View style={commonStyles.menuContainer}>
+			<View style={commonStyles.menuCard}>
 				<TextInput
 					value={search}
 					onChangeText={setSearch}
@@ -289,7 +289,7 @@ export default function LogWorkout() {
 				</View>
 			</View>
 
-			<View style={commonStyles.menuContainer}>
+			<View style={commonStyles.menuCard}>
 				{loading ? (
 					<Text style={commonStyles.cardText}>Loading exercises...</Text>
 				) : (

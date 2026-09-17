@@ -25,6 +25,10 @@ import {
 
 const ACTIVITY_LEVEL = ["SEDENTARY", "LIGHT", "MODERATE", "ACTIVE"];
 
+export function getNavOptions() {
+	return { title: "" };
+}
+
 export default function SetGoal() {
 	const { data: goalData, loading, error } = useQuery(GOAL);
 
@@ -69,13 +73,7 @@ export default function SetGoal() {
 
 	if (loading) {
 		return (
-			<View
-				style={{
-					flex: 1,
-					justifyContent: "center",
-					alignItems: "center",
-				}}
-			>
+			<View style={commonStyles.loadingContainer}>
 				<ActivityIndicator size="large" />
 				<Text style={{ marginTop: 8 }}>Loading...</Text>
 			</View>
@@ -84,22 +82,8 @@ export default function SetGoal() {
 
 	if (error) {
 		return (
-			<View
-				style={{
-					flex: 1,
-					justifyContent: "center",
-					alignItems: "center",
-					padding: 20,
-				}}
-			>
-				<Text
-					style={{
-						color: colors.danger,
-						textAlign: "center",
-					}}
-				>
-					Error: {error.message}
-				</Text>
+			<View style={commonStyles.errorContainer}>
+				<Text style={commonStyles.errorText}>Error: {error.message}</Text>
 			</View>
 		);
 	}
