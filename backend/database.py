@@ -16,7 +16,7 @@ if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
 # The engine is the core connection pool to the database.
-engine = create_engine(DATABASE_URL)
+engine = create_engine(DATABASE_URL, echo=True)
 
 # A session factory. Each request gets a session to run queries/commits.
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

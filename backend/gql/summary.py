@@ -2,6 +2,7 @@ from datetime import date
 
 import strawberry
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from strawberry.types import Info
 
 from database import SessionLocal
@@ -30,10 +31,12 @@ class SummaryQuery:
             # Food logs for the date -> sum calories and macros
             food_logs = (
                 db.execute(
-                    select(FoodLogModel).where(
+                    select(FoodLogModel)
+                    .where(
                         FoodLogModel.user_id == current_user.id,
                         FoodLogModel.log_date == summary_date,
                     )
+                    .options(selectinload(FoodLogModel.food))
                 )
                 .scalars()
                 .all()

@@ -3,6 +3,7 @@ from datetime import date
 
 import strawberry
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from strawberry.types import Info
 
 from database import SessionLocal
@@ -63,8 +64,10 @@ class WorkoutQuery:
         db = SessionLocal()
 
         try:
-            query = select(WorkoutLogModel).where(
-                WorkoutLogModel.user_id == current_user.id
+            query = (
+                select(WorkoutLogModel)
+                .where(WorkoutLogModel.user_id == current_user.id)
+                .options(selectinload(WorkoutLogModel.exercise))
             )
 
             if log_date is not None:

@@ -3,6 +3,7 @@ from datetime import date
 
 import strawberry
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from strawberry.types import Info
 
 from database import SessionLocal
@@ -82,6 +83,9 @@ class FoodQuery:
                 db.execute(
                     select(FoodLogModel)
                     .where(FoodLogModel.user_id == current_user.id)
+                    .options(
+                        selectinload(FoodLogModel.food)
+                    )  # batch-fetch all related foods in ONE extra query
                     .order_by(FoodLogModel.created_at.desc())
                     .limit(limit * 3)  # over-fetch to allow de-duping by name
                 )
