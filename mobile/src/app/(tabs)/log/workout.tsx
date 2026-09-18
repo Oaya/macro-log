@@ -106,13 +106,7 @@ export default function LogWorkout() {
 					</TouchableOpacity>
 				</View>
 
-				<View
-					style={[
-						commonStyles.menuContainer,
-						commonStyles.menuItemFirst,
-						commonStyles.menuItemLast,
-					]}
-				>
+				<View style={commonStyles.card}>
 					<Text style={commonStyles.sectionHeading}>Workout</Text>
 					{isStrength ? (
 						<View>

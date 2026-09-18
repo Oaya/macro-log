@@ -51,7 +51,7 @@ export default function WorkoutHistory({ workoutLogs }: Props) {
 	};
 
 	return (
-		<View style={[commonStyles.menuContainer, commonStyles.menuItemFirst]}>
+		<View style={commonStyles.card}>
 			<View style={commonStyles.sectionHeaderRow}>
 				<Text
 					style={[commonStyles.sectionHeading, commonStyles.sectionHeadingFlat]}

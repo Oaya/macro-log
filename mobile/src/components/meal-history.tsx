@@ -60,7 +60,7 @@ export default function MealHistory({ foodLogs }: Props) {
 	};
 
 	return (
-		<View style={[commonStyles.menuContainer, commonStyles.menuItemFirst]}>
+		<View style={commonStyles.card}>
 			<View style={commonStyles.sectionHeaderRow}>
 				<Text
 					style={[commonStyles.sectionHeading, commonStyles.sectionHeadingFlat]}

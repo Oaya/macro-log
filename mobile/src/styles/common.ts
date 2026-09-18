@@ -56,6 +56,14 @@ export const commonStyles = {
 		color: colors.textPrimary,
 		flex: 1,
 	},
+	card: {
+		backgroundColor: colors.card,
+		borderRadius: 12,
+		padding: 16,
+		marginBottom: 20,
+		marginTop: 0,
+		paddingTop: 0,
+	},
 
 	loadingContainer: {
 		flex: 1,

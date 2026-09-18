@@ -198,7 +198,7 @@ export default function Progress() {
 
 				{/* Goal targets */}
 				{data?.goal && (
-					<View style={[commonStyles.menuContainer, { paddingTop: 0 }]}>
+					<View style={commonStyles.card}>
 						<Text style={styles.sectionHeading}>Daily Target</Text>
 						<View style={styles.statsRow}>
 							<StatBox
@@ -222,7 +222,7 @@ export default function Progress() {
 				)}
 
 				{/* History list */}
-				<View style={[commonStyles.menuContainer, { paddingTop: 0 }]}>
+				<View style={commonStyles.card}>
 					<Text style={styles.sectionHeading}>{metricLabel} history</Text>
 
 					<FlatList

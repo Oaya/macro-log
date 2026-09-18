@@ -1,4 +1,5 @@
 import { DatePickerModal } from "@/components/date-picker-modal";
+import { TextInput } from "@/components/text-input";
 import {
 	BODY_STATS_FOR_DATE,
 	BODY_STATS_HISTORY,
@@ -15,7 +16,6 @@ import {
 } from "@/lib/units";
 import { colors } from "@/styles/colors";
 import { commonStyles } from "@/styles/common";
-import { TextInput } from "@/components/text-input";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
@@ -45,7 +45,12 @@ export default function LogBodyStats() {
 		},
 	);
 	const today = formatDateToISO(new Date());
-	const { data: meData, loading, error, refetch } = useQuery(ME_WEIGHT, {
+	const {
+		data: meData,
+		loading,
+		error,
+		refetch,
+	} = useQuery(ME_WEIGHT, {
 		variables: { date: today },
 		skip: isEditing,
 	});
@@ -71,7 +76,9 @@ export default function LogBodyStats() {
 
 	const [date, setDate] = useState(editDate ?? today);
 	const [initializedKey, setInitializedKey] = useState<string | null>(null);
-	const unit = isEditing ? dateData?.me.unitPreference : meData?.me.unitPreference;
+	const unit = isEditing
+		? dateData?.me.unitPreference
+		: meData?.me.unitPreference;
 
 	const isImperial = unit?.toUpperCase() === "IMPERIAL";
 
@@ -170,13 +177,7 @@ export default function LogBodyStats() {
 					{isEditing ? `Edit Body Stats — ${date}` : "Record Your Body Stats"}
 				</Text>
 
-				<View
-					style={[
-						commonStyles.menuContainer,
-						commonStyles.menuItemFirst,
-						commonStyles.menuItemLast,
-					]}
-				>
+				<View style={commonStyles.card}>
 					<Text style={commonStyles.sectionHeading}>Body measurement</Text>
 
 					<View style={commonStyles.row}>
@@ -305,13 +306,7 @@ export default function LogBodyStats() {
 					</View>
 				</View>
 
-				<View
-					style={[
-						commonStyles.menuContainer,
-						commonStyles.menuItemFirst,
-						commonStyles.menuItemLast,
-					]}
-				>
+				<View style={commonStyles.card}>
 					<Text style={commonStyles.sectionHeading}>Date</Text>
 
 					<View style={commonStyles.row}>
@@ -339,7 +334,11 @@ export default function LogBodyStats() {
 					disabled={creating}
 				>
 					<Text style={commonStyles.submitButtonText}>
-						{creating ? "Saving..." : isEditing ? "Update Body Stats" : "Record Body Stats"}
+						{creating
+							? "Saving..."
+							: isEditing
+								? "Update Body Stats"
+								: "Record Body Stats"}
 					</Text>
 				</TouchableOpacity>
 			</ScrollView>

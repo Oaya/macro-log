@@ -15,7 +15,7 @@ export function MetricChart({ title, data, unit }: MetricChartProps) {
 	if (data.length < 2) return null;
 
 	return (
-		<View style={[commonStyles.menuContainer, { paddingTop: 0 }]}>
+		<View style={commonStyles.card}>
 			<Text style={styles.sectionHeading}>{title}</Text>
 
 			<View style={styles.chartWrapper}>

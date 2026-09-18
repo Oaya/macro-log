@@ -198,7 +198,7 @@ export default function Profile() {
 					</Text>
 				</View>
 
-				<View style={profileStyles.detailsCard}>
+				<View style={commonStyles.card}>
 					{/* Email Row */}
 					<View style={commonStyles.row}>
 						<View style={commonStyles.leftContainer}>

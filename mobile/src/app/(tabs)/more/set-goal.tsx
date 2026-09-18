@@ -161,13 +161,7 @@ export default function SetGoal() {
 				bounces={false}
 				showsVerticalScrollIndicator={false}
 			>
-				<View
-					style={[
-						commonStyles.menuContainer,
-						commonStyles.menuItemFirst,
-						commonStyles.menuItemLast,
-					]}
-				>
+				<View style={commonStyles.card}>
 					<Text style={commonStyles.sectionHeading}>Goal</Text>
 					{/* Current Weight */}
 					<View style={commonStyles.row}>
@@ -290,13 +284,7 @@ export default function SetGoal() {
 
 				{/* Daily Target */}
 				{goalData?.goal && (
-					<View
-						style={[
-							commonStyles.menuContainer,
-							commonStyles.menuItemFirst,
-							commonStyles.menuItemLast,
-						]}
-					>
+					<View style={commonStyles.card}>
 						<Text style={commonStyles.sectionHeading}>Daily Goal</Text>
 						<View style={commonStyles.row}>
 							<Text style={commonStyles.label}>Daily Calories</Text>
