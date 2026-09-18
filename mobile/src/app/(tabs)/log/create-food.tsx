@@ -1,3 +1,4 @@
+import { TextInput } from "@/components/text-input";
 import { CREATE_FOOD } from "@/graphql/food";
 import { colors } from "@/styles/colors";
 import { commonStyles } from "@/styles/common";
@@ -11,7 +12,6 @@ import {
 	ScrollView,
 	StyleSheet,
 	Text,
-	TextInput,
 	TouchableOpacity,
 	View,
 } from "react-native";

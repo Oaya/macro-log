@@ -77,10 +77,15 @@ class AuthPayload:
 
 
 @strawberry.type
-class BodyWeight:
+class BodyMeasurement:
     id: strawberry.ID
-    weight_kg: float
     recorded_date: str | None
+    weight_kg: float | None = None
+    waist_cm: float | None = None
+    hip_cm: float | None = None
+    chest_cm: float | None = None
+    arm_cm: float | None = None
+    thigh_cm: float | None = None
 
 
 @strawberry.type

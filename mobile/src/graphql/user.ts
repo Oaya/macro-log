@@ -22,8 +22,13 @@ export const ME_ACCOUNT: TypedDocumentNode<MeAccountData> = gql`
 
 export type MeWeightData = {
 	me: { id: string; unitPreference: UnitPreference };
-	latestBodyWeight: {
-		weightKg: number;
+	latestBodyStats: {
+		weightKg: number | null;
+		waistCm: number | null;
+		hipCm: number | null;
+		chestCm: number | null;
+		armCm: number | null;
+		thighCm: number | null;
 		recordedDate: string;
 	};
 };
@@ -34,17 +39,43 @@ export const ME_WEIGHT: TypedDocumentNode<MeWeightData> = gql`
 			id
 			unitPreference
 		}
-		latestBodyWeight {
+		latestBodyStats {
 			weightKg
+			waistCm
+			hipCm
+			chestCm
+			armCm
+			thighCm
 			recordedDate
 		}
 	}
 `;
 
-export const RECORD_WEIGHT = gql`
-	mutation RecordWeight($weightKg: Float!, $recordedDate: Date!) {
-		recordWeight(weightKg: $weightKg, recordedDate: $recordedDate) {
+export const RECORD_BODY_STATS = gql`
+	mutation RecordBodyStats(
+		$weightKg: Float
+		$waistCm: Float
+		$hipCm: Float
+		$chestCm: Float
+		$armCm: Float
+		$thighCm: Float
+		$recordedDate: Date
+	) {
+		recordBodyStats(
+			weightKg: $weightKg
+			waistCm: $waistCm
+			hipCm: $hipCm
+			chestCm: $chestCm
+			armCm: $armCm
+			thighCm: $thighCm
+			recordedDate: $recordedDate
+		) {
 			weightKg
+			waistCm
+			hipCm
+			chestCm
+			armCm
+			thighCm
 			recordedDate
 		}
 	}

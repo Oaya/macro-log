@@ -1,10 +1,11 @@
+import { TextInput } from "@/components/text-input";
 import { useAuth } from "@/lib/auth-context";
 import { authStyles } from "@/styles/auth";
 import { REGISTER } from "@/graphql/auth";
 import { useMutation } from "@apollo/client/react";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, Pressable, Text, TextInput, View } from "react-native";
+import { Alert, Pressable, Text, View } from "react-native";
 
 export default function Register() {
 	const [email, setEmail] = useState("");

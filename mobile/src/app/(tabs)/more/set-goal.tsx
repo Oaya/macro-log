@@ -1,4 +1,5 @@
 import { DatePickerModal } from "@/components/date-picker-modal";
+import { TextInput } from "@/components/text-input";
 import {
 	ACTIVITY_LEVEL,
 	ActivityLevel,
@@ -22,7 +23,6 @@ import {
 	Pressable,
 	ScrollView,
 	Text,
-	TextInput,
 	TouchableOpacity,
 	View,
 } from "react-native";

@@ -17,7 +17,7 @@ export default function LogLayout() {
 			/>
 			<Stack.Screen
 				name="weight"
-				options={{ title: "Log Weight" }}
+				options={{ title: "Log Body Stats" }}
 			/>
 			<Stack.Screen
 				name="create-food"

@@ -1,4 +1,5 @@
 import { DatePickerModal } from "@/components/date-picker-modal";
+import { TextInput } from "@/components/text-input";
 import {
 	FoodResult,
 	LOG_FOOD,
@@ -23,7 +24,6 @@ import {
 	ScrollView,
 	StyleSheet,
 	Text,
-	TextInput,
 	TouchableOpacity,
 	View,
 } from "react-native";

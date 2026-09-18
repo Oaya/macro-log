@@ -208,7 +208,7 @@ export default function Index() {
 								<>
 									<Text style={styles.weightLabel}>No weight logged</Text>
 									<TouchableOpacity
-										onPress={() => router.push("/(tabs)/log/weight")}
+										onPress={() => router.push("/(tabs)/log/log-body-stats")}
 									>
 										<Text style={commonStyles.addText}>+ Add</Text>
 									</TouchableOpacity>

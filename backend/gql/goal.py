@@ -9,7 +9,7 @@ from database import SessionLocal
 from gql.context import require_user
 from gql.converters import calculate_age
 from gql.types import ActivityLevel, Goal
-from models import BodyWeight as BodyWeightModel
+from models import BodyMeasurement as BodyMeasurementModel
 from models import Goal as GoalModel
 from models import User as UserModel
 
@@ -69,16 +69,6 @@ class GoalMutation:
             if db_user is None:
                 raise Exception("User not found")
 
-            # latest_weight = (
-            #     db.execute(
-            #         select(BodyWeightModel)
-            #         .where(BodyWeightModel.user_id == current_user.id)
-            #         .order_by(BodyWeightModel.recorded_date.desc())
-            #     )
-            #     .scalars()
-            #     .first()
-            # )
-
             if not (db_user.height_cm and db_user.date_of_birth and db_user.sex):
                 raise Exception(
                     "Please complete your profile (height, date of birth, sex) first"
@@ -125,13 +115,24 @@ class GoalMutation:
             db.commit()
             db.refresh(goal)
 
-            db.add(
-                BodyWeightModel(
-                    user_id=current_user.id,
-                    weight_kg=start_weight_kg,
-                    recorded_date=date.today(),
+            existing_measurement = db.execute(
+                select(BodyMeasurementModel).where(
+                    BodyMeasurementModel.user_id == current_user.id,
+                    BodyMeasurementModel.recorded_date == date.today(),
                 )
-            )
+            ).scalar_one_or_none()
+
+            if existing_measurement:
+                existing_measurement.weight_kg = start_weight_kg
+            else:
+                db.add(
+                    BodyMeasurementModel(
+                        user_id=current_user.id,
+                        weight_kg=start_weight_kg,
+                        recorded_date=date.today(),
+                    )
+                )
+            db.commit()
 
             return Goal(
                 id=strawberry.ID(str(goal.id)),

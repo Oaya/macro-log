@@ -1,4 +1,5 @@
 import { DatePickerModal } from "@/components/date-picker-modal";
+import { TextInput } from "@/components/text-input";
 import { EXERCISES, Exercise, LOG_WORKOUT } from "@/graphql/workout";
 import { formatDateToISO, parseISODate } from "@/lib/date";
 import { colors } from "@/styles/colors";
@@ -13,7 +14,6 @@ import {
 	ScrollView,
 	StyleSheet,
 	Text,
-	TextInput,
 	TouchableOpacity,
 	View,
 } from "react-native";

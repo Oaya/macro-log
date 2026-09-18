@@ -53,16 +53,21 @@ class User(BaseMixin, Base):
     workout_logs: Mapped[list["WorkoutLog"]] = relationship(back_populates="user")
 
 
-class BodyWeight(BaseMixin, Base):
-    __tablename__ = "body_weights"
+class BodyMeasurement(BaseMixin, Base):
+    __tablename__ = "body_measurements"
 
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("users.id"), nullable=False
     )
-    weight_kg: Mapped[float] = mapped_column(Float, nullable=False)
     recorded_date: Mapped[date] = mapped_column(
         Date, nullable=False, server_default=func.current_date()
     )
+    weight_kg: Mapped[float] = mapped_column(Float)
+    waist_cm: Mapped[float | None] = mapped_column(Float)
+    hip_cm: Mapped[float | None] = mapped_column(Float)
+    chest_cm: Mapped[float | None] = mapped_column(Float)
+    arm_cm: Mapped[float | None] = mapped_column(Float)
+    thigh_cm: Mapped[float | None] = mapped_column(Float)
 
     __table_args__ = (
         UniqueConstraint("user_id", "recorded_date", name="uq_user_date"),

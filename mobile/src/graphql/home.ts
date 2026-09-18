@@ -71,7 +71,7 @@ export const HOME_DATA: TypedDocumentNode<HomeData> = gql`
 			durationMin
 			caloriesBurned
 		}
-		todayBodyWeight {
+		todayBodyWeight(recordedDate: $date) {
 			id
 			weightKg
 		}

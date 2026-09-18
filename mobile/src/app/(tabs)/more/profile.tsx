@@ -8,6 +8,7 @@ import {
 	UPDATE_PROFILE,
 } from "@/graphql/user";
 import { formatDateToISO, parseISODate } from "@/lib/date";
+import { cmToDisplayHeight } from "@/lib/units";
 import { colors } from "@/styles/colors";
 import { commonStyles } from "@/styles/common";
 import { profileStyles } from "@/styles/profile";
@@ -124,13 +125,15 @@ export default function Profile() {
 		);
 	}
 
+	const isImperial = unit?.toUpperCase() === "IMPERIAL";
+
 	//  Save and Cancel Handlers
 	const handleSave = async () => {
 		try {
 			await updateProfile({
 				variables: {
 					dateOfBirth: dob,
-					heightCm: parseHeightCm(height),
+					heightCm: height ? parseHeightCm(height) : null,
 					sex: sex,
 					unitPreference: unit,
 				},
@@ -153,24 +156,10 @@ export default function Profile() {
 		setIsEditing(false);
 	};
 
-	// Helper to format dynamic height labels
-	const formatHeightDisplay = (heightVal: string) => {
-		const cm = parseFloat(heightVal);
-		if (isNaN(cm) || cm <= 0) return "--";
+	const heightOptions = isImperial
+		? IMPERIAL_HEIGHT_OPTIONS
+		: METRIC_HEIGHT_OPTIONS;
 
-		if (unit?.toLowerCase() === "imperial") {
-			const totalInches = cm / 2.54;
-			const feet = Math.floor(totalInches / 12);
-			const inches = Math.round(totalInches % 12);
-			return `${feet}'${inches}"`;
-		}
-		return `${cm} cm`;
-	};
-
-	const heightOptions =
-		unit?.toUpperCase() === "IMPERIAL"
-			? IMPERIAL_HEIGHT_OPTIONS
-			: METRIC_HEIGHT_OPTIONS;
 	const selectedHeightIndex = findNearestOptionIndex(
 		heightOptions,
 		parseHeightCm(height),
@@ -280,7 +269,9 @@ export default function Profile() {
 								numberOfLines={1}
 								ellipsizeMode="tail"
 							>
-								{formatHeightDisplay(height ?? "")}
+								{height
+									? (cmToDisplayHeight(height, isImperial) ?? "--")
+									: "--"}
 							</Text>
 						)}
 					</View>
