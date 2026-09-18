@@ -8,7 +8,7 @@ from strawberry.types import Info
 from database import SessionLocal
 from gql.context import require_user
 from gql.types import CaloriesEstimateStatus, Exercise, ExerciseType, WorkoutLog
-from models import BodyWeight as BodyWeightModel
+from models import BodyMeasurement as BodyMeasurementModel
 from models import Exercise as ExerciseModel
 from models import WorkoutLog as WorkoutLogModel
 
@@ -121,9 +121,9 @@ class WorkoutMutation:
             if duration_min and exercise.met_value:
                 latest_weight = (
                     db.execute(
-                        select(BodyWeightModel)
-                        .where(BodyWeightModel.user_id == current_user.id)
-                        .order_by(BodyWeightModel.recorded_date.desc())
+                        select(BodyMeasurementModel)
+                        .where(BodyMeasurementModel.user_id == current_user.id)
+                        .order_by(BodyMeasurementModel.recorded_date.desc())
                     )
                     .scalars()
                     .first()

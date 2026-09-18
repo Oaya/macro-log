@@ -22,29 +22,123 @@ export const ME_ACCOUNT: TypedDocumentNode<MeAccountData> = gql`
 
 export type MeWeightData = {
 	me: { id: string; unitPreference: UnitPreference };
-	latestBodyWeight: {
-		weightKg: number;
+	todayBodyStats: {
+		weightKg: number | null;
+		waistCm: number | null;
+		hipCm: number | null;
+		chestCm: number | null;
+		armCm: number | null;
+		thighCm: number | null;
 		recordedDate: string;
-	};
+	} | null;
 };
 
-export const ME_WEIGHT: TypedDocumentNode<MeWeightData> = gql`
-	query {
+export type MeWeightVariables = { date: string };
+
+export const ME_WEIGHT: TypedDocumentNode<MeWeightData, MeWeightVariables> = gql`
+	query MeWeight($date: Date!) {
 		me {
 			id
 			unitPreference
 		}
-		latestBodyWeight {
+		todayBodyStats(recordedDate: $date) {
 			weightKg
+			waistCm
+			hipCm
+			chestCm
+			armCm
+			thighCm
 			recordedDate
 		}
 	}
 `;
 
-export const RECORD_WEIGHT = gql`
-	mutation RecordWeight($weightKg: Float!, $recordedDate: Date!) {
-		recordWeight(weightKg: $weightKg, recordedDate: $recordedDate) {
+export type BodyStatsEntry = {
+	id: string;
+	weightKg: number | null;
+	waistCm: number | null;
+	hipCm: number | null;
+	chestCm: number | null;
+	armCm: number | null;
+	thighCm: number | null;
+	recordedDate: string;
+};
+
+export type BodyStatsHistoryData = {
+	bodyWeights: Omit<BodyStatsEntry, "id">[];
+};
+
+// Ordered newest-first by the backend, so the first non-null match for a
+// field is the most recent prior value — used to placeholder a blank field
+// with the last known measurement.
+export const BODY_STATS_HISTORY: TypedDocumentNode<BodyStatsHistoryData> = gql`
+	query BodyStatsHistory {
+		bodyWeights {
 			weightKg
+			waistCm
+			hipCm
+			chestCm
+			armCm
+			thighCm
+			recordedDate
+		}
+	}
+`;
+
+export type BodyStatsForDateData = {
+	me: { id: string; unitPreference: UnitPreference };
+	bodyWeights: BodyStatsEntry[];
+};
+
+export type BodyStatsForDateVariables = { recordedDate: string };
+
+export const BODY_STATS_FOR_DATE: TypedDocumentNode<
+	BodyStatsForDateData,
+	BodyStatsForDateVariables
+> = gql`
+	query BodyStatsForDate($recordedDate: Date!) {
+		me {
+			id
+			unitPreference
+		}
+		bodyWeights(recordedDate: $recordedDate) {
+			id
+			weightKg
+			waistCm
+			hipCm
+			chestCm
+			armCm
+			thighCm
+			recordedDate
+		}
+	}
+`;
+
+export const RECORD_BODY_STATS = gql`
+	mutation RecordBodyStats(
+		$weightKg: Float
+		$waistCm: Float
+		$hipCm: Float
+		$chestCm: Float
+		$armCm: Float
+		$thighCm: Float
+		$recordedDate: Date
+	) {
+		recordBodyStats(
+			weightKg: $weightKg
+			waistCm: $waistCm
+			hipCm: $hipCm
+			chestCm: $chestCm
+			armCm: $armCm
+			thighCm: $thighCm
+			recordedDate: $recordedDate
+		) {
+			weightKg
+			waistCm
+			hipCm
+			chestCm
+			armCm
+			thighCm
 			recordedDate
 		}
 	}

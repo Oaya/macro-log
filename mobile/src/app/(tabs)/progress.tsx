@@ -1,13 +1,15 @@
-import { WeightChart } from "@/components/weight-chart";
+import { MetricChart } from "@/components/metric-chart";
 import { PROGRESS_DATA } from "@/graphql/progress";
 import { DELETE_BODY_WEIGHT } from "@/graphql/user";
-import { kgToDisplayWeight } from "@/lib/units";
+import { cmToDisplayLength, kgToDisplayWeight } from "@/lib/units";
 import { colors } from "@/styles/colors";
 import { commonStyles } from "@/styles/common";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { Minus, TrendingDown, TrendingUp } from "lucide-react-native";
 import moment from "moment";
+import { useState } from "react";
 import {
 	ActivityIndicator,
 	Alert,
@@ -22,24 +24,47 @@ import {
 } from "react-native";
 import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 
+const METRICS = [
+	{ key: "weightKg", label: "Weight" },
+	{ key: "waistCm", label: "Waist" },
+	{ key: "hipCm", label: "Hip" },
+	{ key: "chestCm", label: "Chest" },
+	{ key: "armCm", label: "Arm" },
+	{ key: "thighCm", label: "Thigh" },
+] as const;
+
+type MetricKey = (typeof METRICS)[number]["key"];
+
 export default function Progress() {
 	const { data, loading, error } = useQuery(PROGRESS_DATA);
 	const [deleteBodyWeight] = useMutation(DELETE_BODY_WEIGHT, {
 		refetchQueries: ["ProgressData"],
 	});
+	const [metric, setMetric] = useState<MetricKey>("weightKg");
 
 	const bodyWeights = data?.bodyWeights ?? [];
-
-	const latest = bodyWeights[0];
-	const earliest = bodyWeights[bodyWeights.length - 1];
-	const change =
-		latest && earliest ? latest.weightKg - earliest.weightKg : null;
-
 	const isImperial = data?.me.unitPreference?.toUpperCase() === "IMPERIAL";
-	const weightUnit = isImperial ? "lb" : "kg";
+	const isWeight = metric === "weightKg";
+	const unit = isWeight ? (isImperial ? "lb" : "kg") : isImperial ? "in" : "cm";
+	const metricLabel = METRICS.find((m) => m.key === metric)!.label;
 
-	const chartData = [...bodyWeights].reverse().map((entry) => ({
-		value: Number(kgToDisplayWeight(entry.weightKg, isImperial)),
+	const toDisplay = (raw: number | null) =>
+		isWeight
+			? kgToDisplayWeight(raw, isImperial)
+			: cmToDisplayLength(raw, isImperial);
+
+	// Only entries where the selected metric was actually recorded.
+	const entries = bodyWeights.filter((entry) => entry[metric] != null);
+
+	const latest = entries[0];
+	const earliest = entries[entries.length - 1];
+	const change =
+		latest && earliest && entries.length > 1
+			? (latest[metric] as number) - (earliest[metric] as number)
+			: null;
+
+	const chartData = [...entries].reverse().map((entry) => ({
+		value: Number(toDisplay(entry[metric] as number)),
 		label: moment(entry.recordedDate, "YYYY-MM-DD").format("MMM D"),
 	}));
 
@@ -68,7 +93,7 @@ export default function Progress() {
 	}
 
 	const handleDelete = (id: string, date: string) => {
-		Alert.alert("Delete entry", `Remove ${date}'s weight history?`, [
+		Alert.alert("Delete entry", `Remove ${date}'s body stats?`, [
 			{ text: "Cancel", style: "cancel" },
 			{
 				text: "Delete",
@@ -94,14 +119,44 @@ export default function Progress() {
 				contentContainerStyle={styles.scrollContent}
 			>
 				<Text style={styles.heading}>Progress</Text>
+
+				{/* Metric selector */}
+				<ScrollView
+					horizontal
+					showsHorizontalScrollIndicator={false}
+					contentContainerStyle={styles.metricSelector}
+				>
+					{METRICS.map((m) => (
+						<TouchableOpacity
+							key={m.key}
+							onPress={() => setMetric(m.key)}
+							style={[
+								styles.metricTab,
+								metric === m.key && styles.metricTabSelected,
+							]}
+						>
+							<Text
+								style={[
+									styles.metricTabText,
+									metric === m.key && styles.metricTabTextSelected,
+								]}
+							>
+								{m.label}
+							</Text>
+						</TouchableOpacity>
+					))}
+				</ScrollView>
+
 				{/* Summary card */}
-				{latest && (
+				{latest ? (
 					<View style={commonStyles.menuContainer}>
-						<Text style={styles.currentWeightLabel}>Current weight</Text>
-						<Text style={styles.currentWeightValue}>
-							{kgToDisplayWeight(latest.weightKg, isImperial)} {weightUnit}
+						<Text style={styles.currentWeightLabel}>
+							Current {metricLabel.toLowerCase()}
 						</Text>
-						{change !== null && bodyWeights.length > 1 && (
+						<Text style={styles.currentWeightValue}>
+							{toDisplay(latest[metric])} {unit}
+						</Text>
+						{change !== null && (
 							<View style={styles.changeRow}>
 								{change < 0 ? (
 									<TrendingDown
@@ -120,18 +175,25 @@ export default function Progress() {
 									/>
 								)}
 								<Text style={[styles.changeText, { color: trendColor }]}>
-									{kgToDisplayWeight(Math.abs(change), isImperial)} {weightUnit}{" "}
-									since {earliest.recordedDate}
+									{toDisplay(Math.abs(change))} {unit} since{" "}
+									{earliest.recordedDate}
 								</Text>
 							</View>
 						)}
 					</View>
+				) : (
+					<View style={commonStyles.menuContainer}>
+						<Text style={styles.emptyText}>
+							No {metricLabel.toLowerCase()} entries yet
+						</Text>
+					</View>
 				)}
 
-				{/* Weight trend chart */}
-				<WeightChart
+				{/* Metric trend chart */}
+				<MetricChart
+					title={`${metricLabel} Trend`}
 					data={chartData}
-					unit={weightUnit}
+					unit={unit}
 				/>
 
 				{/* Goal targets */}
@@ -159,12 +221,12 @@ export default function Progress() {
 					</View>
 				)}
 
-				{/* Weight history list */}
+				{/* History list */}
 				<View style={[commonStyles.menuContainer, { paddingTop: 0 }]}>
-					<Text style={styles.sectionHeading}>Weight history</Text>
+					<Text style={styles.sectionHeading}>{metricLabel} history</Text>
 
 					<FlatList
-						data={bodyWeights}
+						data={entries}
 						keyExtractor={(item) => item.id}
 						scrollEnabled={false}
 						renderItem={({ item, index }) => (
@@ -182,21 +244,29 @@ export default function Progress() {
 									</TouchableOpacity>
 								)}
 							>
-								<View
+								<TouchableOpacity
 									style={[
 										styles.historyRow,
-										index === bodyWeights.length - 1 && styles.historyRowLast,
+										index === entries.length - 1 && styles.historyRowLast,
 									]}
+									onPress={() =>
+										router.push({
+											pathname: "/(tabs)/log/log-body-stats",
+											params: { date: item.recordedDate },
+										})
+									}
 								>
 									<Text style={styles.historyDate}>{item.recordedDate}</Text>
 									<Text style={styles.historyWeight}>
-										{kgToDisplayWeight(item.weightKg, isImperial)} {weightUnit}
+										{toDisplay(item[metric])} {unit}
 									</Text>
-								</View>
+								</TouchableOpacity>
 							</Swipeable>
 						)}
 						ListEmptyComponent={
-							<Text style={styles.emptyText}>No weight entries yet</Text>
+							<Text style={styles.emptyText}>
+								No {metricLabel.toLowerCase()} entries yet
+							</Text>
 						}
 					/>
 				</View>
@@ -218,6 +288,21 @@ const styles = StyleSheet.create({
 	scrollContent: { paddingBottom: 100 },
 	loadingText: { marginTop: 8 },
 	heading: { ...commonStyles.heading, marginTop: 26 },
+	metricSelector: { gap: 20, paddingBottom: 12 },
+	metricTab: {
+		paddingBottom: 8,
+		borderBottomWidth: 2,
+		borderBottomColor: "transparent",
+	},
+	metricTabSelected: { borderBottomColor: colors.primary },
+	metricTabText: {
+		fontSize: 14,
+		color: colors.textSecondary,
+	},
+	metricTabTextSelected: {
+		color: colors.textPrimary,
+		fontWeight: "600",
+	},
 	currentWeightLabel: { fontSize: 13, color: colors.textSecondary },
 	currentWeightValue: { fontSize: 28, fontWeight: "bold", marginBottom: 8 },
 	changeRow: { flexDirection: "row", alignItems: "center", gap: 4 },

@@ -8,8 +8,8 @@ from strawberry.types import Info
 from database import SessionLocal
 from gql.context import require_user
 from gql.converters import to_graphql_user
-from gql.types import BodyWeight, Sex, UnitPreference, User
-from models import BodyWeight as BodyWeightModel
+from gql.types import BodyMeasurement, Sex, UnitPreference, User
+from models import BodyMeasurement as BodyMeasurementModel
 from models import User as UserModel
 
 
@@ -18,27 +18,32 @@ class UserQuery:
     @strawberry.field
     def body_weights(
         self, info: Info, recorded_date: date | None = None
-    ) -> list[BodyWeight]:
+    ) -> list[BodyMeasurement]:
         current_user = require_user(info)
 
         db = SessionLocal()
 
         try:
-            query = select(BodyWeightModel).where(
-                BodyWeightModel.user_id == current_user.id
+            query = select(BodyMeasurementModel).where(
+                BodyMeasurementModel.user_id == current_user.id
             )
             if recorded_date is not None:
-                query = query.where(BodyWeightModel.recorded_date == recorded_date)
+                query = query.where(BodyMeasurementModel.recorded_date == recorded_date)
             query = query.order_by(
-                BodyWeightModel.recorded_date.desc(),
+                BodyMeasurementModel.recorded_date.desc(),
             )
 
             db_weights = db.execute(query).scalars().all()
             return [
-                BodyWeight(
+                BodyMeasurement(
                     id=strawberry.ID(str(w.id)),
                     weight_kg=w.weight_kg,
                     recorded_date=str(w.recorded_date),
+                    waist_cm=w.waist_cm,
+                    hip_cm=w.hip_cm,
+                    chest_cm=w.chest_cm,
+                    arm_cm=w.arm_cm,
+                    thigh_cm=w.thigh_cm,
                 )
                 for w in db_weights
             ]
@@ -46,17 +51,19 @@ class UserQuery:
             db.close()
 
     @strawberry.field
-    def today_body_weight(self, info: Info) -> BodyWeight | None:
+    def today_body_stats(
+        self, info: Info, recorded_date: date
+    ) -> BodyMeasurement | None:
         current_user = require_user(info)
 
         db = SessionLocal()
 
         try:
             db_weight = db.execute(
-                select(BodyWeightModel)
+                select(BodyMeasurementModel)
                 .where(
-                    BodyWeightModel.user_id == current_user.id,
-                    BodyWeightModel.recorded_date == date.today(),
+                    BodyMeasurementModel.user_id == current_user.id,
+                    BodyMeasurementModel.recorded_date == recorded_date,
                 )
                 .limit(1)
             ).scalar_one_or_none()
@@ -64,35 +71,15 @@ class UserQuery:
             if db_weight is None:
                 return None
 
-            return BodyWeight(
+            return BodyMeasurement(
                 id=strawberry.ID(str(db_weight.id)),
                 weight_kg=db_weight.weight_kg,
                 recorded_date=str(db_weight.recorded_date),
-            )
-        finally:
-            db.close()
-
-    @strawberry.field
-    def latest_body_weight(self, info: Info) -> BodyWeight | None:
-        current_user = require_user(info)
-
-        db = SessionLocal()
-
-        try:
-            db_weight = db.execute(
-                select(BodyWeightModel)
-                .where(BodyWeightModel.user_id == current_user.id)
-                .order_by(BodyWeightModel.recorded_date.desc())
-                .limit(1)
-            ).scalar_one_or_none()
-
-            if db_weight is None:
-                return None
-
-            return BodyWeight(
-                id=strawberry.ID(str(db_weight.id)),
-                weight_kg=db_weight.weight_kg,
-                recorded_date=str(db_weight.recorded_date),
+                waist_cm=db_weight.waist_cm,
+                hip_cm=db_weight.hip_cm,
+                chest_cm=db_weight.chest_cm,
+                arm_cm=db_weight.arm_cm,
+                thigh_cm=db_weight.thigh_cm,
             )
         finally:
             db.close()
@@ -101,12 +88,17 @@ class UserQuery:
 @strawberry.type
 class UserMutation:
     @strawberry.mutation
-    def record_weight(
+    def record_body_stats(
         self,
         info: Info,
-        weight_kg: float,
+        weight_kg: float | None = None,
+        waist_cm: float | None = None,
+        hip_cm: float | None = None,
+        chest_cm: float | None = None,
+        arm_cm: float | None = None,
+        thigh_cm: float | None = None,
         recorded_date: date | None = None,
-    ) -> BodyWeight:
+    ) -> BodyMeasurement:
         current_user = require_user(info)
 
         target_date = recorded_date or date.today()
@@ -116,20 +108,36 @@ class UserMutation:
         try:
             # Check if an entry already exists for this user + date
             existing = db.execute(
-                select(BodyWeightModel).where(
-                    BodyWeightModel.user_id == current_user.id,
-                    BodyWeightModel.recorded_date == target_date,
+                select(BodyMeasurementModel).where(
+                    BodyMeasurementModel.user_id == current_user.id,
+                    BodyMeasurementModel.recorded_date == target_date,
                 )
             ).scalar_one_or_none()
 
             if existing:
-                existing.weight_kg = weight_kg
+                if weight_kg is not None:
+                    existing.weight_kg = weight_kg
+                if waist_cm is not None:
+                    existing.waist_cm = waist_cm
+                if hip_cm is not None:
+                    existing.hip_cm = hip_cm
+                if chest_cm is not None:
+                    existing.chest_cm = chest_cm
+                if arm_cm is not None:
+                    existing.arm_cm = arm_cm
+                if thigh_cm is not None:
+                    existing.thigh_cm = thigh_cm
                 db_weight = existing
 
             else:
-                db_weight = BodyWeightModel(
+                db_weight = BodyMeasurementModel(
                     user_id=current_user.id,
                     weight_kg=weight_kg,
+                    waist_cm=waist_cm,
+                    hip_cm=hip_cm,
+                    chest_cm=chest_cm,
+                    arm_cm=arm_cm,
+                    thigh_cm=thigh_cm,
                     recorded_date=target_date,
                 )
 
@@ -137,10 +145,15 @@ class UserMutation:
             db.commit()
             db.refresh(db_weight)
 
-            return BodyWeight(
+            return BodyMeasurement(
                 id=strawberry.ID(str(db_weight.id)),
                 weight_kg=db_weight.weight_kg,
                 recorded_date=str(db_weight.recorded_date),
+                waist_cm=db_weight.waist_cm,
+                hip_cm=db_weight.hip_cm,
+                chest_cm=db_weight.chest_cm,
+                arm_cm=db_weight.arm_cm,
+                thigh_cm=db_weight.thigh_cm,
             )
         finally:
             db.close()
@@ -187,9 +200,9 @@ class UserMutation:
         db = SessionLocal()
 
         try:
-            log = db.get(BodyWeightModel, uuid.UUID(str(id)))
+            log = db.get(BodyMeasurementModel, uuid.UUID(str(id)))
             if log is None:
-                raise Exception("BodyWeight log not found")
+                raise Exception("BodyMeasurement log not found")
 
             if log.user_id != current_user.id:
                 raise Exception("Not authorized to delete this log")

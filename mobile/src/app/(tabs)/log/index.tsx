@@ -51,7 +51,7 @@ export default function Log() {
 
 				<TouchableOpacity
 					style={[commonStyles.menuItem, commonStyles.menuItemLast]}
-					onPress={() => router.push("/(tabs)/log/weight")}
+					onPress={() => router.push("/(tabs)/log/log-body-stats")}
 				>
 					<View style={[commonStyles.iconBg, { backgroundColor: "#E8F5E9" }]}>
 						<Ionicons
@@ -60,7 +60,7 @@ export default function Log() {
 							size={20}
 						/>
 					</View>
-					<Text style={commonStyles.menuText}>Record Weight</Text>
+					<Text style={commonStyles.menuText}>Record Body Stats</Text>
 					<Ionicons
 						name="chevron-forward"
 						color="#C7C7CC"

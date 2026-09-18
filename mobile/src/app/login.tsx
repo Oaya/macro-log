@@ -1,9 +1,10 @@
+import { TextInput } from "@/components/text-input";
 import { useAuth } from "@/lib/auth-context";
 import { LOGIN } from "@/graphql/auth";
 import { useMutation } from "@apollo/client/react";
 import { Link, useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, Pressable, Text, TextInput, View } from "react-native";
+import { Alert, Pressable, Text, View } from "react-native";
 
 export default function Login() {
 	const [email, setEmail] = useState("");

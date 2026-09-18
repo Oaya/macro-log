@@ -5,17 +5,18 @@ import { LineChart } from "react-native-gifted-charts";
 
 const CHART_WIDTH = Dimensions.get("window").width - 20 * 2 - 16 * 2;
 
-type WeightChartProps = {
+type MetricChartProps = {
+	title: string;
 	data: { value: number; label: string }[];
 	unit: string;
 };
 
-export function WeightChart({ data, unit }: WeightChartProps) {
+export function MetricChart({ title, data, unit }: MetricChartProps) {
 	if (data.length < 2) return null;
 
 	return (
 		<View style={[commonStyles.menuContainer, { paddingTop: 0 }]}>
-			<Text style={styles.sectionHeading}>Weight Trend</Text>
+			<Text style={styles.sectionHeading}>{title}</Text>
 
 			<View style={styles.chartWrapper}>
 				<Text style={styles.unitLabel}>{`(${unit})`}</Text>

@@ -3,7 +3,12 @@ import { UnitPreference } from "./user";
 
 export type WeightEntry = {
 	id: string;
-	weightKg: number;
+	weightKg: number | null;
+	waistCm: number | null;
+	hipCm: number | null;
+	chestCm: number | null;
+	armCm: number | null;
+	thighCm: number | null;
 	recordedDate: string;
 };
 
@@ -25,6 +30,11 @@ export const PROGRESS_DATA: TypedDocumentNode<ProgressData> = gql`
 		bodyWeights {
 			id
 			weightKg
+			waistCm
+			hipCm
+			chestCm
+			armCm
+			thighCm
 			recordedDate
 		}
 		me {
