@@ -1,6 +1,13 @@
-# Welcome to your Expo app 👋
+# macro-log mobile
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+React Native (Expo) client for MacroLog — a fitness and nutrition tracker. Log meals and workouts, and track calories and macros against daily goals. Talks to the [`backend`](../backend) GraphQL API.
+
+## Stack
+
+- [Expo](https://expo.dev) + [Expo Router](https://docs.expo.dev/router/introduction) (file-based routing)
+- React Native, TypeScript
+- [Apollo Client](https://www.apollographql.com/docs/react) for GraphQL
+- Native CSS (`global.css`) for shared design tokens
 
 ## Get started
 
@@ -10,7 +17,15 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npm install
    ```
 
-2. Start the app
+2. Configure the API URL
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Set `EXPO_PUBLIC_API_URL` to point at a running instance of the [`backend`](../backend) GraphQL API (e.g. `http://localhost:8000/graphql`).
+
+3. Start the app
 
    ```bash
    npx expo start
@@ -23,34 +38,23 @@ In the output, you'll find options to open the app in a
 - [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
 - [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Project structure
 
-## Get a fresh project
+- `src/app/` - screens and layouts (Expo Router file-based routing)
+- `src/components/` - shared UI components
+- `src/graphql/` - GraphQL queries/mutations, grouped by feature
+- `src/lib/` - Apollo client, auth, and other app-level utilities
+- `src/hooks/`, `src/styles/`, `src/constants/` - theming and shared hooks/styles
 
-When you're ready, run:
+## Scripts
 
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-### Other setup steps
-
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+- `npm run android` / `npm run ios` / `npm run web` - run on a platform
+- `npm run lint` - lint with `expo lint`
+- `npm run typecheck` - type-check with `tsc --noEmit`
+- `npm run reset-project` - move the starter code aside and start from a blank `app` directory (see Expo's docs)
 
 ## Learn more
 
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- [Expo documentation](https://docs.expo.dev/)
+- [Expo Router](https://docs.expo.dev/router/introduction)
+- [Apollo Client docs](https://www.apollographql.com/docs/react)

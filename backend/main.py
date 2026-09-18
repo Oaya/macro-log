@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from strawberry.fastapi import GraphQLRouter
 
 from database import SessionLocal
@@ -38,4 +39,15 @@ graphql_app = GraphQLRouter(schema, context_getter=get_context)
 
 # Create the FastAPI app and mount the GraphQL router at /graphql.
 app = FastAPI(title="MacroLog API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://192.168.1.91:3000",  # if you ever test the web build from another device on your network
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.include_router(graphql_app, prefix="/graphql")
