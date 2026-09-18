@@ -51,7 +51,7 @@ class UserQuery:
             db.close()
 
     @strawberry.field
-    def today_body_weight(
+    def today_body_stats(
         self, info: Info, recorded_date: date
     ) -> BodyMeasurement | None:
         current_user = require_user(info)
@@ -65,36 +65,6 @@ class UserQuery:
                     BodyMeasurementModel.user_id == current_user.id,
                     BodyMeasurementModel.recorded_date == recorded_date,
                 )
-                .limit(1)
-            ).scalar_one_or_none()
-
-            if db_weight is None:
-                return None
-
-            return BodyMeasurement(
-                id=strawberry.ID(str(db_weight.id)),
-                weight_kg=db_weight.weight_kg,
-                recorded_date=str(db_weight.recorded_date),
-                waist_cm=db_weight.waist_cm,
-                hip_cm=db_weight.hip_cm,
-                chest_cm=db_weight.chest_cm,
-                arm_cm=db_weight.arm_cm,
-                thigh_cm=db_weight.thigh_cm,
-            )
-        finally:
-            db.close()
-
-    @strawberry.field
-    def latest_body_stats(self, info: Info) -> BodyMeasurement | None:
-        current_user = require_user(info)
-
-        db = SessionLocal()
-
-        try:
-            db_weight = db.execute(
-                select(BodyMeasurementModel)
-                .where(BodyMeasurementModel.user_id == current_user.id)
-                .order_by(BodyMeasurementModel.recorded_date.desc())
                 .limit(1)
             ).scalar_one_or_none()
 

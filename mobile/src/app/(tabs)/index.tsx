@@ -193,12 +193,12 @@ export default function Index() {
 								size={18}
 								color={colors.primary}
 							/>
-							{data.todayBodyWeight ? (
+							{data.todayBodyStats ? (
 								<>
 									<Text style={styles.weightLabel}>Weight logged</Text>
 									<Text style={styles.weightValue}>
 										{kgToDisplayWeight(
-											data.todayBodyWeight.weightKg,
+											data.todayBodyStats.weightKg,
 											isImperial,
 										)}{" "}
 										{isImperial ? "lb" : "kg"}

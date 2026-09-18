@@ -33,7 +33,7 @@ export type HomeData = {
 		durationMin: number | null;
 		caloriesBurned: number | null;
 	}[];
-	todayBodyWeight: {
+	todayBodyStats: {
 		id: string;
 		weightKg: number;
 	};
@@ -71,7 +71,7 @@ export const HOME_DATA: TypedDocumentNode<HomeData> = gql`
 			durationMin
 			caloriesBurned
 		}
-		todayBodyWeight(recordedDate: $date) {
+		todayBodyStats(recordedDate: $date) {
 			id
 			weightKg
 		}
